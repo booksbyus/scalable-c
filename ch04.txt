@@ -1,0 +1,66 @@
++ CZMQ Reference
+
+
+Patterns for C
+
+Public class:
+    thing.h
+    thing.c
+
+Private class:
+
+    typedef struct {
+        char *property;
+    } thing_t;
+
+    //  Constructor
+    static thing_t *
+    thing_new (char *property)
+    {
+        thing_t *self = (thing_t *) zmalloc (sizeof (thing_t));
+        self->property = strdup (property);
+        return self;
+    }
+
+    //  Destructor
+    static void
+    thing_destroy (thing_t **self_p)
+    {
+        assert (self_p);
+        if (*self_p) {
+            thing_t *self = *self_p;
+            free (self->property);
+            free (self);
+            *self_p = NULL;
+        }
+    }
+
+    //  Method
+    static char *
+    thing_property (thing_t *self)
+    {
+        return self->property;
+    }
+
+
+Work with a list of things:
+
+    thing_t *thing = (thing_t *) zlist_first (self->things);
+    while (thing) {
+        //  Do stuff with thing
+        thing = (thing_t *) zlist_next (self->things);
+    }
+
+Delete some things from a list:
+
+    thing_t *thing = (thing_t *) zlist_first (self->things);
+    while (thing) {
+        if (thing_fails_test (thing)) {
+            thing_t *next = (thing_t *) zlist_next (self->things);
+            zlist_remove (self->things, thing);
+            thing_destroy (&thing);
+            thing = next;
+        }
+        else
+            thing = (thing_t *) zlist_next (self->things);
+    }

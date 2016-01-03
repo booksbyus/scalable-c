@@ -1,0 +1,77 @@
+
+# CLASS Approach
+    why and how
+    basic patterns
+        taken from RFC (update as needed)
+    advanced patterns
+    generic containers
+        zlist, zhash
+    advanced containers
+        zlistx, zhashx
+    basic types
+        zchunk
+
+# Using ZeroMQ
+    what it does, and how
+    ping pong example
+        break it down
+        client, server
+        strings
+        connect, bind
+    weather example
+        break it down
+        pub, sub
+    zsock, zstr, zmsg, zframe
+
+# Working Together
+    optimistic merging
+    worked example of a patch
+        break it down
+    RFC 22, explained
+
+# Actor-Based Concurrency
+    why and how it works
+    hello actor example
+        break it down
+    zsock_send, zsock_recv
+    zpoller
+
+# Layered Portability
+    principles of abstraction
+    zproject
+    zbeacon, zproc, zsys
+    ziflist, zclock, zuuid
+    zdir, zfile
+
+# Security and Encryption
+    ZeroMQ's security model
+    PLAIN security mechanism
+    CURVE security mechanism
+    security examples
+    zauth, zcert, zcertstore
+
+# Scalable Servers and Clients
+    zproto for clients and servers
+    state machine model
+    examples
+    client timeouts
+    heartbeating
+    break down the full FSM
+    wrap the client API
+
+# Clustering
+    zyre for group clustering
+
+# Basics of Code Generation
+    gsl
+    examples
+    quick reference
+
+# Rules of API Design
+    minimal
+    extensible
+    consistent
+    testable
+    portable
+
+# Further Reading

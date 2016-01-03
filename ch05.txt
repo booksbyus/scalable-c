@@ -1,0 +1,167 @@
+.bookmark class
++ The CLASS Style Guide
+
+++ The Sins of Programming
+
+The following block of C code would be considered "good" by most C programmers. Can you tell what it does, without more context?
+
+[[code language="C"]]
+max_index = allocator->max_index;
+ref = &allocator->free[index];
+i = index;
+while (*ref == NULL && i < max_index) {
+    ref++;
+    i++;
+}
+[[/code]]
+
+How about this function--would you feel safe copying and pasting this into your own work?
+
+[[code language="C"]]
+static BOOL
+is_counted_repeat(const uschar *p)
+{
+if ((digitab[*p++] & ctype_digit) == 0) return FALSE;
+while ((digitab[*p] & ctype_digit) != 0) p++;
+if (*p == '}') return TRUE;
+
+if (*p++ != ',') return FALSE;
+if (*p == '}') return TRUE;
+
+if ((digitab[*p++] & ctype_digit) == 0) return FALSE;
+while ((digitab[*p] & ctype_digit) != 0) p++;
+
+return (*p == '}');
+}
+[[/code]]
+
+Or how about this fragment, taken from the same program just a little later... how long does it take you to be surprised by that dangling {{else}} and wonder, "what is that doing there?":
+
+[[code language="C"]]
+if (*p == '}') max = min; else
+  {
+  if (*(++p) != '}')
+    {
+    max = 0;
+    while((digitab[*p] & ctype_digit) != 0) max = max * 10
+        + *p++ - '0';
+    if (max < 0 || max > 65535)
+      {
+      *errorcodeptr = ERR5;
+      return p;
+      }
+    if (max < min)
+      {
+      *errorcodeptr = ERR4;
+      return p;
+      }
+    }
+  }
+[[/code]]
+
+And this code, which is, I'm sure, technically solid, but is as friendly as a drunken Glaswegian who thinks you're making eyes at his girlfriend:
+
+[[code language="C"]]
+if (hdr.xid == WATCHER_EVENT_XID) {
+    struct WatcherEvent evt;
+    int type = 0;
+    char *path = NULL;
+    completion_list_t *c = NULL;
+
+    LOG_DEBUG(("Processing WATCHER_EVENT"));
+
+    deserialize_WatcherEvent(ia, "event", &evt);
+    type = evt.type;
+    path = evt.path;
+    /* We are doing a notification, so there is no pending request */
+    c = create_completion_entry(WATCHER_EVENT_XID,-1,0,0,0,0);
+    c->buffer = bptr;
+    c->c.watcher_result = collectWatchers(zh, type, path);
+
+    // We cannot free until now, otherwise path will become invalid
+    deallocate_WatcherEvent(&evt);
+    queue_completion(&zh->completions_to_process, c, 0);
+} else if (hdr.xid == SET_WATCHES_XID) {
+    LOG_DEBUG(("Processing SET_WATCHES"));
+    free_buffer(bptr);
+} else if (hdr.xid == AUTH_XID){
+    LOG_DEBUG(("Processing AUTH_XID"));
+    ...
+[[/code]]
+
+The first thing this code does, when I stumble across it, is whisper quietly but urgently, "Please, for the love of all that is holy, //rewrite me//, I'm just dying of embarrassment here". Code shouldn't have to look like this. I'm so irritated by this last fragment that I rewrite it just to show what it //could// look like:
+
+[[code]]
+if (hdr.xid == WATCHER_EVENT_XID) {
+    LOG_DEBUG ("Processing WATCHER_EVENT");
+    //  We are doing a notification, so there is no pending request
+    event_t *event = event_new (ia, "event");
+    clist_t *clist = clist_new (WATCHER_EVENT_XID, -1, 0, 0, 0, 0);
+    clist_set_buffer (clist, buffer);
+    clist_set_watcher (clist,
+        queue_watchers (queue, event_type (event), event_path (event)));
+    queue_set_clist (queue, clist);
+    //  Queue now owns clist, which owns buffer
+    event_destroy (&event);
+}
+else
+if (hdr.xid == SET_WATCHES_XID) {
+    LOG_DEBUG ("Processing SET_WATCHES");
+    buffer_destroy (&buffer);
+}
+else
+if (hdr.xid == AUTH_XID) {
+    LOG_DEBUG ("Processing AUTH_XID");
+    ...
+[[/code]]
+
+These code fragments come from popular and widely-used libraries. All this code is technically solid: it doesn't crash, and doesn't have security holes as far as I can tell. Yet it in terms of readability it achieves a solid C-minus. It's doubtful that anyone could tell me what these fragments did, even approximately, unless they were the original authors or fellow contributors. Of course taking chunks of code out of context is unfair, but isn't there something wrong with needing large amounts of context in order to understand a piece of writing?
+
+When we can't read and understand code, we are unable to judge how accurate or correct it is, except by faith. "Yes, he's a good developer, so his code is //probably// correct" is fine for a toy application. It's not acceptable for code that deals in real life.
+
+Many people have tried to find ways to prove code correct scientifically, but it seems there are only two ways to prove any piece of code approximately correct. One is to run it against a set of inputs and prove, "it has no flaws that show with this set of inputs". The second is to inspect it manually and be able to say, "we did not find any errors by inspection".
+
+Like any proof-reading, the inspector must be someone other than the author. We're blind to our own mistakes, as I tell my children when they misbehave. But how can you reasonably inspect code that uses an inconsistent and arbitrary style, and makes minimal effort at being readable?
+
+When we can't inspect a project's code, we're left with testing as the only tool. It's better than nothing, but it's weak.
+
+Inspection is only one challenge. How about reusing code? A smart programmer reuses large portions of his old code, especially code that's stood the test of time and is known to work properly. But modern programming has grown beyond personal projects. We program in groups, in communities, and code sharing and remixing is essential to doing this cheaply and effectively.
+
+Looking at those code samples, I'd not touch them with a long stick. I don't care how good the library is, code that doesn't read well is going to cause trouble sooner or later.
+
+Here are some of the problems I see with the code fragments above:
+
+# Inconsistent and arbitrary style: either several people contributed, or the author changed his mind frequently.
+# Style that is harder to read, because the authors did not rank "readability" as a goal.
+# Variable names that tell you nothing, like {{i}} and {{p}}.
+# Simple disregard for formatting, such as code with bad or wrong indentation.
+# Magic numbers in code, like "65535".
+# Magic constants that tell you nothing, like "ERR5" and "ERR4".
+# Whitespace and punctuation that separates text that should be together, and glues together text that should be separated.
+# Attempts to "save space" by writing compound statements on one line.
+# Highly fuzzy boundaries between components, e.g., direct manipulation of structure members, long argument lists, unclear return values from functions, etc.
+
+All of these have the same result, which is to make it more expensive to understand the code, check it, reuse it, and change it.
+
+
+
+
+
+The reason for putting generated code into the repos is to make it possible for naive contributors to get started. From experience, if they have to get the code generators working first (if they're not standard on whatever platform the contributor is using), it creates real pain.
+Putting generated code into the repo means they can clone, make, run, and then start hacking, and typically the generated code is for parts that beginners don't touch.
+
+_t discussion
+casting malloc return -> for C++ compatibility
+http://stackoverflow.com/questions/605845/do-i-cast-the-result-of-malloc
+
+http://man.cat-v.org/plan_9/6/style
+http://yarchive.net/comp/linux/typedefs.html
+http://www.literateprogramming.com/pikestyle.pdf
+
+I started writing C code in 1988 or so, and my old C code is still readable today. When I look at this old code--usually to steal some pieces of it--I see a very careful programmer who obviously took great effort on every line of code. But the composition looks wrong. There's no overall regularity. It looks way too complex, yet I know that the C code I write today, which looks much simpler is in fact much more sophisticated.
+
+It turns out that there are ways to write C that remove practically all the risk and havoc that most programmers associate with manual control of the machine. In 1988, we didn't know about these patterns. Today, they're clear and starting to define the state of the art in C programming. It did take us a lot of trial and error to discover them.
+
+Some of these patterns are basic coding style; some are about how to construct larger projects out of regular pieces; and some are about how to connect these pieces to create larger-scale architectures.
+
+

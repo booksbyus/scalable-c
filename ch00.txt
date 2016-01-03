@@ -1,0 +1,203 @@
+.bookmark preface
++ Preface
+
+++ Why This Book Exists
+
+The C programming language does not have a sense of humor. If you write in C, you know that it does not forgive mistakes. It does not try to interpret what you mean. It does what you tell it, no more and no less. In return, it gives you full control over the results of your work.
+
+Modern languages focus on comfort, abstraction, and automation. C, which was born around 1970, focuses on minimalism, portability, and performance. Well-written C code can run on a $1 embedded computer as well as on a massive server.
+
+If you know C well enough to understand these trade-offs, then you know where C stops working, as a language. C has many problems, yet three stand out:
+
+* While C lends itself to building libraries, it has no consistent API model. This makes C code much harder to read and understand than it should be.
+
+* The standard approach for concurrency is POSIX threads that share their state. This is complex and fragile. We know how to do this better, using message passing between threads.
+
+* To compile and link C code for arbitrary platforms is a complex black art. This creates a real cost for C projects. Even CMake, perhaps the best cross-platform answer, uses autotools to bootstrap itself.
+
+This adds up to extra effort and cost for anyone using C. It is uneconomic to write large applications in C. Even for system-level applications, many people prefer C++, Go, and Erlang. Yet there are good reasons to use C, which are not going away.
+
+The most powerful argument for using C is that it works well with all other languages. This is a result of its age, and its wide use as a low-level systems language. If you make a library in C, you can offer it to developers in every one of the hundred most popular languages.
+
+Over time, C's [https://github.com/blog/2047-language-trends-on-github relative popularity is falling]. The high costs of using C in the real world of the 21st century are throttling it.
+
+Yet we have solved these problems. We have good, tested answers. Today these answers are still well-hidden, and known only to a few people. This book aims to change that. It aims to bring C into the 21st century and make it a cheap, useful material in which to build.
+
+++ What is "Scalable C?"
+
+We use C most often to write libraries, which we then call from applications in other languages. This layer of C libraries sits between the operating system and the application.
+
+This layer provides [http://en.cppreference.com/w/c/links/libs  security, user interfaces, audio and video, maths, graphics, databases,  communications, compression, and so on]. I call this the "fabric layer."
+
+For the most part, this fabric layer sees the world as a single processor. It has no concept of concurrency. It cannot take advantage of many cores on a machine, let alone many machines in a cloud. Every library has its own style, standards, and API model. Every library has a custom build process.
+
+A scalable technology can solve large problems as well as small ones. Our current fabric layer is not scalable. It costs too much to write and to use.
+
+What I will explain in this book is how to build a scalable fabric layer, written in "Scalable C."
+
+Scalable C has specific properties:
+
+* It is cheap to create a Scalable C project.
+
+* It is cheap to use, with consistent and obvious APIs.
+
+* It is cheap to deploy, with powerful tools and packagers.
+
+* It is cheap to scale to many cores, with actor-based concurrency.
+
+* It is cheap to scale to many servers, with clustering across a cloud or data center.
+
+* It is cheap to build community, with a modern collaborative process.
+
+Scalable C is standard portable C plus a mix of other technologies:
+
+* The [http://rfc.zeromq.org/spec:21 CLASS RFC] defines the Scalable C language style.
+
+* [http://zeromq.org ZeroMQ] provides message passing between threads and processes.
+
+* [http://czmq.zeromq.org CZMQ] provides a core C library for Scalable C.
+
+* [http://zyre.org Zyre] provides local-area clustering for Scalable C projects.
+
+* [https://github.com/zeromq/zproject zproject] provides packaging (builds, bindings, and distributions).
+
+* [https://github.com/zeromq/zproto zproto] provides client-server meta-programming.
+
+* The [http://rfc.zeromq.org/spec:22 C4.1 RFC] defines a collaborative process for scalability.
+
+++ How This Book Works
+
+This book takes the same approach that I take in distributed programming workshops. That is, start with simple worked examples, and then add more and more depth.
+
+We will see a lot of example code. All the examples work, and you can build and play with them. The Scalable C repository holds this book, and the code. If you find things you want to change, just send a pull request. I'll explain how that works, when we get started.
+
+If you read the whole book and follow the examples, you will learn how to:
+
+* Write C code using the Scalable C style, called CLASS.
+
+* Build and package your C projects, using zproject.
+
+* Use the CZMQ generic list and hash containers.
+
+* Pass messages between threads and processes, using ZeroMQ.
+
+* Write non-blocking multithreaded C code as CZMQ actors.
+
+* Design good APIs and wire-level protocols.
+
+* Use git to collaborate with others on a project.
+
+* Build an open source community.
+
+* Make secure encrypted communications.
+
+* Build clustering across a local network, using Zyre.
+
+* Build scalable client and server stacks using zproto.
+
+* Generate C code using model oriented programming.
+
+* Use your C code from other languages, including Java.
+
+* Build and ship your C code for Android.
+
+* Write portable code that runs on all platforms.
+
+This sounds like a lot, and it might be, if I had to explain everything from scratch. I'll keep things simple by focusing on patterns that work, without too much argumentation. For example I'll explain patterns for using git, that avoid the most common pitfalls. I expect you to be able to learn git yourself.
+
+++ Before You Start
+
+Here is a list of ingredients:
+
+* One working PC. It does not need to be new, or fancy.
+
+* An operating system you are comfortable with. Linux will give you the best results. OS/X and Windows are usable if you have no choice.
+
+* An Internet connection, at least to get started.
+
+* A GitHub account. If you are not already registered on github.com, do that now.
+
+* Conversational Bash skills. You can run commands, install packages, and so on.
+
+* A basic knowledge of C. You at least understand pointers, and the standard library.
+
+* A basic knowledge of compute models. You have written programs as a job for a few years at least.
+
+Here's my current set-up:
+
+* A second hand X220 Thinkpad from [http://lapstore.de/ LapStore]. Costs about EUR 300, with an SSD. It's not the lightest or fastest laptop. Yet the battery lasts all day and it runs Linux well.
+
+* Ubuntu Linux with default configuration.
+
+To start with, you need at least these packages:
+
+* git-all -- git is how we share code with other people.
+
+* build-essential, libtool, pkg-config - the C compiler and related tools.
+
+* autotools-dev, autoconf, automake - the GNU autoconf makefile generators.
+
+* cmake - the CMake makefile generators (an alternative to autoconf).
+
+Plus some others:
+
+* asciidoc - which we use to build manual pages.
+
+* uuid-dev - utility libraries.
+
+* valgrind - a useful tool for checking your code.
+
+Which we install like this (using the Debian-style apt-get package manager):
+
+[[code]]
+sudo apt-get install -y git-all build-essential libtool pkg-config
+sudo apt-get install -y autotools-dev autoconf automake cmake
+sudo apt-get install -y asciidoc uuid-dev valgrind
+[[/code]]
+
+The LearnXinYMinutes project has good quick guides to many languages. Here are its guides [https://learnxinyminutes.com/docs/bash/ to Bash], [https://learnxinyminutes.com/docs/c/ to C],
+[https://learnxinyminutes.com/docs/git/ and to git].
+
+++ Becoming a Good Programmer
+
+I'll end this preface with some inspirational advice on how become a good programmer. Writing code is like doing magic. Just say the right words, and amazing stuff happens. Or, horrible things happen. Becoming a great programmer isn't easy. It takes time. I'm going to give ten tips to help you along that path.
+
+1. Take Your Time
+
+It takes years to get good at coding, so be patient. Your first projects will be weak, no matter how smart you are. If you're coding every day you'll be decent after five years, and good after ten. And after twenty years you may become great.
+
+2. Write Code, Write Code
+
+There's a myth that superb coders are born. Yes, you need talent, yet above all you need practice. Code every spare minute. You need to practice for years, alone and with others. It won't make you rich, it will make you better. Coding is like playing music. Play the same tune a hundred times, and each time you will learn something new.
+
+3. Develop Your Strengths
+
+Discover what you are good at: everyone is different. Maybe it's problem solving. Maybe it's teaching others. Maybe it's long, deep focus on difficult concepts. The best sign you're good at something is you enjoy doing it. Over time you'll become better at other aspects of coding.
+
+4. Learn to Work With Others
+
+Alone, you'll always be mediocre. Only when you work with others can you shine. Learn to let others compensate for your weaknesses. Look for teams that need you and that can challenge you. Join open source projects. Learn open source culture. Learn from others, and especially their mistakes.
+
+5. Use Science, not Magic
+
+Most of the software industry is plain wrong. Learn to recognize and reject magical arguments. Science is about solving real problems with wild, irresponsible answers, and harsh error correction. Don't follow fashion. Take the next most urgent problem. Write a minimal plausible solution. Test that, and keep it only if it seems to work.
+
+6. Trust Your Instincts
+
+We're born with good instincts for working with others. Education and work beat these out of us. Most of all we learn to accept discomfort and pain. Learn to trust your instincts. If something you're doing seems wrong, fix it. Even if it takes a decade: write it down, understand it, and fix it.
+
+7. Work With What You Have
+
+Work with the problems, tools, and people you have at hand. Focus on getting it right, minimal, and modest. Don't wait for tomorrow's technology to arrive. Don't try to invent the future. Just get to work making real solutions to real problems. The future will invent itself.
+
+8. Embrace Criticism
+
+Lose your ego. When someone criticizes your work it can hurt. Yet when people ignore you and your work, it is far worse. Ask for critiques. Make your work public and open source, when you can. Now and then you'll hit a troll who aims to hurt you. It's never personal. Learn to shrug that off.
+
+9. Keep Your Costs Low
+
+Cheap is important. Learn to use Linux, and a cheap or second-hand PC. Learn the command line. Stick with small languages like C, instead of massive languages like C++. Learning a larger language does not make you a better programmer.
+
+10. Publish Your Work
+
+Put your code out there, using your real name. Become a contributor to open source projects. If they don't want you, find projects that do. Build up your public profile, e.g. on GitHub. It's your future resume.

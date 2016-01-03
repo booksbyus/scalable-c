@@ -1,0 +1,10 @@
+#! /bin/bash
+
+TITLE=ThePsychopathCode
+mv main.odt.pdf $TITLE.pdf
+mv main.epub $TITLE.epub
+
+wdattach hintjens blog:_psychopaths $TITLE.pdf
+wdattach hintjens blog:_psychopaths $TITLE.epub
+
+

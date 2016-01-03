@@ -1,0 +1,142 @@
++++ Building and Installing
+
+The CZMQ library is called {{libczmq}}. You need to build and install the 0MQ library, {{libzmq}}, before you can build {{libczmq}}. I usually build both libraries from the GitHub masters, like this (on Linux):
+
+[[code]]
+git clone git://github.com/zeromq/libzmq.git
+cd libzmq
+sh autogen.sh
+./configure
+make all
+sudo make install
+sudo ldconfig
+cd ..
+
+git clone git://github.com/zeromq/czmq.git
+cd czmq
+sh autogen.sh
+./configure
+make all
+sudo make install
+sudo ldconfig
+cd ..
+[[/code]]
+
+You can also use the stable packages from the [http://czmq.zeromq.org CZMQ] and [http://www.zeromq.org zeromq.org] web sites. CZMQ should work with any version of {{libzmq}}, back to 2.1. However you must run the configure and make steps again for CZMQ if you change the installed version of {{libzmq}}. CZMQ uses macros to compile differently depending on the version of {{libzmq}} that it finds at the configure step.
+
+When you've installed CZMQ for the first time, make and run a minimal test to make sure you've done this right. First, create a program {{hello.c}} like this:
+
+[[code type="example" title="Hello World" name="hello"]]
+[[/code]]
+
+Build this using gcc:
+
+[[code]]
+gcc -o hello hello.c -lzmq -lczmq
+[[/code]]
+
+If this gives errors, fix them before going further. Then, run the hello program, which does a basic ping-pong test and should tell you, "Hello, World!"
+
++++ Getting the Examples
+
+The examples for this book live in the [https://github.com/imatix/scalablec git repository]. The simplest way to get all the examples is to clone this repository:
+
+[[code]]
+git clone --depth=1 git://github.com/imatix/scalablec.git
+[[/code]]
+
+And then browse the examples/C subdirectory. All examples are licensed under MIT/X11 so you can reuse the code freely in your applications.
+
++++ GitHub Master Versus Stable Packages
+
+If you're developing a new application, you should use the GitHub masters for {{libzmq}} and CZMQ. These are almost always stable, and it makes it much easier to make contributions back if you're on the latest source code. Any bugs in the master version get fixed as a matter of high priority.
+
+If you're moving an application into production, you want to base off versions of {{libzmq}} and CZMQ that have more guarantees of not changing. We're already quite fussy about not breaking applications when we make new versions, but the risk is never zero.
+
+When you are working off packages, it's a little more work to get updates--that's the point, in fact. When you're working off GitHub master, you can update your copy of the repository with one command:
+
+[[code]]
+git pull --rebase origin master
+[[/code]]
+
+++ Contributing to CZMQ
+
++++ The Short Version
+
+CZMQ has a simple and effective contribution process. The simplest way to make a contribution is to:
+
+# Fork the CZMQ repository to your own GitHub account
+# Clone your fork to your computer, configure and build as explained above
+# Make and test a single change
+# Commit that change with a clear message
+# Push the change to your cloned repository on GitHub
+# In the GitHub web interface, make a "pull request"
+
+If your change was clear, simple, and didn't break style, one of the CZMQ maintainers will merge it within a few hours. Once it's been merged, resynchronize your fork like this:
+
+[[code]]
+git pull --rebase upstream master
+[[/code]]
+
+The first time, you'll want to add the "upstream" remote to point to the real CZMQ repository:
+
+[[code]]
+git remote add upstream git://github.com:zeromq/czmq.git
+[[/code]]
+
++++ The Long Version
+
+The CZMQ contribution process is actually more involved than this. If you want to do any significant work on the library, you should get familiar with the rules. They're defined by two RFCs: [http://rfc.zeromq.org/spec:16 C4] and [http://rfc.zeromq.org/spec:16 CLASS]. C4 expands on GitHub's fork + pull request model to define the whole process for making a change. CLASS defines the style guide we use for the code itself.
+
+If you make a patch that breaks the C4 or CLASS guidelines, someone will explain what you missed, so don't worry. These rules aren't there to make life harder, they're to make it simpler.
+
++++ Fixing Bugs
+
+If you think you've found a bug in CZMQ, the first thing to do is make a //minimal test case//. If you think you have a fix for the bug, you can make a pull request as explained above. Otherwise, you can email zeromq-dev and ask one of the CZMQ developers for advice. In either case, post your test case to a pastebin or [http://gist.github.com GitHub gist].
+
+++ Overall Structure of Your Code
+
++++ Build Libraries, not Applications
+
+One of the hardest things about working with C is to create good structure for your code. In [#class] we'll learn the CLASS standard, which is a detailed answer for how to write well-structured and readable C code. I strongly recommend that you read, and if possible, adopt this standard, because it will make your life so much easier. CLASS should be familiar to anyone who's worked on well-structured C libraries.
+
+The examples in this book tend to exist just as main programs. But this isn't realistic. Every C project consists of some mix of library functions and main programs. When we say an "application" we tend to think of main programs. These are reusable via the command-line, if we take the effort of creating a command-line interface.
+
+But a more modern, and scalable approach is to make everything a library API, wrapped in the thinnest of main programs. Every CLASS project consists of:
+
+* A set of modules which provide the library API
+* A set of main programs for testing
+
+This approach has some compelling advantages:
+
+* It creates better internal architecture as you break everything into modules from the start;
+* It develops a public API that can be wrapped in higher-level languages;
+* It lets you embed the full functionality in other C libraries.
+
+I'd argue that //all fabric// should be built like this. Where you need loosely-bound APIs, you use protocols over 0MQ. So your code looks like this:
+
+[[code type="textdiagram" title="Scalable Fabric"]]
+#----------------#
+|  Applications  |
+#----------------#
+        ^
+        |
+#-------+--------#
+|   Public API   |
++----------------+
+|  Internal API  |
++----------------+
+|   Protocols    |
+#-------+--------#
+        |
+        v
+#----------------#
+|     Peers      |
+#----------------#
+[[/code]]
+
+For an example of a project structured like this, look at the [https://github.com/zeromq/filemq FileMQ] project. This presents applications with a //server// and a //client// module that can be configured in code. For example here's a simple C main program that wraps FileMQ:
+
+[[code type="example" title="File Tracker Tool" name="track"]]
+[[/code]]
+

@@ -1,0 +1,5 @@
+<project name = "Scalable C" script = "zproject.gsl" prefix = "sc" >
+    <use project = "czmq" />
+    <main name = "hello" private = "1" />
+</project>
+

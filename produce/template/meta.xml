@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:grddl="http://www.w3.org/2003/g/data-view#" office:version="1.2">
+  <office:meta>
+    <meta:initial-creator>Pieter Hintjens</meta:initial-creator>
+    <meta:creation-date>2012-12-13T09:49:33</meta:creation-date>
+    <dc:date>2012-12-13T13:20:31</dc:date>
+    <dc:creator>Pieter Hintjens</dc:creator>
+    <meta:editing-duration>PT23M54S</meta:editing-duration>
+    <meta:editing-cycles>5</meta:editing-cycles>
+    <meta:generator>LibreOffice/3.5$Linux_X86_64 LibreOffice_project/350m1$Build-2</meta:generator>
+    <dc:title>%TITLE%</dc:title>
+    <meta:document-statistic meta:table-count="0" meta:image-count="1" meta:object-count="0" meta:page-count="13" meta:paragraph-count="75" meta:word-count="1250" meta:character-count="8778" meta:non-whitespace-character-count="7586"/>
+  </office:meta>
+</office:document-meta>

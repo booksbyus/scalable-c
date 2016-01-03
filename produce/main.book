@@ -1,0 +1,48 @@
+#   Scalable C
+FILENAME=main
+AUTHOR=Pieter Hintjens
+TITLE=Scalable C
+SUBTITLE=Programming C for the 21st Century
+TITLENOTE=
+
+#   Page dimensions in cm
+WIDTH=13.97
+HEIGHT=21.59
+TOP=1.4
+BOTTOM=1.4
+INSIDE=2.3
+OUTSIDE=1.4
+
+#   Fonts
+HEADERFONT=EB Garamond
+BODYFONT=EB Garamond
+TEXTHEIGHT=90%
+TEXTSIZE=11pt
+
+#   Copyright page
+EDITION=Edition 0.1: xx January 2016
+ISBN=ISBN tbd
+DEDICATION=For my friends
+COPYRIGHT=Copyright © 2016 Pieter Hintjens
+LICENSE=Free to share and remix under CC-BY-SA-4.0
+TRADEMARKS="Scalable C" is a trademark of Pieter Hintjens
+PUBLISHER=Published by Pieter Hintjens
+CREDITS1=
+CREDITS2=Cover by westinCovers, www.westincovers.com. Cover font: Kontrapunkt by Bo Linnemann, Kontrapunkt A/S. Text font: EB Garamond by Georg Duffner
+PURCHASE=http://www.amazon.com/dp/B016MRW9KS
+
+#   Author page
+BIOGRAPHY=Pieter Hintjens has spent years building on-line communities and helping others to work better together. He is an expert in the dynamics of group psychology. He has researched cults and abusive manipulation since 2000, and psychopaths since 2010. He is also a software programmer, musician, and father.
+OTHERBOOKS=Other books by the same author: "ZeroMQ - Messaging for Many Applications" (O'Reilly), "Culture and Empire: Digital Revolution" (Amazon.com).
+
+#   Build index
+#INDEX=../index.txt
+
+#   Body content
+HEADER=Scalable C
+BREAKS=chapter
+
+#   Content
+../ch00.txt
+../ch01.txt
+
