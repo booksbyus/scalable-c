@@ -11,6 +11,11 @@
     basic types
         zchunk
 
+# Packaging
+    zproject
+        what it produces
+        how to use it
+
 # Using ZeroMQ
     what it does, and how
     ping pong example

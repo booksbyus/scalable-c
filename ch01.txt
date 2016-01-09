@@ -1,61 +1,578 @@
+// kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
 .bookmark hello-world
 + Hello, World
 
-In this chapter we'll build, test, and package a full C application that does nothing. This gives us a tour of the Scalable C tools and process, without swamping us in details.
+In this chapter we'll build, test, and publish a full C application that does nothing. Above all we'll learn how to use git, a most important tool for working with other people. Even if you know git, it's worth reading this chapter to learn how to use it without pain.
 
-++ Start a New Project
+++ Problem: what do we do next?
 
-Let's start a new, empty project:
+Deciding what to do next is always a tricky thing. I like to solve this using a simple and effective pattern I call "problem-solution." It works like this:
 
-```
-using git
-    basic commands & flow
-    use git master
-    install libzmq, czmq
-hello world example
-    a minimal program
-building and running
-    cmake
-    autoconf
-    msvc
-working together
-rules for open source
-```
+* Take the next most urgent problem and write it down.
 
-++ Memory Checking with Valgrind
+* Make a minimal plausible solution.
 
-The one add-on I really recommend for C development on Linux is Valgrind. This has a number of tools, but the one I use systematically is the Memcheck tool, which catches memory leaks and illegal accesses. Here's how I run the hello program under Valgrind:
+* Test that solution against real-life.
 
-```
-valgrind --tool=memcheck --leak-check=full
-    --suppressions=valgrind.supp ./hello
-```
+* If the solution works, keep it. Otherwise throw it out.
 
-Which tells me:
+* Repeat until exhausted, broke, or dead.
+
+So this will be the structure of the book. Every section states a problem, and then solves it. This approach makes it easy for you to know why I'm explaining a particular topic. More to the point, it makes it easier for me to write the book.
+
+Remember this rule:
+
+> Don't add features or explore maybes. Solve real problems one by one with minimal, testable solutions.
+
+++ Problem: where do we start?
+
+Luckily the software industry has learned
+
+Create a single source called {{hello.c}}, anywhere on disk:
 
 ```
-==26539== Memcheck, a memory error detector...
-==26539==
-Hello, World!
-==26539==
-==26539== HEAP SUMMARY:
-==26539==     in use at exit: 0 bytes in 0 blocks
-==26539==   total heap usage: 67 allocs, 67 frees,...
-==26539==
-==26539== All heap blocks were freed -- no leaks are possible
-```
+#include <stdio.h>
 
-To suppress warnings from the way {{libzmq}} initializes memory, I create a file called {{valgrind.supp}} that contains:
-
-[[code]]
+int main (void)
 {
-   <socketcall_sendto>
-   Memcheck:Param
-   socketcall.sendto(msg)
-   fun:send
-   ...
+    puts ("Hello, World");
+    return 0;
 }
-[[/code]]
+```
 
-Note that running under Valgrind does slow things down. If you're expecting a certain performance from your application, don't be surprised when it crawls like a snail under Valgrind.
+Now compile, link, and run this program. I'll assume we're using Ubuntu, for all command examples:
 
+```
+gcc -o hello hello.c
+./hello
+```
+
+And you should see that familiar {{Hello, World}} printed on your console. If you are using OS/X or Windows, it won't be this easy. I'll repeat my advice to install Linux.
+
+++ Problem: we need to organize our work
+
+Just scattering source files around your laptop's hard disk is a bad idea for many reasons. A productive programmer works on hundreds and thousands of source files, over years. There is a natural pattern to this work, which is the //project//. A typical project grows for a few years and then quietens down, in a neat curve. Newer projects use older projects, and replace them. Cycle of life stuff.
+
+//Solution: use one directory per project.//
+
+Often we'll collect these projects together into groups. A project directory will be as rich as it needs to be. Let's make this happen:
+
+```
+mkdir -p $HOME/projects/hello
+```
+
+Now move {{hello.c}} to {{$HOME/projects/hello}} and compile and run, as before. If it doesn't work, get some rest. Things are only going to get harder from here on.
+
+++ Problem: we need to backup and share our work
+
+Laptops tend to die or get stolen. Anything you save to a laptop hard drive is liable to get lost. There are many ways to back up your work, and only one that's worth teaching, which is to use git. In principle git is for "revision control", meaning you can check who changes what, when, and why. It is a good habit to use it for //everything// you create that looks like text. (There are better ways to back up your photos, videos, and dubstep mixes.)
+
+//Solution: create one git repository per project.//
+
+Log in to your GitHub account, then click the big '+' sign on the top right. Choose 'New repository' and then enter the name "hello". Don't change any other settings. Click the "Create repository" button.
+
+Next we'll link our projects/hello directory to this repo. I'll assume your GitHub name is "urlogin." This means your repo's address is {{https://github.com/urlogin/hello}}.
+
+Here's how we link our directory to the repo:
+
+```
+cd $HOME/projects/hello
+
+# Make current directory a git repo
+git init .
+
+# Create a 'remote' called 'origin', pointed to GitHub
+git remote add origin https://github.com/urlogin/hello
+
+# Tell git we intend to commit our source
+git add hello.c
+
+# Do the actual commit with a nice message
+git commit -m "Added source file"
+
+# Push the 'master' branch to the remote called 'origin'
+git push origin master
+```
+
+Jargon file:
+
+* "repo" is how the cool kids say "repository." But you knew that.
+* "commit" is how you save local changes to your local repo.
+* "remote" is what git calls another repo. Stick to the same name for both repos.
+* "push" is what git calls sending changes from one repo to another repo.
+* "pull" is getting changes from a remote to your local repo.
+* "branches" are a thing git does to confuse you. We always use one branch called "master." I'll explain more about that later.
+
+Remember this rule:
+
+> If you have't committed your work and pushed it to GitHub, it is already dead.
+
+++ Problem: git asks for login and password
+
+Ah, welcome to the annoying world of security. You can always grab stuff from a public repository without authentication. Yet when you want to push commits to a remote, you must have permission. Entering your name and password over and over gets painful.
+
+If you are serious about security, you use two-factor authentication. This means your puny passwords don't even work. So you need a more magical solution.
+
+//Solution: use the SSH protocol and a SSH key.//
+
+# Follow the [https://help.github.com/articles/generating-ssh-keys/ GitHub article on SSH keys]
+# Use SSH instead of HTTPS for remotes.
+
+```
+# Delete the remote called "origin"
+git remote rm origin
+# Create it again, using SSH
+git remote add origin git@github.com:urlogin/hello
+# Check that it works
+git push origin master
+```
+
+Jargon file:
+
+* "SSH" - the secure shell protocol, often used when A wants to talk to B without C snooping.
+* "Two-factor authentication" or 2FA - stops people accessing your account if they steal your password. Learn it, and use it.
+
+++ Problem: the C preprocessor
+
+A realistic C program starts with loads of #include statements. In technical terms we call this "making humans do work that computers can do faster and better." This used to be fashionable in the 20th century. These days it's about as smart as stopping the CPU so we can inspect and change its registers.
+
+For example here is a "random C program" I got off the Internet:
+
+```
+#include <time.h>
+#include <stdlib.h>
+srand(time(NULL));
+int r = rand();
+```
+
+It makes sense, right? Wrong. It's like asking taxi drivers to memorize the street map of their city. We have GPS. Doing extra work just because our ancestors did it is cargo-cult programming. "Oh, boy, I've got lots of #includes! My code is the greatest!"
+
+I'm going to hammer this point because //every// C application I've ever seen does this. Except the ones I'm responsible for, that is. The rationale for forcing us to include random files left and right is "efficiency." It is one of those things that made sense when computers read their input from punched cards.
+
+So a large C program has to make dozens of include statements. Half of them may be redundant, and the only way to know is to try to remove them, or learn the whole code base by heart.
+
+Oh, it gets worse. Header files aren't standard across different platforms. So real C code gets full of conditional #ifdef blocks. After all, this is how you make portable code, right? //Wrong.// It's how you make crazy.
+
+99.99% of people doing an insane thing does not make it less insane.
+
+When I started writing large C frameworks in the late 1980's this madness annoyed the heck out of me. I took the brutal and lazy solution which was something like this:
+
+```
+#include <everything.h>
+```
+
+Which included every header that I felt was useful, and did all the non-portable #ifdef stuff. So with one leap, I got a consistent environment in every program, and every application. No pain, much gain. In 25 years I've not found a better approach.
+
+//Solution: shove the preprocessor junk into a single header file.//
+
+These days we've moved on, so this looks somewhat different:
+
+```
+#include <czmq.h>
+```
+
+Jargon file:
+
+* "header" - for historical reasons, C splits its code into two pieces. The "header" defines function signatures ("prototypes"), constants, and data types. The "source" contains the actual functional code. A clean project does this in a consistent way (and we'll come to that). Most projects are kind of random about it.
+* "include file" - another name for "header."
+* "punched cards" - the 1960's and 70's USB stick, capable of holding a massive 80 bytes per card.
+
+Remember this rule:
+
+> If code looks ugly, it's not scalable. Work on it until it looks nice.
+
+++ Problem: I don't have CZMQ!?
+
+CZMQ lives at http://czmq.zeromq.org. It is the core library for Scalable C. This book started out as a guide for CZMQ. It does a lot more than get rid of #include statements. One step at a time though.
+
+First, what version of CZMQ does one use? It is a question that used to matter. Over the years we've learned to build living code that doesn't need stable releases.
+
+Put this another way: you should always be able to use the latest version of CZMQ, the git master. Sometimes, the git master will have errors. Then, your prerogative is to raise hell, send patches, and help fix things. That sounds daunting. It's not, though. I'll even walk you through it, later in this chapter.
+
+//Solution: grab the latest CZMQ git master from github.//
+
+Here's how we grab the latest git master:
+
+```
+cd $HOME/projects
+git clone https://github.com/zeromq/czmq
+```
+
+Note that we're using HTTPS again here. SSH would also work:
+
+```
+git clone git@github.com:zeromq/czmq
+```
+
+Except, don't. If you had commit rights to CZMQ, the second form would let you push changes straight to the repo. That's a "no no" for reasons I'll explain later. So remember this rule:
+
+> When you clone projects from outside your own account, always use the HTTPS form.
+
+Next, we build and install CZMQ. There are two ways, and I'll show both of them. Here is the more traditional way:
+
+```
+./autogen.sh
+./configure
+make -j 4
+make check
+make install
+```
+
+And here is the more modern way, using CMake:
+
+```
+cmake .
+make -j 4
+make test
+make install
+```
+
+The {{-j 4}} option to {{make}} runs parallel jobs to make use of a dual or quad core box. CMake runs somewhat faster. If you're going to learn either of these two, CMake is easier, and autoconf is better for job security.
+
+Jargon file:
+
+* "git master" - the common name for the latest version of a project living on GitHub (or a similar site).
+* "cloning" - means making a local copy of a remote repo. This automatically sets up a remote called "origin" that points back to the original repo.
+
+Remember this rule:
+
+> Git master should be almost perfect, almost all the time.
+++ Problem: building CZMQ fails! I need libzmq...
+
+Ah, yes. Sorry to make you work backwards here. Let's grab the projects that CZMQ needs, so we can build it. There are two: libzmq, the ZeroMQ messaging library, and libsodium, for encryption.
+
+//Solution: install libzmq and libsodium first//
+
+```
+cd $HOME/projects
+
+# Install libsodium
+git clone https://github.com/jedisct1/libsodium
+cd libsodium
+./autogen.sh && ./configure && make -j 4
+make install
+cd ..
+
+# Install libzmq
+git clone https://github.com/zeromq/libzmq
+cd libzmq
+./autogen.sh && ./configure && make -j 4
+make install
+cd ..
+
+# Build CZMQ again...
+cd czmq
+./configure && make -j 4
+make install
+cd ..
+```
+
+++ Problem: 'make install' fails with a permission error
+
+Welcome again to the weird world of security. Linux assumes there are several of you, all sharing that precious laptop. This is one thing Windows got righter: the "personal" part of "PC".
+
+On Linux, {{/usr/local/}} is the normal place to install headers and libraries you build. Building and installing software is not some magical system administration task. It is part of our daily work as developers. Yet to copy files into /usr/local tree we must invoke "sudo." Using "sudo" for daily work is fragile. If you run this, for instance:
+
+```
+sudo make check install
+```
+
+Then any test files that {{make check}} produces have root permissions. So, future {{make check}} steps will fail. Also it sudo asks for passwords, making it harder to script. Aagh!
+
+//Solution: make /usr/local writeable.//
+
+This is a brutal and effective solution, the best kind of solution:
+
+```
+cd /usr/local
+sudo chmod -R a+w *
+cd $HOME/projects/libsodium
+make install
+```
+
+Jargon file:
+
+* "sudo" - run a command as "super user", so with root permissions.
+
+Remember this rule:
+
+> The computer should not make your life harder without good reason.
+
+++ Problem: I'm on Windows and these commands don't work
+
+Indeed. Windows boasts a thing called "PowerShell." The name already gives it away. This thing is Bash reinvented by drunken Martians raised on old episodes of the Big Bang Theory. This is how typical PowerShell users explain things:
+
+> Most people know how easy it is to use Windows PowerShell... Want to see all your environment variables and their values? This command should do the trick: {{Get-ChildItem Env:}}
+
+I'm not kidding. You can google it. Every other command shell in the universe uses {{set}}. But hey, why make it simple when you can have job security, amirite?
+
+Turns out that libsodium, libzmq, CZMQ, and our other projects all support Visual Studio. If you don't have Visual Studio, grab the free 2013 Community Edition. Then, look in {{builds/msvc}}.
+
+For instance to build CZMQ, do this:
+
+```
+cd builds\msvc\vs2013
+.\build.bat
+```
+
+You will want to clone and build libsodium and libzmq first. A warning: libsodium master sometimes does not build on Windows. Check out the latest stable release tag if you get compile errors.
+
+Having said that, remember this rule:
+
+> Linux is the native environment for C development.
+
+++ Problem: 'make check' failed on CZMQ
+
+So you found a bug in CZMQ? Congratulations! Your next step is to spend a while tracking it down, then fixing it. //Hang on//, you may say, //what's this about asking me to fix your bugs?//
+
+Lending a hand to a project that is profitable for you is good manners and smart. It's even smarter to take any excuse you can to learn your tools. CZMQ is the original Scalable C library. We built it to be easy to read, understand, and use.
+
+//Solution: send us a pull request with your fix.//
+
+Pull requests are the life blood of an open source project. Some projects make a big deal out of reviewing and criticizing pull requests. This tends to annoy contributors and empower elitist maintainers. It also creates a "hang for a penny" mentality. If you have to fight for several weeks to get a patch accepted, you might as well make large breaking patches.
+
+CZMQ uses the pattern of treating pull requests as good by definition. Some patches (small, focused, non-disruptive) are better than others. We still merge them all as fast as we can. This means even if you send an insane pull request, we'll merge it. (We would then tag you as "Sends insane pull requests" and revert your work. This is another story I'll tell later.)
+
+Let me walk you through the steps of making a pull request to CZMQ:
+
+* Go to https://github.com/zeromq/czmq.
+* Click the "Fork" button at the top right and fork to your personal account.
+* When that's done, go to your laptop and clone it (your forked project, not the laptop):
+
+```
+cd $HOME/projects
+# Let's pretend we never cloned this
+rm -rf czmq
+git clone git@github.com:urlogin/czmq
+cd czmq
+cmake . && make -j 4
+```
+
+* Next, make your changes in the cloned CZMQ.
+* Commit your changes using a good message. A good commit title starts with "Problem:" and then explains the solution.
+
+To commit all changes to a project, do this:
+
+```
+git commit -a
+```
+
+And then enter your commit message and save (type {{ZZ}}, if you are in vim):
+
+```
+Problem: random number generator is predictable
+
+The random number generator we use in the zrandom
+class is using only 3 bits of randomness. This fails at
+test time.
+
+Solution: use pi bits of randomness
+```
+
+You now have a new commit on your local repo. You can see it using {{git log}}. To send this to your remote repo, do this:
+
+```
+git push origin master
+```
+
+And then open your browser to https://github.com/urlogin/czmq and click the "New pull request" button. If you did things right, GitHub will show you your commit message. Click OK to make the pull request.
+
+One of the crack CZMQ maintainers will spot your pull request, and merge it, often in a few minutes. If they spot something wrong, they'll tell you.
+
+Do try to keep one commit per change. If you have ten small commits to fix a single problem, learn the {{git reset}} command. Undo the last commits, then make a single new commit.
+
+These git commands can be useful:
+
+```
+# Show most recent commits
+git log
+# Redo the last commit
+git commit --amend
+# Undo any git add commands
+git reset
+# Undo all commits since 6e6042
+git reset 6e6042
+```
+
+++ Problem: CZMQ master has changed, but my clone is out of date
+
+This happens all the time, since the master of any living project will change. You need to get new commits back to your clone, and do this as often as necessary.
+
+//Solution: pull changes from the CZMQ upstream repo.//
+
+You first add a remote that points to the upstream repo:
+
+```
+git remote add upstream https://github.com/zeromq/czmq
+```
+
+And then every time you want to "refresh" your local fork, you do this:
+
+```
+git pull --rebase upstream master
+git log
+```
+
+The {{--rebase}} option stops git from adding spurious "Hey I merged some stuff, look at me!" commits. If you don't use this option, your git history gets messy. It should be the default. It's not. So just always use it. Or, do add this to your $HOME/.bashrc:
+
+```
+alias gdn='git pull --rebase origin master'
+alias gup='git push origin master'
+alias gdu='git pull --rebase upstream master'
+```
+
+And then you can type {{gdn}}, {{gdu}} and {{gup}}.
+
+Jargon file:
+
+* "upstream repo" - the "real" repo that you forked from.
+* "rebasing" - a synonym for smoking whatever it was the git developers were on when they wrote the git pull command.
+
+++ Problem: git isn't working
+
+Ah, git. We love you because you made repositories cheap and scalable. And we hate you because you act weird a lot of the time. There are several ways that git will manage to confuse you. In general, you try a git command that should work, and it fails with some bizarre message.
+
+The most common problem is that having repositories with conflicting commits. This can show as different problems:
+
+* {{git pull}} fails. Someone else changed the same files at you, at the same time. This is rare, and git explains exactly what you need to do to resolve the conflicts.
+
+* {{git push}} fails. Your remote fork has a history that conflicts with your local repository history. Maybe you did a {{git reset}} or a {{git commit --amend}}. Make sure your remote fork has no commits you care about (try {{git pull}} for fun). Then nuke its history with {{git push --force origin master}}.
+
+* Nothing works any more. Save your changes somewhere safe. Then, delete your local repo and/or remote fork, and start over. This remedy is often easier than trying to fix up stuff.
+
+//Solution: Google the error message.//
+
+Remember this lesson:
+
+> You are not alone. Most sane people who use git hate it. It just hurts less than all the alternatives.
+
+++ Problem: how do I clean my project?
+
+There are a few ways to do this, depending on how "dirty" it is:
+
+* To save all work in progress so you can fetch remote changes, use {{git stash}}. Then after you've fetched remote changes, use {{git stash apply}}.
+
+* To remove all untracked files, use {{git clean -d -f -x}}. //Warning: this will delete any work you've not added and committed.//
+
+* To get back to a specific commit 6e6042 and //wipe everything since then//, do {{git reset --hard 6e6042}}.
+
+* You can always delete a repository and clone or fork it again. //Hint: don't delete it, just rename it in case you decide you want to get something out of it later.//
+
+//Solution: Google the error message.//
+
+Remember this lesson:
+
+> Don't Panic.
+
+++ Problem: after a "git pull", I lost commits!
+
+This is one of the "wtf, git, WTF?!" moments. Again, Don't Panic.
+
+It can happen for all kinds of reasons, from sunspots to brainfarts. Sometimes a "git pull --rebase" will trash your work. I won't explain the reasons because they're beyond me. Something something six dimensions portal something alternate monsters something.
+
+//Solution: git's history can lie. Use {{git reflog}} to see all commits git knows about.//
+
+* Use {{git reflog}} to find the commit 6e6042 with your precious work.
+
+* Then, {{git checkout 6e6042}} to switch to that commit.
+
+* Save the files you need to, then delete your repository, re-clone it, and copy the changed files back into it.
+
+I'm sure there are more elegant ways. It doesn't matter: this happens once a year and damn elegance. Recover your work, wipe the slate, and start again.
+
+++ Problem: git is confusing!
+
+Git is great, yet far from perfect. The command syntax is inconsistent, complex, and arbitrary. It has far too many commands, and often makes us feel stupid.
+
+One of git's neat features is how {{git checkout}}, {{git revert}}, and {{git reset}} all seem to do roughly the same thing in different ways. I'm being sarcastic. It's not neat, it's pathological.
+
+Git is at its worst when you use branches. It is ironic as these are one of git's main so-called features. It turns out that if you don't use branches, about 90% of git's commands and complexity disappear. What is more fun is that you don't need branches at all. It is better than that: working without branches is actually faster and more scalable.
+
+//Solution: stop using git branches and do all work on master.//
+
+It is not quite as simple as that, as I explain at the end of this chapter. To make a project succeed on master you need a combination of techniques. Most of all, you need to learn to work with many people in the same space. This requires a new perception that can take time to develop. It is one of the most important lessons of this book. Scalable C is a social language. I will teach this little by little, from different directions.
+
+++ Dialectics
+
+In which I tell the stories and arguments that gave us the tools in this chapter.
+
++++ The Problem of Branches
+
+Git's ability to work with "branches" is one of its central features. Branches let you isolate different flows of work. Before git, using branches was hard work. Git made branches cheaper. As a result, most developers use them more. A lot more.
+
+You'd think this was a good thing, right? Well, my experience tells the opposite story. Branches are to software like cars are to cities. They make our work more complex, slower, and less effective. They tie into old, corrupt traditions of freedom through hardship. They support the theory of programming as pain.
+
+Branches epitomize our cargo cult approach to programming. We do it because we believe it will bring us success. We do not ask //why//, only //how//. We make the ritual sacrifice of our time and effort because we believe: //if it hurts it must be healthy.//
+
+Branches existed before git, and they were always nasty. The original rationale for branches is two-fold. First, git's predecessors (like Subversion) were centralized. This meant you made commits straight to the main repository. No ifs or buts. This made it impossible to work on stuff in isolation.
+
+Subversion's branches were like fast copies, within a repository. Let's say I wanted to work on /stuff/main/czmq for a week. I could branch it to /stuff/branches/pieter/experiment/czmq/ and then work there.
+
+So branches provide isolation for large and disruptive sets of changes. In 2005 or so, git came along. Git reinvented the concept of repository, making it small and lightweight. Every clone provides automatic and perfect isolation. I just clone a repository somewhere, and work there.
+
+Git clones do isolation far better than branches do. Each clone is a full copy. Git offers a clear model for moving changes between clones (push, pull). It is consistent and simple and hard to get wrong.
+
+Yet we learned the "branch" concept, and we got used to it. And thus we got branches in git //on top of// its per-repository isolation.
+
+Branches make a true mess of things.
+
+Look at any on-line guide to git branches, and you will see the familiar "cliff of insanity." The text starts with simple concepts like commits. About halfway through it begins to explain git's internal model. By the end you feel like you are reading an alien language.
+
+Poor git. Not a single of its commands seems intact. Here's a piece of the {{git-log}} help page:
+
+> --first-parent -- Follow only the first parent commit upon seeing a merge commit. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge.
+
+Such a mass of synthetic concepts.
+
+Git has over 150 commands according to {{git help -a}}.  If we stop using branches,  we need only a dozen commands. I've explained these in this chapter. They are: add, clean, clone, commit, init, log, push, reflog, remote, reset, revert, stash.
+
+Most shared repositories use long-lasting branches. We have rituals on how to use these. Vincent Driessen's git-flow may be the best known. It has master and develop "base branches." It has feature branches, release branches, hotfix branches, and support branches. Many teams have adopted git-flow, which even has git extensions to support it.
+
+This complexity demands training and consensus. It lets every project to be different. It keeps out newcomers away. It pulls power towards central repositories, and then towards their administrators. That is ironic, when git is about decentralization.
+The cost of this complexity might be acceptable if it solves a worse problem. Yet it doesn't.
+
+The second reason for branches is the assumption we need to make large and disruptive sets of changes. It has always been a poor way of working. Already in 1999 my team built large apps through continuous integration and delivery. Every change was small, and done straight onto the master.
+
+For isolation, we broke large projects into pieces. We defined formal APIs and protocols between the pieces. We had no more that one or two people working on a piece. It worked without flaw.
+We have learned a lot in the last 20 years about how to work together. This knowledge is difficult for many to accept. It often goes against our fundamental assumptions and teachings. And yet the data is there. Let me state some key emergent truths:
+
+* //Good software is the product of collaboration between many people, rather than individual brilliance or corporate muscle.// You are on the Internet, built by collaboration between millions of people. The many well-funded competitors to this public project are all dead.
+
+* //Software is a set of answers to problems we do not know, yet.// This is a profound truth. We believed, decades ago, that software was a finite problem. Today we know it is infinite. This means software is never finished. Individual projects can start, and end. What we produce together is an ever-growing and decentralized economy of small pieces.
+
+* //The key to such an economy is contracts.// It is what underpins the Internet's success. Contracts permit arbitrary change in one part of a system without breaking other parts.
+
+* //The most successful software economies are learning machines.// Not only do they grow by learning, they do this at a measurable speed. That speed depends on how long it takes for projects to grow and adapt to new needs. I call this the "change latency." Change latency is the sum of many costs. Some are inevitable (it takes time to think). Some are avoidable (waiting for approval to think).
+
+* //The key latency cost is time-to-failure.// We're taught that success is good, failure is bad. Yet success teaches us nothing. Software is the accumulation of thousands of theories. How many of those have we actually tested against reality? Failure is the only basis for science.
+
+What this comes down to is a subtle yet critical lesson about thinking and learning. Every change is a theory. Most theories are wrong. Anything that lets us disprove bad theories faster will produce better software. And we'll get that software with less cost, and faster. Anything that makes it slower or harder to disprove changes will produce worse software.
+
+So now we come to a theory of change. This underpins my whole approach to software development:
+
+* Anyone should be free to make a change, based on their perception of costs and benefits. (So, open source with an explicit right of participation.)
+
+* Changes should be small, focused, and argued according to the problem they claim to solve. (So, one commit per change.)
+
+* Changes should be safe: no change should ever damage working parts of the whole system. (So, contracts between layers.)
+
+* Changes should enter public view ("reality") and use as soon as possible. (So, rapid and unhindered merging to master.)
+
+* Anyone should be free to challenge, undo, or improve a change, at no significant cost. (So, open source with an explicit right of participation.)
+
+Branches encourage an opposing theory of change:
+
+* Only qualified people can make changes, based on careful analysis.
+
+* Changes may be broad and deep, especially within large systems that lack internal contracts.
+
+* Changes should stay away from public view until fully tested (using artificial test code).
+
+* We assume changes to be valid, if they pass their (artificial) tests. The cost of arguing or removing a change can be significant.
+
+Banning branches forces us to work in smarter ways. There are no guarantees of success. Yet the economics will push us to smaller, safer, cheaper commits. This produces better software.
+If you have worked this way, you will appreciate it. If you are working the old fashioned way, my arguments will confuse and annoy you. All I can say is, give it a shot in your next project. If it fails, let me know where and how.
+
+++ Conclusions
+
+Sorry for all the git. It was inevitable, as this tool has become so central to our work and identity as developers. In the next chapter I'll start to explore what a Scalable C project looks like.

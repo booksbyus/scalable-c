@@ -1,0 +1,37 @@
+++ Memory Checking with Valgrind
+
+The one add-on I really recommend for C development on Linux is Valgrind. This has a number of tools, but the one I use systematically is the Memcheck tool, which catches memory leaks and illegal accesses. Here's how I run the hello program under Valgrind:
+
+```
+valgrind --tool=memcheck --leak-check=full
+    --suppressions=valgrind.supp ./hello
+```
+
+Which tells me:
+
+```
+==26539== Memcheck, a memory error detector...
+==26539==
+Hello, World!
+==26539==
+==26539== HEAP SUMMARY:
+==26539==     in use at exit: 0 bytes in 0 blocks
+==26539==   total heap usage: 67 allocs, 67 frees,...
+==26539==
+==26539== All heap blocks were freed -- no leaks are possible
+```
+
+To suppress warnings from the way {{libzmq}} initializes memory, I create a file called {{valgrind.supp}} that contains:
+
+[[code]]
+{
+   <socketcall_sendto>
+   Memcheck:Param
+   socketcall.sendto(msg)
+   fun:send
+   ...
+}
+[[/code]]
+
+Note that running under Valgrind does slow things down. If you're expecting a certain performance from your application, don't be surprised when it crawls like a snail under Valgrind.
+

@@ -1,142 +1,1169 @@
-+++ Building and Installing
+// kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
+.bookmark hello-world
++ The Scalable C Language
 
-The CZMQ library is called {{libczmq}}. You need to build and install the 0MQ library, {{libzmq}}, before you can build {{libczmq}}. I usually build both libraries from the GitHub masters, like this (on Linux):
+In this chapter we'll look at the C style we use in Scalable C. Like all styles it's a mix of taste and pragmatism. I'll explain this using the problem-solution approach. This lets you critique our decisions, and improve on our answers.
 
-[[code]]
-git clone git://github.com/zeromq/libzmq.git
-cd libzmq
-sh autogen.sh
-./configure
-make all
-sudo make install
-sudo ldconfig
-cd ..
+++ Problem: blank page syndrome
 
-git clone git://github.com/zeromq/czmq.git
-cd czmq
-sh autogen.sh
-./configure
-make all
-sudo make install
-sudo ldconfig
-cd ..
-[[/code]]
+C has few abstractions. It's a blank page language: you can write code in any shape and form. Yet this creates many problems. The worst problem is that every developer does it differently. Every project is unique. Often, even inside a project there is little or no consistency.
 
-You can also use the stable packages from the [http://czmq.zeromq.org CZMQ] and [http://www.zeromq.org zeromq.org] web sites. CZMQ should work with any version of {{libzmq}}, back to 2.1. However you must run the configure and make steps again for CZMQ if you change the installed version of {{libzmq}}. CZMQ uses macros to compile differently depending on the version of {{libzmq}} that it finds at the configure step.
+The economics work against creating new projects. It is cheaper and easier to extend existing ones, as you can use the work already done. This is a Bad Thing. Creating new projects must cost nothing, so we are free to experiment, reshape, copy, and learn.
 
-When you've installed CZMQ for the first time, make and run a minimal test to make sure you've done this right. First, create a program {{hello.c}} like this:
+One reason git (sorry, I know I promised to shut up about it, this is the last time) beat old Subversion hands down is that it erased the cost of creating a code repository. In the Old Times, creating a repository was days, weeks of work. Seriously, in my firm we could only afford one repository (we were poor if not humble). All projects sat inside that.
 
-[[code type="example" title="Hello World" name="hello"]]
-[[/code]]
+To fix blank page syndrome, we look at C projects and we realize, they could all look much the same. Sure, they all look different today. Yet that's just historical accident. With a little care and design we can model them all around the same template. Then, to create a new project, we just grab an empty template.
 
-Build this using gcc:
+//Solution: use a standard project template.//
 
-[[code]]
-gcc -o hello hello.c -lzmq -lczmq
-[[/code]]
+We already saw the basics for that:
 
-If this gives errors, fix them before going further. Then, run the hello program, which does a basic ping-pong test and should tell you, "Hello, World!"
+* One project = one git source code repository. Is that obvious? It wasn't, a few years ago.
 
-+++ Getting the Examples
+* Each project has a unique name. The name space is ideally all of GitHub, though it can be a given language community. I doubt that Java developers care what names Perl projects use.
 
-The examples for this book live in the [https://github.com/imatix/scalablec git repository]. The simplest way to get all the examples is to clone this repository:
+//Solution: define a standard project layout.//
 
-[[code]]
-git clone --depth=1 git://github.com/imatix/scalablec.git
-[[/code]]
+++ Problem: how do explain my project to others?
 
-And then browse the examples/C subdirectory. All examples are licensed under MIT/X11 so you can reuse the code freely in your applications.
+You could hire a designer, and build a beautiful web site. Yet the essence of "scalable" is So Cheap It Costs You Nothing To Fail. Web sites aren't scalable.
 
-+++ GitHub Master Versus Stable Packages
+GitHub to the rescue: stick a README in your project root, and it appears on your project's home screen.
 
-If you're developing a new application, you should use the GitHub masters for {{libzmq}} and CZMQ. These are almost always stable, and it makes it much easier to make contributions back if you're on the latest source code. Any bugs in the master version get fixed as a matter of high priority.
+//Solution: write a minimal README.//
 
-If you're moving an application into production, you want to base off versions of {{libzmq}} and CZMQ that have more guarantees of not changing. We're already quite fussy about not breaking applications when we make new versions, but the risk is never zero.
+You'll probably use {{README.md}}, which uses Markdown formatting. Your README has to explain at least:
 
-When you are working off packages, it's a little more work to get updates--that's the point, in fact. When you're working off GitHub master, you can update your copy of the repository with one command:
+* The goal of the project (or better, the overall problem it aims to solve).
 
-[[code]]
-git pull --rebase origin master
-[[/code]]
+* The license (under what terms people can use, distribute, and modify the code).
 
-++ Contributing to CZMQ
+* The contribution policy (how people can contribute their patches).
 
-+++ The Short Version
+And probably also:
 
-CZMQ has a simple and effective contribution process. The simplest way to make a contribution is to:
+* A style guide (what the code should look like).
 
-# Fork the CZMQ repository to your own GitHub account
-# Clone your fork to your computer, configure and build as explained above
-# Make and test a single change
-# Commit that change with a clear message
-# Push the change to your cloned repository on GitHub
-# In the GitHub web interface, make a "pull request"
+* How to use the project's tools and APIs.
 
-If your change was clear, simple, and didn't break style, one of the CZMQ maintainers will merge it within a few hours. Once it's been merged, resynchronize your fork like this:
+++ Problem: my public project has no license
+
+Many public projects on GitHub don't use a license. Don't follow their example. Without a license, others cannot use, distribute, or modify your code. It doesn't matter that you've published it. If your code has no license, only uninformed people use it, or send you patches. The failure to properly license code can kill a project.
+
+As I'll explain in the dialectics, the Mozilla Public License version 2.0 (MPLv2) is the currently the best choice for public works.
+
+//Solution: use the Mozilla Public License version 2.0.//
+
+Copy [https://www.mozilla.org/en-US/MPL/2.0/ the whole license text] into a file called {{LICENSE}}. Put this into the root directory of your project. Then, add the following blurb to the header of every source file:
 
 [[code]]
-git pull --rebase upstream master
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
 [[/code]]
 
-The first time, you'll want to add the "upstream" remote to point to the real CZMQ repository:
+Remember this lesson:
+
+> "Most people do X" is not a recipe for success.
+
+++ Problem: how do I manage copyrights?
+
+I'll assume you are making public software, and you accepted my recommendation to use the MPLv2. We now come to the question of ownership. The copyright to any non-trivial work (thus, ownership of code) lies with its author, a person or business. By default, no-one can use or distribute the work without permission of the copyright owner.
+
+A license grants others the rights to use, modify, distribute the work under certain conditions. It is like putting up a sign saying, "You may walk on my lawn if you don't damage it."
+
+Asking contributors to give copyrights to a project is clumsy and ponderous. It is simpler that they license their contributions under the project license. This creates a collective work owned by many people, under a single license. If you use the MPLv2 and the GitHub fork and merge model, then patches are by default also licensed under MPLv2.
+
+Thus, you can merge them safely without asking the contributor for a license grant.
+
+You do need to watch out for "unsafe" patches. This means, ones that change the project LICENSE, the blurb in any source, or which add sources with new blurbs.
+
+//Solution: everyone keeps ownership of their own copyrights.//
+
+A key side-effect to this arrangement is that it is //expensive// to change the license on an existing work with many owners. You need explicit permission from every contributor, or you have to rewrite or remove their patches. This side-effect is often desirable, as it is a poison pill against hostile takeover.
+
+++ Problem: how do I manage contributions?
+
+You need a way to collect patches and merge them onto master. Some projects use email lists. Some projects have maintainers who pick patches, review them, merge the ones they like.
+
+My pattern for success is to solicit so-called "pull requests" onto master, then to merge them as rapidly as possible. One can discuss them after merging.
+
+//Solution: use pull requests and merge aggressively.//
+
+I'll explain the "aggressive" part in the dialectics of this chapter. There are a few rules:
+
+* You never merge your own pull requests. Every project needs at least two minds.
+
+* It is better to make a new pull request with changes, than to discuss a commit. The former creates a team; the latter creates an argument.
+
+* Continuous integration testing (CI) is a Good Idea yet it's not essential. Errors are an excuse for others to get involved.
+
+* The only good reason to refuse a change is, "the author is a bad actor and has been banned."
+
+Remember this lesson:
+
+> People are more important than code.
+
+++ Problem: how do I keep a consistent code style?
+
+It is painful to read code that has no style. A good project looks like it has a single author. Consistency is gold. Yet every contributor comes with their own habits.
+
+A solution some projects use is to mechanically clean up code, using a code beautifier. This does create a consistent style. Yet that does more harm than good, in my experience. It turns out that "cannot respect project style" is key data for detecting so-called "bad actors." It's a specific case of bad actors' general disrespect for social norms and rules.
+
+Thus it is better to document the project's style, and ask people to respect it. They won't, and so you can fix their patches and they should learn. If they don't, over time, you start to build a case for banning them.
+
+//Solution: use a style guide document.//
+
+You should be totalitarian about style. Every space and dot matters. For example these two pieces of C are entirely different:
+
+```
+int i;
+for( i=0 ; i<10; i++
+{
+   printf ("%d\n", i) ;
+}
+```
+
+and
+
+```
+int counter;
+for (counter = 0; counter < 10; counter++) {
+    printf ("%d\n", counter) ;
+}
+```
+
+Remember this lesson:
+
+> Consistency matters.
+
+I think there are some basic rules, such as using whitespace and punctuation as we do in English. Code should be compact as screen space is always precious, yet not cryptic. It makes no sense to use short variable names like 'i' and then put { on a line by itself. I'll come to the specifics of a Good Style for C as we continue.
+
+
+
+++ Problem: my code needs a README
+
+
+
+
+//Solution: define a standard project layout.//
+
+The project SHALL contain at least these files and directories:
+
+* A {{README}} file that refers to this Specification and provides other necessary information about the project.
+* A license file (e.g., {{COPYING}} or {{LICENSE}}) that specifies the terms of distribution for the project.
+* An {{include}} directory for all header files.
+* A {{src}} directory for all library source files.
+* The //external header file// ({{myproj.h}}).
+* Scripts and makefiles to build and test the project on at least one platform.
+
+
+
+
+
+
+//Solution: use a class model//
+
+The overall unit of work is a //project// that builds as a library with a set of executable test programs and supplemental command-line tools.
+
+The project is composed of //classes//, where each class covers one area of work and is implemented as a source file with matching header file.
+
+Each class implements a series of //methods//, where each method performs one task and is implemented as a C function.
+
+++ Problem: naming is a hard problem
+
+- global name spaces
+- every project different
+- sometimes poor choices that don't scale
+
+//Solution: define standard naming rules.//
+
+The project SHALL have these short names and abbreviations:
+
+* A //project short name// used in paths and URLs that identify the project. This would be used for instance in the GitHub project name. In this Specification we will use {{myproject}} as the example.
+* A //project abbreviation// used for project files and output libraries. This would be used for instance in the library produced for the project. The abbreviation MAY be an acronym. In this Specification we will use {{myproj}} as the example.
+* A //project prefix// used to prefix all method names, which MAY be the same as the project abbreviation. This would be used in source code and its API. The prefix SHOULD end with an underscore. In this Specification we will use {{myp_}} as the example.
+- variables
+
+++ Problem: how do I organize my project?
+
+- inconsistent means we can't automate
+- means we have to do things by hand, not scalable
+
+
+The project MAY contain these files and directories which MUST have these names if present at all:
+
+* An {{AUTHORS}} file listing all contributors to the project.
+* A {{doc}} directory containing documentation.
+* The //internal header file// ({{myproj_classes.h}}).
+
+The project SHOULD install these files:
+
+* The project header files and all class header files that form part of the public API.
+* The project library, named with the project abbreviation ({{libmyproj.a}} on POSIX platforms, {{myproj.dll}} on Windows).
+* Command-line tools, if present.
+
+The project SHALL NOT use deeper nested subdirectories.
+
+++ Problem: how do export my APIs?
+
+
++++ Project Header Files
+
+The project SHALL provide two services via header files:
+
+# A set of internal definitions to class source files, which a class source file can access with a single {{include}} statement.
+# A public API that calling applications can access with a single {{include}} statement.
+
+These two services MAY be combined into one project header file (({{include/myproj.h}}), or MAY be split into an external header file ({{myproj.h}}) and an internal header file ({{src/myproj_classes.h}}). The project MAY further break down these header files if necessary.
+
+The external header file SHALL define a version number for the project as follows:
 
 [[code]]
-git remote add upstream git://github.com:zeromq/czmq.git
+//  MYPROJ version macros for compile-time API detection
+#define MYPROJ_VERSION_MAJOR 1
+#define MYPROJ_VERSION_MINOR 0
+#define MYPROJ_VERSION_PATCH 0
+
+#define MYPROJ_MAKE_VERSION(major, minor, patch) \
+    ((major) * 10000 + (minor) * 100 + (patch))
+#define MYPROJ_VERSION \
+    MYPROJ_MAKE_VERSION(MYPROJ_VERSION_MAJOR, \
+                        MYPROJ_VERSION_MINOR, \
+                        MYPROJ_VERSION_PATCH)
 [[/code]]
 
-+++ The Long Version
+The project header file SHALL assert the required version numbers for any dependencies immediately after including their respective header files, like this:
 
-The CZMQ contribution process is actually more involved than this. If you want to do any significant work on the library, you should get familiar with the rules. They're defined by two RFCs: [http://rfc.zeromq.org/spec:16 C4] and [http://rfc.zeromq.org/spec:16 CLASS]. C4 expands on GitHub's fork + pull request model to define the whole process for making a change. CLASS defines the style guide we use for the code itself.
-
-If you make a patch that breaks the C4 or CLASS guidelines, someone will explain what you missed, so don't worry. These rules aren't there to make life harder, they're to make it simpler.
-
-+++ Fixing Bugs
-
-If you think you've found a bug in CZMQ, the first thing to do is make a //minimal test case//. If you think you have a fix for the bug, you can make a pull request as explained above. Otherwise, you can email zeromq-dev and ask one of the CZMQ developers for advice. In either case, post your test case to a pastebin or [http://gist.github.com GitHub gist].
-
-++ Overall Structure of Your Code
-
-+++ Build Libraries, not Applications
-
-One of the hardest things about working with C is to create good structure for your code. In [#class] we'll learn the CLASS standard, which is a detailed answer for how to write well-structured and readable C code. I strongly recommend that you read, and if possible, adopt this standard, because it will make your life so much easier. CLASS should be familiar to anyone who's worked on well-structured C libraries.
-
-The examples in this book tend to exist just as main programs. But this isn't realistic. Every C project consists of some mix of library functions and main programs. When we say an "application" we tend to think of main programs. These are reusable via the command-line, if we take the effort of creating a command-line interface.
-
-But a more modern, and scalable approach is to make everything a library API, wrapped in the thinnest of main programs. Every CLASS project consists of:
-
-* A set of modules which provide the library API
-* A set of main programs for testing
-
-This approach has some compelling advantages:
-
-* It creates better internal architecture as you break everything into modules from the start;
-* It develops a public API that can be wrapped in higher-level languages;
-* It lets you embed the full functionality in other C libraries.
-
-I'd argue that //all fabric// should be built like this. Where you need loosely-bound APIs, you use protocols over 0MQ. So your code looks like this:
-
-[[code type="textdiagram" title="Scalable Fabric"]]
-#----------------#
-|  Applications  |
-#----------------#
-        ^
-        |
-#-------+--------#
-|   Public API   |
-+----------------+
-|  Internal API  |
-+----------------+
-|   Protocols    |
-#-------+--------#
-        |
-        v
-#----------------#
-|     Peers      |
-#----------------#
+[[code]]
+#include <czmq.h>
+#if CZMQ_VERSION < 10203
+#   error "myproject needs CZMQ/1.2.3 or later"
+#endif
 [[/code]]
 
-For an example of a project structured like this, look at the [https://github.com/zeromq/filemq FileMQ] project. This presents applications with a //server// and a //client// module that can be configured in code. For example here's a simple C main program that wraps FileMQ:
+Definitions in the external header file are visible to calling applications as well as class source code. The external header file SHALL include all class header files that form part of the public API for the project.
 
-[[code type="example" title="File Tracker Tool" name="track"]]
+Definitions in the internal header file are visible only to class source code. The internal header file, if present, SHALL include the external header file, all class header files, and all system and library header files needed by the project. The primary goal here is to keep delicate system-dependent {{#include}} chains in a single place, and away from class source code.
+
+
+
++++ Template README File
+
+
+++ Problem: what compilers can I rely on?
+
+
++++ Language Level
+
+The project SHOULD use the C99 language for best clarity, but MAY use the C89 language for compatibility with older platforms. The language level SHALL be noted in the project {{README}} and all source code SHALL conform to it.
+
+NOTE: Microsoft Visual C/C++ does //not// support C99 and projects must build using C++ language extensions to get access to C99 syntax. Because of this, projects SHOULD NOT use any C99 syntax that is not a strict subset of C++.
+
++++ Use of the Preprocessor
+
+Project source code SHALL NOT include any header files except the project header file. This ensures that all class source code compiles in exactly the same environment.
+
+Project source code SHALL NOT define "magic numbers" (numeric constants); these SHALL be defined in the external or internal header file, as appropriate.
+
+Projects MAY use the preprocessor for these purposes:
+
+* To create backwards compatibility with older code.
+* To improve portability by e.g., mapping non-portable system calls into more portable ones.
+* To create precise, small macros with high usability.
+
+Projects SHOULD NOT use the preprocessor for other work except when it significantly reduces the complexity of code.
+
+Macro names SHALL be uppercase when they represent constants, and lowercase when they act as functions.
+
+++ Problem: how do I organize my code?
+
+
++++ File Organization
+
+Each class SHALL be written as two files:
+
+* A header file: {{include/myp_mymod.h}}
+* A source file: {{src/myp_mymod.c}}
+
+These two files SHALL be the original documentation for the class. Specifically, the class header SHALL define the API for the class, and the class source file SHALL define the implementation of each method.
+
+Class names SHALL follow the General Style for Naming. We will use {{mymod}} in examples.
+
+Every source and header file SHALL start with an appropriate file header that states at least:
+
+* The name of the class or file and its purpose
+* The copyright statement for the class
+* The name of the project and a URL if relevant
+* The summary license statement
+
+Here is a template file header for an LGPL open source project:
+
+[[code]]
+/*  =========================================================================
+    <name> - <description>
+
+    -------------------------------------------------------------------------
+    Copyright (c) <year> - <company name> - <website>
+    Copyright other contributors as noted in the AUTHORS file.
+
+    This file is part of <project name>, <description>
+    <website>
+
+    This is free software; you can redistribute it and/or modify it under
+    the terms of the GNU Lesser General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or (at your
+    option) any later version.
+
+    This software is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANT-
+    ABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General
+    Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this program. If not see http://www.gnu.org/licenses.
+    =========================================================================
+*/
 [[/code]]
 
+++ Problem: my APIs are inconsistent
+
++++ Class Types
+
+We define two types of class:
+
+* //Stateful classes//, where the class provides methods working on //instances//, which are like "objects" in an object-oriented language.
+* //Stateless classes//, where the class provides methods that work purely on data provided by the caller or system.
+
+A class may be stateful or stateless but SHALL NOT mix the two approaches.
+
+A stateful class SHALL provide these methods:
+
+* A constructor method {{myp_mymod_new ()}}
+* A destructor method {{myp_mymod_destroy ()}}
+* A self-test method {{myp_mymod_test ()}}
+
+A stateful class MAY provide these methods, and SHALL use these names when providing such functionality:
+
+* A duplicator method {{myp_mymod_dup ()}}
+* A set of list navigation methods {{myp_mymod_first ()}} and {{myp_mymod_next ()}}.
+* Print methods {{myp_mymod_print ()}} and {{myp_mymod_fprint ()}}.
+
+A stateless class SHALL provide this method:
+
+* A self-test method {{myp_mymod_test ()}}
+
++++ Method Names
+
+Method names SHALL follow the General Style for Naming. Method names SHOULD be verbs ("destroy", "insert", "lookup") or adjectives ("ready", "empty", "new"). The method name SHOULD imply the method return type, where verbs return a success/failure indicator, if anything, and adjectives return a value or instance.
+
++++ Class Header File
+
+The class header file SHALL have this layout:
+
+* The file header
+* An outer {{#ifndef}} that makes it safe to include the header file multiple times
+* Calling conventions for C++
+* A forward reference to the class type, for stateful classes
+* Prototypes for the class methods
+
+Here is a template header file for stateful classes, not showing the file header:
+
+[[code]]
+#ifndef __MYMOD_H_INCLUDED__
+#define __MYMOD_H_INCLUDED__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//  Opaque class structure
+typedef struct _myp_mymod_t myp_mymod_t;
+
+//  Create a new <class name> instance
+CZMQ_EXPORT myp_mymod_t *
+    myp_mymod_new (void);
+
+//  Destroy a <class name> instance
+CZMQ_EXPORT void
+    myp_mymod_destroy (myp_mymod_t **self_p);
+
+//  Self test of this class
+void
+    myp_mymod_test (bool verbose);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+[[/code]]
+
+Here is a similar template header file for stateless classes:
+
+[[code]]
+#ifndef __MYMOD_H_INCLUDED__
+#define __MYMOD_H_INCLUDED__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//  Self test of this class
+int
+    myp_mymod_test (bool verbose);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+[[/code]]
+
+All public methods SHALL be declared with {{CZMQ_EXPORT}} in the class header file so that these methods are properly exported on operating systems that require it.
+
++++ Class Source File
+
+The class source file SHALL define:
+
+* The class structure, for stateful classes. This structure SHALL be //opaque// and known only to code in the class source file.
+
+* The class methods, in the same order as defined in the class header: constructor, destructor, other methods, and finally self test.
+
+* Any static functions used in the class methods.
+
+* Any global or static variables needed.
+
++++ Class Properties
+
+For stateful classes, the class structure has one or more properties defined as a private C structure in the class source file.
+
+This SHOULD be defined as follows:
+
+[[code]]
+//  Structure of our class
+
+struct _mymod_t {
+    <type> <name>;              //  <description>
+};
+[[/code]]
+
+Property names SHALL follow the General Style for Naming. Property names SHOULD be nouns or adjectives (typically used for Boolean properties). We will use {{myprop}} in examples.
+
+++ Method Styles
+
++++ General Rules
+
+++++ Argument Names
+
+Argument names SHALL be consistent with property names.
+
+++++ Return Values
+
+Success/failure SHALL be indicated by returning an int, with values zero or -1 respectively.
+
+Strings SHALL be returned as "char *" when they are passed to the caller, who must free them.
+
+Strings SHALL be returned as "const char *" when the caller may not modify or free them.
+
+Compound return values, e.g. a size-specified buffer, SHOULD be returned as fresh objects of a suitable class. The API SHOULD NOT return compound values via multiple routes, e.g. data via an argument and size via the return code.
+
+++ Problem: I'd like to test my APIs as I write them
+
++++ The Self Test Method
+
+In stateless classes, the only standard method is {{myp_mymod_test ()}}, which SHALL conduct a self test of the class, returning silently on success, and asserting on failure.
+
+The self test method shall take this general form:
+
+[[code]]
+//  --------------------------------------------------------------------------
+//  Runs selftest of class
+
+void
+myp_mymod_test (int verbose)
+{
+    printf (" * myp_mymod: ");
+    //  Conduct tests of every method
+    printf ("OK\n");
+}
+[[/code]]
+
+* The self test method SHALL be a primary source of example code for users of the class.
+* The self test method SHOULD cover every other method in the class.
+
++++ Stateful Classes
+
+++++ The Constructor Method
+
+The constructor SHALL take this general form:
+
+[[code]]
+//  Create a new myp_mymod instance
+myp_mymod_t *
+myp_mymod_new (<arguments>)
+{
+    myp_mymod_t *self = (myp_mymod_t *) zmalloc (sizeof (myp_mymod_t));
+    if (self) {
+        self->someprop = someprop_new ();
+        if (self->someprop)
+            self->anotherprop = anotherprop_new ();
+        if (self->anotherprop)
+            self->lastprop = lastprop_new ();
+        else
+            myp_mymod_destroy (&self);
+    }
+    return self;
+}
+[[/code]]
+
+* The constructor SHALL initialize all properties in new class instances. Properties SHALL either get a suitable initial value, or be set to zero. Very large properties MAY exceptionally be left uninitialized for performance reasons; such behavior MUST be explicitly noted in the constructor body.
+
+* Any properties that are dynamically allocated SHOULD be allocated in the constructor but MAY be left as null.
+
+* The constructor MAY take one or more arguments, which SHALL correspond to properties to be initialized.
+
+* The constructor SHALL return either a new instance reference, or null, if construction failed, in which case all memory allocated during construction SHALL be released.
+
+++++ The Destructor Method
+
+The destructor SHALL take this general form:
+
+[[code]]
+//  Destroy a myp_mymod instance
+void
+myp_mymod_destroy (myp_mymod_t **self_p)
+{
+    assert (self_p);
+    if (*self_p) {
+        myp_mymod_t *self = *self_p;
+        someprop_destroy (&self->someprop);
+        anotherprop_destroy (&self->anotherprop);
+        lastprop_destroy (&self->lastprop);
+        free (self);
+        *self_p = NULL;
+    }
+}
+[[/code]]
+
+* The destructor SHALL nullify the provided instance reference.
+* The destructor SHALL be idempotent, i.e., can be called safely on the same instance reference more than once.
+* The destructor SHALL safely free properties and child class instances that are not null.
+
+++++ The Duplicator Method
+
+The class MAY offer a duplicator method which creates a full copy of an instance; if it offers such semantics, the method MUST be called {{myp_mymod_dup ()}} and take this general form:
+
+[[code]]
+//  Create a copy of a myp_mymod instance
+
+myp_mymod_t *
+myp_mymod_dup (myp_mymod_t *self)
+{
+    if (self) {
+        assert (self);
+        myp_mymod_t *copy = myp_mymod_new (...);
+        if (copy) {
+            //  Initialize copy
+        }
+        return copy;
+    }
+    else
+        return NULL;
+}
+[[/code]]
+
+* The duplicator SHALL return either a new instance reference, or null, if construction failed, in the same manner as the constructor.
+
+* The duplicator SHALL accept a null instance reference, and then return null.
+
+* A duplicated instance SHALL be entirely independent of the original instance (i.e. all properties SHALL also be duplicated).
+
+++++ List Navigation Methods
+
+A class MAY act as a list container for other items, which may be child class instances, strings, memory blocks, or other structures.
+
+Such a container class SHALL keep the list cursor position in the instance, and provide the following methods for navigating the list:
+
+[[code]]
+//  Return first item in the list or null if the list is empty
+
+item_t *
+myp_mymod_first (myp_mymod_t *self)
+{
+    assert (self);
+    //  Reset cursor to first item in list
+    return item;
+}
+
+//  Return next item in the list or null if there are no more items
+
+item_t *
+myp_mymod_next (myp_mymod_t *self)
+{
+    assert (self);
+    //  Move cursor to next item in list
+    return item;
+}
+[[/code]]
+
+* The navigation methods SHALL return null to indicate "no more items".
+
+* The navigation methods SHALL be idempotent, and specifically, calling {{myp_mymod_next ()}} when at the end of the list SHALL return null each time.
+
+* The class MAY offer {{myp_mymod_last ()}} and {{myp_mymod_prev ()}} methods.
+
+* The class MAY offer {{myp_mymod_size ()}} which returns the list size.
+
+* If the class offers methods to create list items, these SHALL be called {{myp_mymod_append ()}} (to add to the end of the list) and {{myp_mymod_insert ()}} (to add to the start of the list).
+
+* If the class offers a method to remove a list item, this SHALL be called {{myp_mymod_delete ()}}; it SHALL take the item reference as argument, and it SHALL delete the first matching item in the list, if any.
+
+* If the class maintains multiple lists, it SHALL create unique method names for each list by adding a list name, e.g., {{myp_momod_myitem_first ()}}.
+
+++++ Accessor Methods
+
+The class MAY expose instance properties via its API, in which case this SHALL be done through accessor methods.
+
+To return the value of a property the class SHALL define an accessor method like this:
+
+[[code]]
+//  Return the value of myprop
+<type>
+myp_mymod_myprop (myp_mymod_t *self)
+{
+    assert (self);
+    return self->myprop;
+}
+[[/code]]
+
+To write the value of a property, if this is permitted, the class SHALL define an accessor method like this:
+
+[[code]]
+//  Set the value of myprop
+void
+myp_mymod_set_myprop (myp_mymod_t *self, <type> myprop)
+{
+    assert (self);
+    self->myprop = myprop;
+}
+[[/code]]
+
+* Properties exposed by accessor methods MAY not actually exist as such in the instance; they may be calculated rather than simply copied to/from the instance structure.
+
+++++ Formatted String Arguments
+
+When a method (such as an accessor method) accepts a string argument as primary argument, it SHOULD use a variable argument list and perform vsnprintf formatting on that string argument.
+
+++++ General Methods
+
+The class MAY offer any number of other methods that operate on the instance. These methods shall take this general form:
+
+* The first argument to the method SHALL be the instance reference.
+* Other arguments may follow.
+
+A method may take ownership of an object instance and then act as a destructor of the object instance at some later stage. In that case the method SHALL use the same style as the destructor.
+
+++++ Return Values
+
+Methods SHOULD use one of the following patterns for returning values to the caller:
+
+* Returning nothing, if no return value is expected.
+* Returning a property value, on an accessor method.
+* Returning an object instance, on a constructor or duplicator.
+* Returning a child value, on a list navigation method.
+* Returning zero on success, -1 on failure.
+* Returning a freshly-allocated string.
+
+++ Code Style
+
++++ Thread Safety
+
+* All methods SHALL be thread safe.
+
+* Class instances SHOULD NOT generally be thread safe; a class instance will be owned by a single calling thread.
+
+* In exceptional cases class instances MAY be made thread safe by the addition of mutexes or locks inside methods.
+
++++ Heap Use
+
+One of the goals of CLASS is to hide heap use as far as possible within classes. Application programs SHOULD use the heap only through constructors and duplicators (including the library {{strdup ()}} function). Class methods MAY use the heap with care, but follow these rules:
+
+* When a class instance has been destroyed, all heap memory it used MUST be freed. Classes SHALL NOT leak memory under any conditions except during abnormal termination (e.g., on a failed assertion).
+
+* Non-atomic properties SHOULD be re-allocated (i.e., freed and allocated) in accessor functions that modify them, as needed.
+
+* The instance structure MAY use char arrays instead of heap allocated char pointers.
+
+* When freeing a non-atomic property outside the destructor, a method MUST set the property to null if it does not allocate a new value immediately.
+
++++ Static Variables
+
+Classes SHOULD NOT use static variables except in exceptional cases, such as for global variables.
+
+Static variables are not thread safe and they are therefore considered poor practice.
+
+Particularly for representing any temporary state inside a class body, stack variables SHALL be used in place of static variables.
+
++++ Static Functions
+
+Functions that are not exported by a class are defined as {{static}} and named {{s_functionname ()}} with no use of the project abbreviation or class name.
+
+Static functions MAY be defined before first use, or MAY be prototyped and defined immediately after first use.
+
+Static functions SHOULD NOT be collected at the end of the class source code.
+
+++ Code Style
+
++++ Indentation
+
+Indentation SHALL be 4 spaces per level. Tab characters SHALL NOT be used in code.
+
++++ Declarations
+
+Functions SHALL be prototyped as follows:
+
+[[code]]
+<type>
+    <name> (<arguments>);
+[[/code]]
+
+Functions SHALL be defined as follows:
+
+[[code]]
+<type>
+<name> (<arguments>)
+{
+    <body>
+}
+[[/code]]
+
+When the project uses C99, stack variables SHALL be defined in-line, as close as possible to their first use, and initialized. For example:
+
+[[code]]
+myp_mymod_t *mymod = myp_mymod_new ();
+char *comma = strchr (surname, '.');
+[[/code]]
+
+When the project uses C89, stack variables SHALL all be defined and initialized at the start of the function or method where they are used.
+
+* Variables and functions SHALL use lower-case names.
+
+* Where necessary, underlines SHALL be used to separate parts of a name.
+
+* Variable names like {{i}} and {{temp}} that carry no information SHALL NOT be used.
+
++++ Statements
+
+Code lines of more than 80-100 characters SHOULD be folded for readability.
+
+Single-statement blocks SHALL NOT be enclosed in brackets.
+
+This is the form of a single-statement block:
+
+[[code]]
+if (comma == NULL)
+    comma = surname;
+[[/code]]
+
+In {{else}} statements, the {{else}} SHALL be put on a line by itself.
+
+Multiple {{if}}/{{else}} tests SHALL be stacked vertically to indicate that the order is arbitrary.
+
+This is the form of a stacked {{if}} statement block:
+
+[[code]]
+if (command == CMD_HELLO)
+    puts ("hello");
+else
+if (command == CMD_GOODBYE)
+    puts ("goodbye");
+else
+if (command == CMD_ERROR)
+    puts ("error");
+[[/code]]
+
+With multi-statement conditional blocks, the closing bracket SHALL be put on a line by itself, aligned with the opening keyword.
+
+This is the form of a stacked {{if}} statement block with brackets around each conditional block:
+
+[[code]]
+if (command == CMD_HELLO) {
+    puts ("hello");
+    myp_peer_reply (peer, CMD_GOODBYE);
+}
+else
+if (command == CMD_GOODBYE) {
+    puts ("goodbye");
+    myp_peer_reply (peer, CMD_DISCONNECT);
+}
+else
+if (command == CMD_ERROR) {
+    puts ("error");
+    myp_peer_close (peer);
+}
+[[/code]]
+
+This is the form of a {{while}} statement:
+
+[[code]]
+char *comma = strchr (surname, ',');
+while (comma) {
+    *comma = ' ';
+    comma = strchr (surname, ',');
+}
+[[/code]]
+
++++ Comments
+
+Comments on code SHALL be used lightly and where necessary.
+
+In C99 projects the syntax for comments is:
+
+* In-line comments SHALL use the C++ {{//}} style.
+
+* Multi-line comments MAY use the C {{/* ... */}} style or MAY use the C++ style.
+
+In C89 projects the syntax for all comments SHALL be the C {{/* ... */}} style.
+
+* When possible in-line comments shall start at column 33.
+
+* In in-line comments, the {{//}} or {{/*}} shall be followed by two spaces.
+
+* Every function shall have a multi-line comment header that briefly explains its purpose.
+* Method comment headers SHALL be preceded by a line of hyphens ending at column 78.
+* Suitably-marked-up comments before a function MAY be used as source material for reference documentation.
+
+This is the general template for a method comment header:
+
+[[code]]
+//  --------------------------------------------------------------------------
+//  Finds the first item in the list, returns null if the list is empty.
+
+myp_mymod_t *
+myp_mymod_first (myp_mymod_t *self)
+{
+    ...
+[[/code]]
+
+* Every property in a class structure SHALL have a 1-line in-line comment that describes its purpose.
+* Comments SHALL NOT be used to compensate for illegible code.
+* Code that cannot be reasonable read and understood by the casual reader SHOULD be rewritten, not annotated.
+* Properties and functions whose semantics are not clear from their names SHOULD be renamed, not annotated.
+
++++ Blank Lines
+
+Blank lines SHALL be used to separate blocks of code to improve readability, in these cases:
+
+* After the closing bracket of a function body and before the comment header for a function.
+* To break up blocks of code that exceed 6-8 lines.
+* After assertions at the start of a class body.
+* After an {{if}} statement with a single-statement block.
+* After multi-line {{case}} blocks inside a {{switch}} statement.
+* After multi-line comment blocks.
+
+Blank lines SHALL not be used in these cases:
+
+* After the closing bracket of a conditional block.
+* To separate individual lines of code that could better be grouped together.
+
++++ Vertical Alignment
+
+Code SHALL NOT use extra spacing to create vertical alignment.
+
+[[code]]
+char *comma = strchr (surname, ',');
+while (comma) {
+    *comma = ' ';
+    comma = strchr (surname, ',');
+}
+[[/code]]
+
++++ Punctuation
+
+Punctuation SHALL follow English rules as far as possible.
+
+This is the style for unary operators, with a space after but not before the operator:
+
+[[code]]
+char_nbr++;
+[[/code]]
+
+This is the style for binary operators, with a space before and after the operator:
+
+[[code]]
+comma = comma + 1;
+[[/code]]
+
+This is the style for the {{?:}} operator:
+
+[[code]]
+comma = comma? comma + 1: strchr (name, '.');
+[[/code]]
+
+This is the style for semi-colons, with a space after but not before:
+
+[[code]]
+for (char_nbr = 0; *char_nbr; char_nbr++)
+    char_nbr++;
+[[/code]]
+
+This is the style for parentheses, with a space before the opening, and after the closing parenthesis, with multiple opening or closing parentheses joined together without spaces:
+
+[[code]]
+node = (node_t *) zmalloc (sizeof (node_t));
+if (!node)
+    return -1;
+[[/code]]
+
+This is the style for square brackets:
+
+[[code]]
+comma = name [char_nbr];
+[[/code]]
+
+This is the style for pointer dereferences, with no space before or after the '->':
+
+[[code]]
+self->name = strdup (name);
+[[/code]]
+
++++ Assertions
+
+Classes SHOULD check the validity of arguments using assertions. That is, misuse of the API is considered a programming error, not a run-time error.
+
+* Assertions SHALL be used for their documentary value, for example to warn the reader, "this argument SHALL NOT be null".
+
+* Assertions on arguments SHALL come at the start of the class body and SHALL follow the order of the arguments.
+
+* Assertions MAY be used on return values from function calls if such failures cannot safely be handled by the code.
+
+* Assertions MAY be used on internal state (e.g., instance properties) to assert a mandatory condition for continuing.
+
+* Assertions SHALL NOT be used to trap errors on external conditions, e.g., bad user input, invalid protocol messages, etc.
+
+* Assertions SHOULD be used to trap errors on internal APIs, e.g. invalid messages sent from one thread to another.
+
+* Assertions SHALL NOT have side-effects since the entire statement may be removed by an optimizing compiler.
+
++++ Exiting Functions and Goto Statements
+
+The {{return}} statement MAY be used at any point in a function to return to the caller.
+
+If the function needs to do clean-up (e.g., free a number of properties), the code MAY use {{goto}} and a single clean-up block at the end of the function. Such a clean-up block SHALL follow the last "normal" return.
+
+A void function SHALL NOT end in an empty {{return}} statement.
+
++++ Recommended Patterns
+
+* The recommended pattern for an open-ended loop is {{while (true) {}}, with {{break}} statements as needed to exit the loop.
+
+* The recommended pattern for array iteration is:
+
+[[code]]
+for (array_index = 0; array_index < array_size; array_index++) {
+    //  Access element [array_index]
+}
+[[/code]]
+
+* The recommended pattern for list iteration is:
+
+[[code]]
+myp_mymod_t *mymod = (myp_mymod_t *) myp_mymod_first (mymod);
+while (mymod) {
+    //  Do something
+    mymod = (myp_mymod_t *) myp_mymod_next (mymod);
+}
+[[/code]]
+
+++ Portability
+
++++ Portable Versus Native Classes
+
+All projects SHALL depend at least on ZeroMQ (libzmq) and CZMQ (libczmq), which provide portable APIs around networking, threads, file systems, and other aspects.
+
+* A class SHALL be either "portable" or "native".
+
+* A portable class SHALL NOT use the preprocessor to compile differently on different systems.
+
+* A native class SHALL export a properly abstracted API that hides system differences, and SHALL use the preprocessor to compile differently on different systems.
+
+* A native class SHALL use the preprocessor macros defined in {{czmq_prelude.h}}, and specifically the {{__WINDOWS__}}, {{__UNIX__}}, and {{__UTYPE_ABC}} macros.
+
+* A native class SHALL NOT use preprocessor macros supplied by any specific build system. If the CZMQ-supplied macros are not sufficient these can be improved and extended.
+
+* The project architect SHOULD aim to fully separate portable and native classes, so that application developers see and write only portable classes.
+
+This example shows the general style of native code:
+
+[[code]]
+#if (defined (__UNIX__))
+    pid = GetCurrentProcessId ();
+#elif (defined (__WINDOWS__))
+    pid = getpid ();
+#else
+    pid = 0;
+#endif
+[[/code]]
+
++++ Portable Language
+
+The following types and macros are defined by CZMQ and may be used safely in all code:
+
+* {{bool}}, {{true}}, {{false}}: Boolean data type and constants.
+* {{byte}}, {{dbyte}}, {{qbyte}}: unsigned 1-, 2-, and 4-octet integers.
+* {{uint}}, {{ulong}}: unsigned integers and longs.
+* {{int32_t}}, {{int64_t}}: signed 32-bit and 64-bit integers.
+* {{uint32_t}}, {{uint64_t}}: unsigned 32-bit and 64-bit integers.
+* {{streq (s1, s2)}}: preferred over {{strcmp (s1, s2) == 0}}.
+* {{strneq (s1, s2)}}: preferred over {{strcmp (s1, s2) != 0}}.
+* {{randof (number)}}: return random integer in range 0 .. number - 1.
+* {{srandom}}: typically used like this: {{srandom ((unsigned) time (NULL));}}
+* {{inline}}, {{snprintf}}, {{vsnprintf}}: Windows uses non-POSIX variants with underscores.
+
++++ Compiler Warnings
+
+Compiler warnings SHOULD always be treated as fatal. The following is a list of constructs known to cause warnings on some but not all compilers:
+
+* Assigning a void pointed to a typed pointer without a cast. Always cast a void * before assigning it to a typed pointer.
+
+* Failing to return a value in a non-void function. Always end a non-void function with a {{return}} statement.
+
+++ Code Generation
+
+Code generation MAY be used to produce classes mechanically when there is compelling benefit.
+
+* The code generator SHOULD be GSL, from https://github.com/imatix/gsl.
+
+* All code generation scripts SHALL be in the project {{scripts}} subdirectory.
+
+* All model data (XML files) SHALL be in the project {{model}} directory.
+
+* The {{model}} directory SHALL contain a shell script {{generate}} that performs the code generation. The general model for this script is:
+
+[[code]]
+export PATH=../scripts:$PATH
+gsl -q -script:<script>.gsl <model>.xml
+[[/code]]
+
+* If only parts of a class are generated, these parts SHALL have the extension {{.inc}} and SHALL ge generated into the project {{src}} directory, and SHALL be included in the class source file using an #include statement.
+
+* Code generation SHALL be done manually, and all generated code SHALL be committed into the project as for hand-written files.
+
+* Code generation SHALL be fully idempotent, that is, generated code SHALL NOT contain any date or time stamps.
+
+* Code generation SHALL be treated as a form of dangerous abstraction that creates significant barriers to readers. A good rule of thumb is that for code generation to be profitable, it should reduce the lines of code written by hand by 80-90%.
+
+* Generated code SHALL contain a warning of this form at the start: "GENERATED SOURCE CODE, DO NOT EDIT".
+
+* Generated code SHALL otherwise conform to this Specification so that it is indistinguishable from hand-written code.
+
+++ Security Aspects
+
++++ Thread Safety
+
+The use of opaque data structures that are accessed via references is thread safe. However:
+
+* Code SHALL NOT share state between threads except in exceptional and limited cases. Threads SHALL communicate by passing 0MQ messages.
+
+* Classes SHALL not use static variables since this is not re-entrant, thus not thread safe.
+
+* Class instances SHALL NOT be passed between threads except in "hand-off" cases.
+
+* Code SHOULD NOT use mutexes, locks, or other mechanisms to share state between threads.
+
+* Code MUST NOT use non-thread safe system calls such as {{basename ()}}.
+
++++ Buffer Overflows
+
+* Code MUST always truncate over-long data.
+
+* Code MUST NOT use unsafe system calls such as {{gets ()}}.
+
++++ Known Weaknesses
+
+* The heavy reliance on heap memory means that CLASS applications are vulnerable to denial-of-service attacks. Applications can mitigate this risk by enforcing limits on the number of class instances they create.
+
+* The heavy reliance on heap memory makes CLASS unsuitable for embedded systems where all memory use must be static.
+
+* In most CLASS applications it is difficult to handle an "out of memory" error in any way except to abort.
+
+++ References
+
+[[bibliography]]
+: rfc2119 : "Key words for use in RFCs to Indicate Requirement Levels" - [http://tools.ietf.org/html/rfc2119 ietf.org]
+: fandos : "Definition of a Free and Open Standard" - [http://www.digistan.org/open-standard:definition digistan.org]
+: coss : "Consensus Oriented Specification System" - [http://www.digistan.org/spec:1/COSS digistan.org]
+: c4 : "Collective Code Construction Contract" - [http://rfc.zeromq.org/spec:16 rfc.zeromq.org]
+[[/bibliography]]
+
+
+++ Dialectics
+
++++ Choosing an Open Source License
+
+
+There is a lot of debate about open source licenses. Most of it is uninformed, naive, and wishful. The license is a tool for getting certain results. Don't complain if your fork can't cut the meat, or your knife stabs your tongue.
+
+Do not "expect people to be ethical." If you use a "liberal license" (BSD or MIT/X11), do not expect people to share their forks and patches. They may. Most will not. If you depend on reciprocity, //use a share-alike license.//
+
+//Solution: learn how licenses work.//
+
+There are at least five cases to choose from:
+
+* You are making private commercial software with the explicit goal of making profits. You have no intention to build a community. You want every user to pay, in cash or credit. In that case you use a proprietary license designed by your expensive lawyers. Contact me if you want expensive help on that.
+
+* You are making public software with the explicit goal of benefiting other public software projects. You wish to build a large, strong community. You have no intention of profit-taking. You prefer to exclude private commercial software projects. In this case you use the GPLv3 license.
+
+* You are making public software with the goal of dumping your code into the market. You have no intention of building a community. You have no intention of profit-taking. Your main goal is to hurt competitors. In this case you use the MIT/X11 or BSD license.
+
+* You are making public software with the goal of building a community. You wish to see your code used as widely as possible. You have no intention of profit-taking. You want to rope your competitors in as partners. In this case you use the MPLv2 license.
+
+* You are making public software with the goal of huge profits. You expect the "community" to make your software for you. You wish to see your code used everywhere. You want to make hundreds of millions in support licenses. You want to destroy your competitors. In this case you stop taking whatever drugs you're on, and come back to the Real World.
+
++++ How to Merge Patches
+
+
+Conventional merge strategies enforce deliberate, single-threaded, slow thinking. Optimistic merging allows more casual, concurrent, fast thinking. The results seem to be measurably better.
+
+Standard practice (Pessimistic Merging, or PM) is to wait until CI is done, then do a code review, then test the patch on a branch, and then provide feedback to the author. The author can then fix the patch and the test/review cycle starts again. At this stage the maintainer can (and often does) make value judgments such as "I don't like how you do this" or "this doesn't fit with our project vision."
+
+In the worst case, patches can wait for weeks, or months, to be accepted. Or they are never accepted. Or, they are rejected with various excuses and argumentation.
+
+PM is how most projects work, and I believe most projects get it wrong. Let me start by listing the problems PM creates:
+
+* //It tells new contributors, "guilty until proven innocent,"// which is a negative message that creates negative emotions. Contributors who feel unwelcome will always look for alternatives. Driving away contributors is bad. Making slow, quiet enemies is worse.
+
+* //It gives maintainers power over new contributors//, which many maintainers abuse. This abuse can be subconscious. Yet it is widespread. Maintainers inherently strive to remain important in their project. If they can keep out potential competitors by delaying and blocking their patches, they will.
+
+* //It opens the door to discrimination//. One can argue, a project belongs to its maintainers, so they can choose who they want to work with. My response is: projects that are not aggressively inclusive will die, and deserve to die.
+
+* //It slows down the learning cycle//. Innovation demands rapid experiment-failure-success cycles. Someone identifies a problem or inefficiency in a product. Someone proposes a fix. The fix is tested and works or fails. We have learned something new. The faster this cycle happens, the faster and more accurately the project can move.
+
+* //It gives outsiders the chance to troll the project//. It is a simple as raising an objection to a new patch. "I don't like this code." Discussions over details can use up much more effort than writing code. It is far cheaper to attack a patch than to make one. These economics favor the trolls and punish the honest contributors.
+
+* //It puts the burden of work on individual contributors//, which is ironic and sad for open source. We want to work together yet we're told to fix our work alone.
+
+Now let's see how this works when we use Optimistic Merge. To start with, understand that not all patches nor all contributors are the same. We see at least four main cases in our open source projects:
+
+# Good contributors who know the rules and write excellent, perfect patches.
+# Good contributors who make mistakes, and who write useful yet broken patches.
+# Mediocre contributors who make patches that no-one notices or cares about.
+# Trollish contributors who ignore the rules, and who write toxic patches.
+
+PM assumes all patches are toxic until proven good (4). Whereas in reality most patches tend to be useful, and worth improving (3).
+
+Let's see how each scenario works, with PM and OM:
+
+# PM: depending on unspecified, arbitrary criteria, patch may be merged rapidly or slowly. At least sometimes, a good contributor will be left with bad feelings. OM: good contributors feel happy and appreciated, and continue to provide excellent patches until they are done using the project.
+# PM: contributor retreats, fixes patch, comes back somewhat humiliated. OM: second contributor joins in to help first fix their patch. We get a short, happy patch party. New contributor now has a coach and friend in the project.
+# PM: we get a flamewar and everyone wonders why the community is so hostile. OM: the mediocre contributor is largely ignored. If patch needs fixing, it'll happen rapidly. Contributor loses interest and eventually the patch is reverted.
+# PM: we get a flamewar which troll wins by sheer force of argument. Community explodes in fight-or-flee emotions. Bad patches get pushed through. OM: existing contributor immediately reverts the patch. There is no discussion. Troll may try again, and eventually may be banned. Toxic patches remain in git history forever.
+
+In each case, OM has a better outcome than PM.
+
+In the majority case (patches that need further work), Optimistic Merge creates the conditions for mentoring and coaching. And indeed this is what we see in ZeroMQ projects, and is one of the reasons they are such fun to work on.
+
+References:
+
+* [http://rfc.zeromq.org/spec:22 ZeroMQ RFC 22], C4.1: the Collective Code Construction Contract.

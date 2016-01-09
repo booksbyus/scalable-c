@@ -2,7 +2,7 @@
 FILENAME=main
 AUTHOR=Pieter Hintjens
 TITLE=Scalable C
-SUBTITLE=Programming C for the 21st Century
+SUBTITLE=Writing Large-Scale Distributed C
 TITLENOTE=
 
 #   Page dimensions in cm
@@ -16,6 +16,7 @@ OUTSIDE=1.4
 #   Fonts
 HEADERFONT=EB Garamond
 BODYFONT=EB Garamond
+FIXEDFONT=MonospaceTypewriter
 TEXTHEIGHT=90%
 TEXTSIZE=11pt
 
@@ -28,12 +29,12 @@ LICENSE=Free to share and remix under CC-BY-SA-4.0
 TRADEMARKS="Scalable C" is a trademark of Pieter Hintjens
 PUBLISHER=Published by Pieter Hintjens
 CREDITS1=
-CREDITS2=Cover by westinCovers, www.westincovers.com. Cover font: Kontrapunkt by Bo Linnemann, Kontrapunkt A/S. Text font: EB Garamond by Georg Duffner
+CREDITS2=Cover by westinCovers, www.westincovers.com. Cover font: Kontrapunkt by Bo Linnemann, Kontrapunkt A/S. Text fonts: EB Garamond by Georg Duffner, MonospaceTypewriter by Manfred Klein.
 PURCHASE=http://www.amazon.com/dp/B016MRW9KS
 
 #   Author page
-BIOGRAPHY=Pieter Hintjens has spent years building on-line communities and helping others to work better together. He is an expert in the dynamics of group psychology. He has researched cults and abusive manipulation since 2000, and psychopaths since 2010. He is also a software programmer, musician, and father.
-OTHERBOOKS=Other books by the same author: "ZeroMQ - Messaging for Many Applications" (O'Reilly), "Culture and Empire: Digital Revolution" (Amazon.com).
+BIOGRAPHY=Pieter Hintjens has been programming C since 1985. He is the author of many free software products written in C: Libero (1991), SFL (1996), Xitami (1998), OpenAMQ (2004). In 2007 he founded the ZeroMQ community. His github profile is https://github.com/hintjens.
+OTHERBOOKS=Other books by the same author: "ZeroMQ - Messaging for Many Applications" (O'Reilly), "Culture and Empire: Digital Revolution" (Amazon.com), "The Psychopath Code" (Amazon.com).
 
 #   Build index
 #INDEX=../index.txt

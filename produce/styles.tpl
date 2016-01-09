@@ -223,6 +223,15 @@
       <style:text-properties style:text-position="super 58%"/>
     </style:style>
 
+    <style:style style:name="Console" style:family="paragraph" style:parent-style-name="Text_20_body" style:class="text" style:master-page-name="">
+      <style:paragraph-properties fo:margin-left="0.0598in" fo:margin-right="0in" fo:margin-top="0.1in" fo:margin-bottom="0.1in" style:contextual-spacing="true" fo:text-align="start" style:justify-single-word="false" fo:orphans="3" fo:widows="3" fo:hyphenation-ladder-count="no-limit" fo:text-indent="0in" style:auto-text-indent="false" style:page-number="auto" fo:padding="0.0598in" fo:border-left="0.06pt solid #b2b2b2" fo:border-right="none" fo:border-top="none" fo:border-bottom="none" style:shadow="none"/>
+      <style:text-properties style:font-name="FixedFont" fo:font-family="%FIXEDFONT%" style:font-style-name="Regular" fo:font-size="9pt" fo:hyphenate="false" />
+    </style:style>
+
+    <style:style style:name="Source_20_Code" style:display-name="Source Code" style:family="paragraph" style:parent-style-name="Console" style:class="text">
+      <style:text-properties fo:font-size="8pt"/>
+    </style:style>
+
     <text:outline-style style:name="Outline">
       <text:outline-level-style text:level="1" style:num-format="">
         <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
@@ -245,6 +254,7 @@
         </style:list-level-properties>
       </text:outline-level-style>
     </text:outline-style>
+
     <text:list-style style:name="List_20_1" style:display-name="List 1">
       <text:list-level-style-bullet text:level="1" text:style-name="Numbering_20_Symbols" text:bullet-char="•">
         <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">

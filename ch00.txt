@@ -1,3 +1,4 @@
+// kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
 .bookmark preface
 + Preface
 
@@ -27,7 +28,7 @@ Yet we have solved these problems. We have good, tested answers. Today these ans
 
 We use C most often to write libraries, which we then call from applications in other languages. This layer of C libraries sits between the operating system and the application.
 
-This layer provides [http://en.cppreference.com/w/c/links/libs  security, user interfaces, audio and video, maths, graphics, databases,  communications, compression, and so on]. I call this the "fabric layer."
+This layer provides [http://en.cppreference.com/w/c/links/libs security, user interfaces, audio and video, maths, graphics, databases, communications, compression, and so on]. I call this the "fabric layer."
 
 For the most part, this fabric layer sees the world as a single processor. It has no concept of concurrency. It cannot take advantage of many cores on a machine, let alone many machines in a cloud. Every library has its own style, standards, and API model. Every library has a custom build process.
 
@@ -67,7 +68,7 @@ Scalable C is standard portable C plus a mix of other technologies:
 
 ++ How This Book Works
 
-This book takes the same approach that I take in distributed programming workshops. That is, start with simple worked examples, and then add more and more depth.
+This book takes the same approach that I take in distributed programming workshops. That is, start with simple worked examples, and then add more and more depth. Each step aims to answer a problem you'll hit soon, or have already hit.
 
 We will see a lot of example code. All the examples work, and you can build and play with them. The Scalable C repository holds this book, and the code. If you find things you want to change, just send a pull request. I'll explain how that works, when we get started.
 
@@ -93,7 +94,7 @@ If you read the whole book and follow the examples, you will learn how to:
 
 * Build clustering across a local network, using Zyre.
 
-* Build scalable client and server stacks using zproto.
+* Build multithreaded clients and servers, using zproto.
 
 * Generate C code using model oriented programming.
 
@@ -149,55 +150,63 @@ Plus some others:
 
 Which we install like this (using the Debian-style apt-get package manager):
 
-[[code]]
-sudo apt-get install -y git-all build-essential libtool pkg-config
-sudo apt-get install -y autotools-dev autoconf automake cmake
-sudo apt-get install -y asciidoc uuid-dev valgrind
-[[/code]]
+```
+sudo apt-get install -y
+    git-all build-essential libtool \
+    pkg-config autotools-dev autoconf automake cmake \
+    asciidoc uuid-dev valgrind
+```
 
 The LearnXinYMinutes project has good quick guides to many languages. Here are its guides [https://learnxinyminutes.com/docs/bash/ to Bash], [https://learnxinyminutes.com/docs/c/ to C],
 [https://learnxinyminutes.com/docs/git/ and to git].
+
+Before you use git, on a new laptop, always tell it your name, and email address. Use the same email address for your GitHub account:
+
+```
+git config --global user.name "Your Name"
+git config --global user.email your.name@example.com
+```
 
 ++ Becoming a Good Programmer
 
 I'll end this preface with some inspirational advice on how become a good programmer. Writing code is like doing magic. Just say the right words, and amazing stuff happens. Or, horrible things happen. Becoming a great programmer isn't easy. It takes time. I'm going to give ten tips to help you along that path.
 
-1. Take Your Time
++++ Take Your Time
 
 It takes years to get good at coding, so be patient. Your first projects will be weak, no matter how smart you are. If you're coding every day you'll be decent after five years, and good after ten. And after twenty years you may become great.
 
-2. Write Code, Write Code
++++ Write Code, Write Code
 
 There's a myth that superb coders are born. Yes, you need talent, yet above all you need practice. Code every spare minute. You need to practice for years, alone and with others. It won't make you rich, it will make you better. Coding is like playing music. Play the same tune a hundred times, and each time you will learn something new.
 
-3. Develop Your Strengths
++++ Develop Your Strengths
 
 Discover what you are good at: everyone is different. Maybe it's problem solving. Maybe it's teaching others. Maybe it's long, deep focus on difficult concepts. The best sign you're good at something is you enjoy doing it. Over time you'll become better at other aspects of coding.
 
-4. Learn to Work With Others
++++ Learn to Work With Others
 
 Alone, you'll always be mediocre. Only when you work with others can you shine. Learn to let others compensate for your weaknesses. Look for teams that need you and that can challenge you. Join open source projects. Learn open source culture. Learn from others, and especially their mistakes.
 
-5. Use Science, not Magic
++++ Use Science, not Magic
 
-Most of the software industry is plain wrong. Learn to recognize and reject magical arguments. Science is about solving real problems with wild, irresponsible answers, and harsh error correction. Don't follow fashion. Take the next most urgent problem. Write a minimal plausible solution. Test that, and keep it only if it seems to work.
+Most of the software industry is plain wrong. That's Sturgeon's Law. Learn to recognize and reject magical arguments. Science is about solving real problems with wild, irresponsible answers, and harsh error correction. Don't follow fashion. Take the next most urgent problem. Write a minimal plausible solution. Test that, and keep it only if it seems to work.
 
-6. Trust Your Instincts
++++ Trust Your Instincts
 
 We're born with good instincts for working with others. Education and work beat these out of us. Most of all we learn to accept discomfort and pain. Learn to trust your instincts. If something you're doing seems wrong, fix it. Even if it takes a decade: write it down, understand it, and fix it.
 
-7. Work With What You Have
++++ Work With What You Have
 
 Work with the problems, tools, and people you have at hand. Focus on getting it right, minimal, and modest. Don't wait for tomorrow's technology to arrive. Don't try to invent the future. Just get to work making real solutions to real problems. The future will invent itself.
 
-8. Embrace Criticism
++++ Embrace Criticism
 
 Lose your ego. When someone criticizes your work it can hurt. Yet when people ignore you and your work, it is far worse. Ask for critiques. Make your work public and open source, when you can. Now and then you'll hit a troll who aims to hurt you. It's never personal. Learn to shrug that off.
 
-9. Keep Your Costs Low
++++ Keep Your Costs Low
 
 Cheap is important. Learn to use Linux, and a cheap or second-hand PC. Learn the command line. Stick with small languages like C, instead of massive languages like C++. Learning a larger language does not make you a better programmer.
 
-10. Publish Your Work
++++ Publish Your Work
 
 Put your code out there, using your real name. Become a contributor to open source projects. If they don't want you, find projects that do. Build up your public profile, e.g. on GitHub. It's your future resume.

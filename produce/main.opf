@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package unique-identifier="uid">
+<metadata>
+  <dc-metadata xmlns:dc="http://purl.org/metadata/dublin_core" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
+    <dc:Title>Scalable C: Building a 21st Century Fabric Layer</dc:Title>
+    <dc:Language>en-us</dc:Language>
+    <dc:Identifier id="uid">978-1-xxxxxxxx-x-x</dc:Identifier>
+    <dc:Creator>Pieter Hintjens</dc:Creator>
+    <dc:Publisher>Pieter Hintjens</dc:Publisher>
+    <dc:Subject BISACCode="xxx">Software</dc:Subject>
+    <dc:Description></dc:Description>
+    <dc:Date>31/01/2016</dc:Date>
+  </dc-metadata>
+
+  <x-metadata>
+    <output encoding="utf-8" content-type="text/x-oeb1-document"></output>
+    <EmbeddedCover>../cover/cover-kindle.jpg</EmbeddedCover>
+    <SRP Currency="USD">4.99</SRP>
+  </x-metadata>
+</metadata>
+<manifest>
+  <item id="toc" media-type="text/x-oeb1-document" href="main_toc.html"></item>
+  <item id="text" media-type="text/x-oeb1-document" href="main.html"></item>
+</manifest>
+
+<spine>
+  <itemref idref="toc"/>
+  <itemref idref="text"/>
+</spine>
+
+<tours></tours>
+<guide></guide>
+</package>
