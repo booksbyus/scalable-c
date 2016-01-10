@@ -86,6 +86,8 @@ A key side-effect to this arrangement is that it is //expensive// to change the 
 
 You need a way to collect patches and merge them onto master. Some projects use email lists. Some projects have maintainers who pick patches, review them, merge the ones they like.
 
+You need to avoid commits directly to master, as these are silent. It is more fun to have a ping-pong between the person who wrote a patch, and someone else (the nominal maintainer.)
+
 My pattern for success is to solicit so-called "pull requests" onto master, then to merge them as rapidly as possible. One can discuss them after merging.
 
 //Solution: use pull requests and merge aggressively.//
@@ -118,7 +120,7 @@ You should be totalitarian about style. Every space and dot matters. For example
 
 ```
 int i;
-for( i=0 ; i<10; i++
+for( i=0 ; i<10; i++ )
 {
    printf ("%d\n", i) ;
 }
@@ -139,51 +141,190 @@ Remember this lesson:
 
 I think there are some basic rules, such as using whitespace and punctuation as we do in English. Code should be compact as screen space is always precious, yet not cryptic. It makes no sense to use short variable names like 'i' and then put { on a line by itself. I'll come to the specifics of a Good Style for C as we continue.
 
+++ Problem: where do I put my sources?
+
+Finally, a non-contentious problem.
+
+//Solution: put headers into include, and sources into src.//
+
+If we have private headers (that are used only by sources in this project), place them in {{src}} as well. This way, {{include}} contains our public API.
+
+++ Problem: how do I organize my code?
+
+Even a C application (a command-line tool, perhaps) needs some internal structure. Some tools are written as massive single C files. It's not a good way to work. It is far better to build up libraries, which the final application uses.
+
+For example, I've written a messaging broker called Malamute. It's a C application. Here is the command line {{malamute.c}} tool (stripped down to show the essence):
+
+[[code]]
+#include <malamute.h>
+
+int main (void)
+{
+    ...
+    zactor_t *server = zactor_new (mlm_server, "Malamute");
+    ...
+    zactor_destroy (&server);
+    return 0;
+}
+[[/code]]
+
+All the actual server code is in a class called {{mlm_server}}. The command line tool parses the command line, mucks about with some configuration, then starts the server. It runs until interrupted, then destroys the server (ending it).
+
+This is a clean and powerful way to write services and other code. In fact, all C code except the thin UI.
+
+//Solution: organize your code into classes.//
+
+Remember this lesson:
+
+> Everything a class. You can definitely make singleton methods (which do not work on a specific instance).
+
+By freaky coincidence, [http://rfc.zeromq.org/spec:21 the style guide] for Scalable C is called "CLASS."  What can I say... acronyms suddenly came back into fashion around 2001.
+
+++ Problem: how do I name my classes?
+
+Let me ask you a stupid question. Imagine I show you this code:
+
+```
+zactor_t *server = zactor_new (mlm_server, "Malamute");
+```
+
+Better still, don't imagine it, since I just showed you the code. Where would you expect to find the method called {{zactor_new}}?
+
+The best solutions to problems are the most obvious ones, if they work. This takes out the guesswork. The most obvious place to find this method is in a file called {{src/zactor.c}}. It would be bizarre to put every method into its own source file. It would be silly to put multiple public classes into one source file. (While it is obvious to put private classes into the source file that uses them.)
+
+//Use the class name as the source file name.//
+
+So for a class called {{zactor}} we expect to have {{src/zactor.c}} containing the code, and {{include//zactor.h}} with the public API. That is, function prototypes, typedefs, and constants.
+
+Remember this lesson:
+
+> Be fanatically consistent. Your users will love you for surprising them in nice ways only.
+
+++ Problem: how do I name my classes?
+
+Naming is like all hard problems: break it down, and it becomes easy. As often, look for the obvious and most usable answers rather than the "best" or "most consistent" answers.
+
+A "best" name for a human is a 12-digit number that encodes their date of birth and acts like a global roaming phone number. Yet it is neither obvious nor usable. A person needs a unique name within their close family (a "personal name"). Then, a family name that identifies them more broadly (a "family name"). Then, decoration to make their name unique (middle initials, titles). Then, short names for social networks (Twitter handle).
+
+When choosing a name, the more often we use a name, the shorter it should be. This is why we like short personal names, and tolerate long family names. The other way around is surprising to us.
+
+A class needs a unique name within their library. Ideally this is a single word that expresses what the class does. It then needs a family name that identifies it more broadly. We use this family name most often of all, so it must be even shorter than the class name.
+
+//Solution: use a unique prefix for classes in a project.//
+
+You do not need //global// uniqueness. Somewhere out there, people are writing C code with the same class names. That is fine so long as your prospective users aren't pulling in both libraries.
+
+The prefix I used for CZMQ was "z" since this was originally a ZeroMQ wrapper, and I wanted the shortest possible prefix. For Zyre I chose "zyre_" since that is short, and unique, and clear. For Malamute I chose "mlm" since "malamute_" felt too long.
+
+I'll use "myp_" as the prefix, in example code that follows.
+
+Remember this lesson:
+
+> Use simple English words for class names, then prefix them with the project prefix.
+
+++ Problem: how do we invoke class methods?
+
+C has no support for classes. So we have to invent this. People have tied various approaches. One way is to create an object that contains pointers to functions. You might hope to invoke methods like this:
+
+```
+myobject->method (arguments)
+```
+
+Except the method still needs the object to work with, so it looks like this:
+
+```
+myobject->method (myobject, arguments)
+```
+
+In theory one could create a structure that holds the object reference, perhaps in front of each method pointer. If we were generating code, this is how I might do it. Yet we want a design that can be built by hand, and which is simple and obvious. Code generation adds too much of its own complexity.
+
+//Solution: construct a full method name out of project, class, and method.//
+
+So we get:
+
+```
+myp_myclass_mymethod (myobject)
+```
+
+From experience, people get this style at once, and it works. It is a little more typing, yet it has the advantage that construction, destruction, and methods all have a consistent style. Take a look at this fragment, without comments or explanation:
+
+[[code]]
+mlm_client_t *writer = mlm_client_new ();
+mlm_client_set_plain_auth (writer, "writer", "secret");
+mlm_client_connect (writer, "tcp://127.0.0.1:9999", 1000, "writer");
+mlm_client_set_producer (writer, "weather");
+mlm_client_sendx (writer, "temp.moscow", "10", NULL);
+mlm_client_sendx (writer, "temp.london", "15", NULL);
+mlm_client_sendx (writer, "temp.madrid", "32", NULL);
+mlm_client_destroy (&writer);
+[[/code]]
+
+Remember this lesson:
+
+> The eye likes patterns in columns. Use this to your advantage.
+
+++ Problem: how do we isolate our objects?
+
+The natural way to represent a random "thing" in C is a structure. You can make structures of structures, yet that is usually silly. You can, as POSIX does, make these structures public. The problem with this is that it creates a fuzzy contract. What happens if the caller modifies a field?
+
+//Solution: use an opaque structure, and getter/setter methods.//
+
+C lets us make "opaque structures" which callers know nothing about except their name. In the public header file {{include/myp_momod.h}}, we write:
+
+```
+typedef struct _myp_myclass_t myp_myclass_t;
+```
+
+And in the class source file {{src/myp_momod.c}} we define the structure, and provide methods to work with it:
+
+```
+struct _myp_myclass_t {
+    ...
+    char *string;
+    ...
+};
+
+//  Get string property
+const char *
+myp_myclass_string (myp_myclass_t *self)
+{
+    assert (self);
+    return self->string;
+}
+
+//  Set string property
+char *
+myp_myclass_set_string (myp_myclass_t *self, const char *string)
+{
+    assert (self);
+    free (self->string);
+    self->string = strdup (string);
+}
+```
+
+++ Problem: what about construction and destruction?
+
+.end
+
+- zmalloc or malloc
+- assert on heap exhaustion
+- destruction wipes caller reference
+    - we see destructors
 
 
-++ Problem: my code needs a README
 
 
-
-
-//Solution: define a standard project layout.//
-
-The project SHALL contain at least these files and directories:
-
-* A {{README}} file that refers to this Specification and provides other necessary information about the project.
-* A license file (e.g., {{COPYING}} or {{LICENSE}}) that specifies the terms of distribution for the project.
-* An {{include}} directory for all header files.
-* A {{src}} directory for all library source files.
-* The //external header file// ({{myproj.h}}).
-* Scripts and makefiles to build and test the project on at least one platform.
+The next thing we need to think about is
 
 
 
 
 
 
-//Solution: use a class model//
-
-The overall unit of work is a //project// that builds as a library with a set of executable test programs and supplemental command-line tools.
-
-The project is composed of //classes//, where each class covers one area of work and is implemented as a source file with matching header file.
 
 Each class implements a series of //methods//, where each method performs one task and is implemented as a C function.
 
-++ Problem: naming is a hard problem
 
-- global name spaces
-- every project different
-- sometimes poor choices that don't scale
-
-//Solution: define standard naming rules.//
-
-The project SHALL have these short names and abbreviations:
-
-* A //project short name// used in paths and URLs that identify the project. This would be used for instance in the GitHub project name. In this Specification we will use {{myproject}} as the example.
-* A //project abbreviation// used for project files and output libraries. This would be used for instance in the library produced for the project. The abbreviation MAY be an acronym. In this Specification we will use {{myproj}} as the example.
-* A //project prefix// used to prefix all method names, which MAY be the same as the project abbreviation. This would be used in source code and its API. The prefix SHOULD end with an underscore. In this Specification we will use {{myp_}} as the example.
-- variables
 
 ++ Problem: how do I organize my project?
 
@@ -203,7 +344,6 @@ The project SHOULD install these files:
 * The project library, named with the project abbreviation ({{libmyproj.a}} on POSIX platforms, {{myproj.dll}} on Windows).
 * Command-line tools, if present.
 
-The project SHALL NOT use deeper nested subdirectories.
 
 ++ Problem: how do export my APIs?
 
@@ -279,16 +419,23 @@ Macro names SHALL be uppercase when they represent constants, and lowercase when
 ++ Problem: how do I organize my code?
 
 
+++ Problem: where do I put my build scripts?
+
+
+* Scripts and makefiles to build and test the project on at least one platform.
+
+
+
 +++ File Organization
 
 Each class SHALL be written as two files:
 
-* A header file: {{include/myp_mymod.h}}
-* A source file: {{src/myp_mymod.c}}
+* A header file: {{include/myp_myclass.h}}
+* A source file: {{src/myp_myclass.c}}
 
 These two files SHALL be the original documentation for the class. Specifically, the class header SHALL define the API for the class, and the class source file SHALL define the implementation of each method.
 
-Class names SHALL follow the General Style for Naming. We will use {{mymod}} in examples.
+Class names SHALL follow the General Style for Naming. We will use {{myclass}} in examples.
 
 Every source and header file SHALL start with an appropriate file header that states at least:
 
@@ -339,19 +486,19 @@ A class may be stateful or stateless but SHALL NOT mix the two approaches.
 
 A stateful class SHALL provide these methods:
 
-* A constructor method {{myp_mymod_new ()}}
-* A destructor method {{myp_mymod_destroy ()}}
-* A self-test method {{myp_mymod_test ()}}
+* A constructor method {{myp_myclass_new ()}}
+* A destructor method {{myp_myclass_destroy ()}}
+* A self-test method {{myp_myclass_test ()}}
 
 A stateful class MAY provide these methods, and SHALL use these names when providing such functionality:
 
-* A duplicator method {{myp_mymod_dup ()}}
-* A set of list navigation methods {{myp_mymod_first ()}} and {{myp_mymod_next ()}}.
-* Print methods {{myp_mymod_print ()}} and {{myp_mymod_fprint ()}}.
+* A duplicator method {{myp_myclass_dup ()}}
+* A set of list navigation methods {{myp_myclass_first ()}} and {{myp_myclass_next ()}}.
+* Print methods {{myp_myclass_print ()}} and {{myp_myclass_fprint ()}}.
 
 A stateless class SHALL provide this method:
 
-* A self-test method {{myp_mymod_test ()}}
+* A self-test method {{myp_myclass_test ()}}
 
 +++ Method Names
 
@@ -378,19 +525,19 @@ extern "C" {
 #endif
 
 //  Opaque class structure
-typedef struct _myp_mymod_t myp_mymod_t;
+typedef struct _myp_myclass_t myp_myclass_t;
 
 //  Create a new <class name> instance
-CZMQ_EXPORT myp_mymod_t *
-    myp_mymod_new (void);
+CZMQ_EXPORT myp_myclass_t *
+    myp_myclass_new (void);
 
 //  Destroy a <class name> instance
 CZMQ_EXPORT void
-    myp_mymod_destroy (myp_mymod_t **self_p);
+    myp_myclass_destroy (myp_myclass_t **self_p);
 
 //  Self test of this class
 void
-    myp_mymod_test (bool verbose);
+    myp_myclass_test (bool verbose);
 
 #ifdef __cplusplus
 }
@@ -411,7 +558,7 @@ extern "C" {
 
 //  Self test of this class
 int
-    myp_mymod_test (bool verbose);
+    myp_myclass_test (bool verbose);
 
 #ifdef __cplusplus
 }
@@ -443,7 +590,7 @@ This SHOULD be defined as follows:
 [[code]]
 //  Structure of our class
 
-struct _mymod_t {
+struct _myclass_t {
     <type> <name>;              //  <description>
 };
 [[/code]]
@@ -472,7 +619,7 @@ Compound return values, e.g. a size-specified buffer, SHOULD be returned as fres
 
 +++ The Self Test Method
 
-In stateless classes, the only standard method is {{myp_mymod_test ()}}, which SHALL conduct a self test of the class, returning silently on success, and asserting on failure.
+In stateless classes, the only standard method is {{myp_myclass_test ()}}, which SHALL conduct a self test of the class, returning silently on success, and asserting on failure.
 
 The self test method shall take this general form:
 
@@ -481,9 +628,9 @@ The self test method shall take this general form:
 //  Runs selftest of class
 
 void
-myp_mymod_test (int verbose)
+myp_myclass_test (int verbose)
 {
-    printf (" * myp_mymod: ");
+    printf (" * myp_myclass: ");
     //  Conduct tests of every method
     printf ("OK\n");
 }
@@ -499,11 +646,11 @@ myp_mymod_test (int verbose)
 The constructor SHALL take this general form:
 
 [[code]]
-//  Create a new myp_mymod instance
-myp_mymod_t *
-myp_mymod_new (<arguments>)
+//  Create a new myp_myclass instance
+myp_myclass_t *
+myp_myclass_new (<arguments>)
 {
-    myp_mymod_t *self = (myp_mymod_t *) zmalloc (sizeof (myp_mymod_t));
+    myp_myclass_t *self = (myp_myclass_t *) zmalloc (sizeof (myp_myclass_t));
     if (self) {
         self->someprop = someprop_new ();
         if (self->someprop)
@@ -511,7 +658,7 @@ myp_mymod_new (<arguments>)
         if (self->anotherprop)
             self->lastprop = lastprop_new ();
         else
-            myp_mymod_destroy (&self);
+            myp_myclass_destroy (&self);
     }
     return self;
 }
@@ -530,13 +677,13 @@ myp_mymod_new (<arguments>)
 The destructor SHALL take this general form:
 
 [[code]]
-//  Destroy a myp_mymod instance
+//  Destroy a myp_myclass instance
 void
-myp_mymod_destroy (myp_mymod_t **self_p)
+myp_myclass_destroy (myp_myclass_t **self_p)
 {
     assert (self_p);
     if (*self_p) {
-        myp_mymod_t *self = *self_p;
+        myp_myclass_t *self = *self_p;
         someprop_destroy (&self->someprop);
         anotherprop_destroy (&self->anotherprop);
         lastprop_destroy (&self->lastprop);
@@ -552,17 +699,17 @@ myp_mymod_destroy (myp_mymod_t **self_p)
 
 ++++ The Duplicator Method
 
-The class MAY offer a duplicator method which creates a full copy of an instance; if it offers such semantics, the method MUST be called {{myp_mymod_dup ()}} and take this general form:
+The class MAY offer a duplicator method which creates a full copy of an instance; if it offers such semantics, the method MUST be called {{myp_myclass_dup ()}} and take this general form:
 
 [[code]]
-//  Create a copy of a myp_mymod instance
+//  Create a copy of a myp_myclass instance
 
-myp_mymod_t *
-myp_mymod_dup (myp_mymod_t *self)
+myp_myclass_t *
+myp_myclass_dup (myp_myclass_t *self)
 {
     if (self) {
         assert (self);
-        myp_mymod_t *copy = myp_mymod_new (...);
+        myp_myclass_t *copy = myp_myclass_new (...);
         if (copy) {
             //  Initialize copy
         }
@@ -589,7 +736,7 @@ Such a container class SHALL keep the list cursor position in the instance, and 
 //  Return first item in the list or null if the list is empty
 
 item_t *
-myp_mymod_first (myp_mymod_t *self)
+myp_myclass_first (myp_myclass_t *self)
 {
     assert (self);
     //  Reset cursor to first item in list
@@ -599,7 +746,7 @@ myp_mymod_first (myp_mymod_t *self)
 //  Return next item in the list or null if there are no more items
 
 item_t *
-myp_mymod_next (myp_mymod_t *self)
+myp_myclass_next (myp_myclass_t *self)
 {
     assert (self);
     //  Move cursor to next item in list
@@ -609,15 +756,15 @@ myp_mymod_next (myp_mymod_t *self)
 
 * The navigation methods SHALL return null to indicate "no more items".
 
-* The navigation methods SHALL be idempotent, and specifically, calling {{myp_mymod_next ()}} when at the end of the list SHALL return null each time.
+* The navigation methods SHALL be idempotent, and specifically, calling {{myp_myclass_next ()}} when at the end of the list SHALL return null each time.
 
-* The class MAY offer {{myp_mymod_last ()}} and {{myp_mymod_prev ()}} methods.
+* The class MAY offer {{myp_myclass_last ()}} and {{myp_myclass_prev ()}} methods.
 
-* The class MAY offer {{myp_mymod_size ()}} which returns the list size.
+* The class MAY offer {{myp_myclass_size ()}} which returns the list size.
 
-* If the class offers methods to create list items, these SHALL be called {{myp_mymod_append ()}} (to add to the end of the list) and {{myp_mymod_insert ()}} (to add to the start of the list).
+* If the class offers methods to create list items, these SHALL be called {{myp_myclass_append ()}} (to add to the end of the list) and {{myp_myclass_insert ()}} (to add to the start of the list).
 
-* If the class offers a method to remove a list item, this SHALL be called {{myp_mymod_delete ()}}; it SHALL take the item reference as argument, and it SHALL delete the first matching item in the list, if any.
+* If the class offers a method to remove a list item, this SHALL be called {{myp_myclass_delete ()}}; it SHALL take the item reference as argument, and it SHALL delete the first matching item in the list, if any.
 
 * If the class maintains multiple lists, it SHALL create unique method names for each list by adding a list name, e.g., {{myp_momod_myitem_first ()}}.
 
@@ -630,7 +777,7 @@ To return the value of a property the class SHALL define an accessor method like
 [[code]]
 //  Return the value of myprop
 <type>
-myp_mymod_myprop (myp_mymod_t *self)
+myp_myclass_myprop (myp_myclass_t *self)
 {
     assert (self);
     return self->myprop;
@@ -642,7 +789,7 @@ To write the value of a property, if this is permitted, the class SHALL define a
 [[code]]
 //  Set the value of myprop
 void
-myp_mymod_set_myprop (myp_mymod_t *self, <type> myprop)
+myp_myclass_set_myprop (myp_myclass_t *self, <type> myprop)
 {
     assert (self);
     self->myprop = myprop;
@@ -741,7 +888,7 @@ Functions SHALL be defined as follows:
 When the project uses C99, stack variables SHALL be defined in-line, as close as possible to their first use, and initialized. For example:
 
 [[code]]
-myp_mymod_t *mymod = myp_mymod_new ();
+myp_myclass_t *myclass = myp_myclass_new ();
 char *comma = strchr (surname, '.');
 [[/code]]
 
@@ -840,8 +987,8 @@ This is the general template for a method comment header:
 //  --------------------------------------------------------------------------
 //  Finds the first item in the list, returns null if the list is empty.
 
-myp_mymod_t *
-myp_mymod_first (myp_mymod_t *self)
+myp_myclass_t *
+myp_myclass_first (myp_myclass_t *self)
 {
     ...
 [[/code]]
@@ -969,10 +1116,10 @@ for (array_index = 0; array_index < array_size; array_index++) {
 * The recommended pattern for list iteration is:
 
 [[code]]
-myp_mymod_t *mymod = (myp_mymod_t *) myp_mymod_first (mymod);
-while (mymod) {
+myp_myclass_t *myclass = (myp_myclass_t *) myp_myclass_first (myclass);
+while (myclass) {
     //  Do something
-    mymod = (myp_mymod_t *) myp_mymod_next (mymod);
+    myclass = (myp_myclass_t *) myp_myclass_next (myclass);
 }
 [[/code]]
 

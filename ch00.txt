@@ -167,46 +167,73 @@ git config --global user.name "Your Name"
 git config --global user.email your.name@example.com
 ```
 
-++ Becoming a Good Programmer
+++ Why not C++?
 
-I'll end this preface with some inspirational advice on how become a good programmer. Writing code is like doing magic. Just say the right words, and amazing stuff happens. Or, horrible things happen. Becoming a great programmer isn't easy. It takes time. I'm going to give ten tips to help you along that path.
+Don't laugh. This is a serious question people sometimes ask, even when "C" is clearly in the title of the book. The answer is roughly: "C++ encourages you to make worse code than even C does."
 
-+++ Take Your Time
+Learning a large language (and C++ is a large language) is like memorizing the first thousand prime numbers. It is to fill your brain with junk without benefit. Yes, it is good to learn, for the sake of learning. Yet to learn complexity is like joining a cult. You start to think the knowledge is worth something for its own sake.
 
-It takes years to get good at coding, so be patient. Your first projects will be weak, no matter how smart you are. If you're coding every day you'll be decent after five years, and good after ten. And after twenty years you may become great.
+The C language is small and yet it takes years to master it. I wrote this book to speed people along that path. Yet inevitably, your first projects will be weak, no matter how smart you are. If you're coding every day you'll be decent after five years, and good after ten. And after twenty years you may become great.
 
-+++ Write Code, Write Code
+Yet during that process, if you can keep it going, you must be making useful things, from day one. In a small language this is doable. You can learn enough to contribute to projects, or start your own, in a few days or weeks. It is like learning to tap a metal triangle. It adds to an orchestra, if you stay on rhythm.
 
-There's a myth that superb coders are born. Yes, you need talent, yet above all you need practice. Code every spare minute. You need to practice for years, alone and with others. It won't make you rich, it will make you better. Coding is like playing music. Play the same tune a hundred times, and each time you will learn something new.
+C++ is a language that speaks to the inner intellectual. The more C++ you know the worse you become at working with others. First, because your particular dialects of C++ tend to isolate you. Second, because you sit in an ivory tower that few can approach. This is a problem with all highly abstract languages.
 
-+++ Develop Your Strengths
+Any language that depends on inheritance leads you to build large monoliths. Worse, there are no reliable internal contracts. Change one piece of code and you can break a hundred.
 
-Discover what you are good at: everyone is different. Maybe it's problem solving. Maybe it's teaching others. Maybe it's long, deep focus on difficult concepts. The best sign you're good at something is you enjoy doing it. Over time you'll become better at other aspects of coding.
+I'll explain later how we design classes in C, so we get neatly isolated APIs. We don't need inheritance. Each class does some work. We wrap that up, expose it to the world. If we need to share code between classes, we make further APIs. This gives us layers of classes.
 
-+++ Learn to Work With Others
+This gives us a neat, compact syntax. Let's take one example to compare C++ and C. We'll make a linked list and push some values to it, then print them out.
 
-Alone, you'll always be mediocre. Only when you work with others can you shine. Learn to let others compensate for your weaknesses. Look for teams that need you and that can challenge you. Join open source projects. Learn open source culture. Learn from others, and especially their mistakes.
+First, in C++:
 
-+++ Use Science, not Magic
+[[code]]
+#include <iostream>
+#include <list>
+using namespace std;
 
-Most of the software industry is plain wrong. That's Sturgeon's Law. Learn to recognize and reject magical arguments. Science is about solving real problems with wild, irresponsible answers, and harsh error correction. Don't follow fashion. Take the next most urgent problem. Write a minimal plausible solution. Test that, and keep it only if it seems to work.
+int main ()
+{
+    list<string> List;
+    List.push_back ("apple");
+    List.push_back ("orange");
+    List.push_front ("grape");
+    List.push_front ("tomato");
+    cout << List.size () << ": ";
 
-+++ Trust Your Instincts
+    list<string>::iterator i;
+    for (i = List.begin (); i != List.end (); ++i)
+        cout << *i << " ";
+    cout << endl;
+    return 0;
+}
+[[/code]]
 
-We're born with good instincts for working with others. Education and work beat these out of us. Most of all we learn to accept discomfort and pain. Learn to trust your instincts. If something you're doing seems wrong, fix it. Even if it takes a decade: write it down, understand it, and fix it.
+And now in Scalable C:
 
-+++ Work With What You Have
+[[code]]
+#include <czmq.h>
 
-Work with the problems, tools, and people you have at hand. Focus on getting it right, minimal, and modest. Don't wait for tomorrow's technology to arrive. Don't try to invent the future. Just get to work making real solutions to real problems. The future will invent itself.
+int main (void)
+{
+    zlist_t *list = zlist_new ();
+    zlist_append (list, "apple");
+    zlist_append (list, "orange");
+    zlist_push (list, "grape");
+    zlist_push (list, "tomato");
+    printf ("%zd: ", zlist_size (list));
 
-+++ Embrace Criticism
+    char *fruit = (char *) zlist_first (list);
+    while (fruit) {
+        printf ("%s ", fruit);
+        fruit = (char *) zlist_next (list);
+    }
+    puts ("");
+    zlist_destroy (&list);
+    return 0;
+}
+[[/code]]
 
-Lose your ego. When someone criticizes your work it can hurt. Yet when people ignore you and your work, it is far worse. Ask for critiques. Make your work public and open source, when you can. Now and then you'll hit a troll who aims to hurt you. It's never personal. Learn to shrug that off.
+The C code is a little more verbose. It has to pass the list object to every method. It cannot do tricks like overloading "++" to move the list pointer. It must destroy its own objects. Yet it's clear, and explicit.
 
-+++ Keep Your Costs Low
-
-Cheap is important. Learn to use Linux, and a cheap or second-hand PC. Learn the command line. Stick with small languages like C, instead of massive languages like C++. Learning a larger language does not make you a better programmer.
-
-+++ Publish Your Work
-
-Put your code out there, using your real name. Become a contributor to open source projects. If they don't want you, find projects that do. Build up your public profile, e.g. on GitHub. It's your future resume.
+I'm not claiming that Scalable C can do everything C++ can. Nor will it be as compact. Yet it is immediately familiar, explicit, and transparent. I'd much rather write and read 100 lines of code like this than 10 lines of code that rely on inheritance, operator overloading, and other syntactic tricks.
