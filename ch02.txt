@@ -22,8 +22,6 @@ We already saw the basics for that:
 
 * Each project has a unique name. The name space is ideally all of GitHub, though it can be a given language community. I doubt that Java developers care what names Perl projects use.
 
-//Solution: define a standard project layout.//
-
 ++ Problem: how do explain my project to others?
 
 You could hire a designer, and build a beautiful web site. Yet the essence of "scalable" is So Cheap It Costs You Nothing To Fail. Web sites aren't scalable.
@@ -130,9 +128,8 @@ and
 
 ```
 int counter;
-for (counter = 0; counter < 10; counter++) {
+for (counter = 0; counter < 10; counter++)
     printf ("%d\n", counter) ;
-}
 ```
 
 Remember this lesson:
@@ -157,7 +154,6 @@ For example, I've written a messaging broker called Malamute. It's a C applicati
 
 [[code]]
 #include <malamute.h>
-
 int main (void)
 {
     ...
@@ -180,31 +176,31 @@ Remember this lesson:
 
 By freaky coincidence, [http://rfc.zeromq.org/spec:21 the style guide] for Scalable C is called "CLASS."  What can I say... acronyms suddenly came back into fashion around 2001.
 
-++ Problem: how do I name my classes?
+++ Problem: how do I name my source files?
 
-Let me ask you a stupid question. Imagine I show you this code:
+Let me ask you a question. Imagine I show you this code:
 
 ```
 zactor_t *server = zactor_new (mlm_server, "Malamute");
 ```
 
-Better still, don't imagine it, since I just showed you the code. Where would you expect to find the method called {{zactor_new}}?
+Better still, don't imagine it, since I just showed you the code. Twice, since you weren't paying attention the first time. Where would you expect to find the method called {{zactor_new}}?
 
 The best solutions to problems are the most obvious ones, if they work. This takes out the guesswork. The most obvious place to find this method is in a file called {{src/zactor.c}}. It would be bizarre to put every method into its own source file. It would be silly to put multiple public classes into one source file. (While it is obvious to put private classes into the source file that uses them.)
 
 //Use the class name as the source file name.//
 
-So for a class called {{zactor}} we expect to have {{src/zactor.c}} containing the code, and {{include//zactor.h}} with the public API. That is, function prototypes, typedefs, and constants.
+So for a class called {{zactor}} we expect to have {{src/zactor.c}} containing the code, and {{include/zactor.h}} with the public API. That is, function prototypes, typedefs, and constants.
 
 Remember this lesson:
 
 > Be fanatically consistent. Your users will love you for surprising them in nice ways only.
 
-++ Problem: how do I name my classes?
+++ Problem: I need to name my classes
 
 Naming is like all hard problems: break it down, and it becomes easy. As often, look for the obvious and most usable answers rather than the "best" or "most consistent" answers.
 
-A "best" name for a human is a 12-digit number that encodes their date of birth and acts like a global roaming phone number. Yet it is neither obvious nor usable. A person needs a unique name within their close family (a "personal name"). Then, a family name that identifies them more broadly (a "family name"). Then, decoration to make their name unique (middle initials, titles). Then, short names for social networks (Twitter handle).
+A "best" name for a human is a 12-digit number that encodes their date of birth and acts like a global roaming phone number. Yet it is neither obvious nor usable. A person needs a unique name within their close family (a "personal name"). Then, a family name that identifies them more broadly (a "family name"). Then, decoration to make their name unique (middle initials, titles). Then, short names for their social networks (GitHub login).
 
 When choosing a name, the more often we use a name, the shorter it should be. This is why we like short personal names, and tolerate long family names. The other way around is surprising to us.
 
@@ -212,11 +208,11 @@ A class needs a unique name within their library. Ideally this is a single word 
 
 //Solution: use a unique prefix for classes in a project.//
 
-You do not need //global// uniqueness. Somewhere out there, people are writing C code with the same class names. That is fine so long as your prospective users aren't pulling in both libraries.
+You do not need //global// uniqueness. Somewhere out there, people may be writing C code with the same class names. That is fine so long as your prospective users aren't pulling in both libraries.
 
-The prefix I used for CZMQ was "z" since this was originally a ZeroMQ wrapper, and I wanted the shortest possible prefix. For Zyre I chose "zyre_" since that is short, and unique, and clear. For Malamute I chose "mlm" since "malamute_" felt too long.
+The prefix I used for CZMQ was "z" since this was originally a ZeroMQ wrapper, and I wanted the shortest possible prefix. For Zyre I chose "zyre" since that is short, and unique, and clear. For Malamute I chose "mlm" since "malamute" felt too long.
 
-I'll use "myp_" as the prefix, in example code that follows.
+I'll use "myp" as the prefix, in example code that follows. We usually use an underscore between the prefix and the rest of the name.
 
 Remember this lesson:
 
@@ -224,7 +220,7 @@ Remember this lesson:
 
 ++ Problem: how do we invoke class methods?
 
-C has no support for classes. So we have to invent this. People have tied various approaches. One way is to create an object that contains pointers to functions. You might hope to invoke methods like this:
+C has no support for classes. So we have to invent this. People have tried various approaches. One way is to create an object that contains pointers to functions. You might hope to invoke methods like this:
 
 ```
 myobject->method (arguments)
@@ -236,9 +232,9 @@ Except the method still needs the object to work with, so it looks like this:
 myobject->method (myobject, arguments)
 ```
 
-In theory one could create a structure that holds the object reference, perhaps in front of each method pointer. If we were generating code, this is how I might do it. Yet we want a design that can be built by hand, and which is simple and obvious. Code generation adds too much of its own complexity.
+In theory you could get rid of the myobject argument. You'd need to create a structure that holds the object reference together with each method pointer. If we were generating code, this is how I might do it. Yet we want a design that can be built by hand, and which is simple and obvious. Code generation adds too much of its own complexity.
 
-//Solution: construct a full method name out of project, class, and method.//
+//Solution: construct a full method name out of project prefix, class, and method.//
 
 So we get:
 
@@ -265,51 +261,239 @@ Remember this lesson:
 
 ++ Problem: how do we isolate our objects?
 
-The natural way to represent a random "thing" in C is a structure. You can make structures of structures, yet that is usually silly. You can, as POSIX does, make these structures public. The problem with this is that it creates a fuzzy contract. What happens if the caller modifies a field?
+The natural way to represent a random "thing" in C is a structure. You can, as POSIX does, make these structures public, and document them. The problem with this is that it creates a complex and fragile contract. What happens if the caller modifies a field? How do you extend and evolve the structure over time?
 
-//Solution: use an opaque structure, and getter/setter methods.//
+//Solution: use an opaque structure, and getter-setter methods.//
 
-C lets us make "opaque structures" which callers know nothing about except their name. In the public header file {{include/myp_momod.h}}, we write:
+C lets us make "opaque structures" which callers know nothing about except their name. In the public header file {{include/myp_myclass.h}}, we write:
 
 ```
 typedef struct _myp_myclass_t myp_myclass_t;
 ```
 
-And in the class source file {{src/myp_momod.c}} we define the structure, and provide methods to work with it:
+And in the class source file {{src/myp_myclass.c}} we define the structure, and provide methods to work with it:
 
 ```
 struct _myp_myclass_t {
     ...
-    char *string;
+    char *myprop;
     ...
 };
 
-//  Get string property
+//  Get myprop property. Note that it's defined as 'const' so
+//  the caller cannot modify it.
 const char *
-myp_myclass_string (myp_myclass_t *self)
+myp_myclass_myprop (myp_myclass_t *self)
 {
     assert (self);
-    return self->string;
+    return self->myprop;
 }
 
-//  Set string property
+//  Set myprop property
 char *
-myp_myclass_set_string (myp_myclass_t *self, const char *string)
+myp_myclass_set_myprop (myp_myclass_t *self, const char *myprop)
 {
     assert (self);
-    free (self->string);
-    self->string = strdup (string);
+    free (self->myprop);
+    self->myprop = strdup (myprop);
 }
 ```
 
-++ Problem: what about construction and destruction?
+++ Problem: how do we manage memory?
 
+C has no garbage collection, and it's not something you can add into a language. Yet allowing random blocks of memory and strings to float around your code is fragile. It leads to fuzzy internal contracts, memory leaks, bugs.
+
+After much experimentation, it turns out that we can hide almost all memory management inside classes. That is:
+
+* Every class has a constructor and a destructor.
+* The constructor allocates the object instance.
+* Further methods can allocate properties and object structures (lists, and such).
+* When you call the destructor, all memory that the class has allocated is freed.
+
+The caller never sees this work, it is entirely hidden in the class. This means we can change it arbitrarily, so long as we don't change the methods (the class API).
+
+//Solution: hide all allocations inside the class.//
+
+Remember this lesson:
+
+> The power of abstraction comes from hiding irrelevant details.
+
+++ Problem: how do we return freshly-allocated data?
+
+Here is a method that returns a fresh buffer:
+
+[[code]]
+byte *
+myclass_buffer (size_t *buffer_size)
+{
+    ...
+    *buffer_size = ...
+    byte *buffer = malloc (*buffer_size);
+    ...
+    return buffer;
+}
+[[/code]]
+
+The author wants to return a buffer, yet also needs to return the buffer size. So, they add an argument which is a pointer to a returned buffer_size.
+
+You call this method, it's not immediately obvious what it's doing:
+
+```
+size_t buffer_size;
+byte *buffer = myclass_buffer (&buffer_size);
+...
+free (buffer);
+```
+
+If we're designing from the user's perspective (always a better idea), we'd want to get a buffer object that we could destroy. We don't need to invent a buffer type, since CZMQ gives us a zchunk class. So, we can write:
+
+```
+zchunk_t *buffer = myclass_buffer ();
+...
+zchunk_destroy (&buffer);
+```
+
+Which is rather cleaner. It is also fully abstract. Perhaps zchunk consists just of a size and data. As it turns out, it has other, useful properties. Such as, the ability to resize chunks and append data to them.
+
+//Solution: return objects, not blocks of memory.//
+
+The only exception that works is strings, which are a native C object. You can safely return a fresh string and tell the caller to free them when done. Inventing a more abstract string type is fun, yet it breaks the standard C library. I don't advise doing it.
+
+Remember this lesson:
+
+> A method should return a single value, or nothing at all.
+
+++ Problem: how do we pass the object to methods?
+
+Not all methods work on objects. Some are "singletons" which just means "not a class method but that other kind of thing we used to call a 'function' and now call 'singletons'."
+
+Apart from singletons, all methods take an object reference. This is a pointer. It is the thing that constructors (the _new method) return. As objects are abstract and hidden inside their classes, we do not work with them directly. There are exceptions -- private classes -- that I'll explain later.
+
+In C there is no real convention for the order of arguments. The standard C library often puts destination arguments first, which is a hangover from assembly language. {{MOV X, Y.}}  A good designer aims to make the order obvious, unsurprising. Yet that can lead to inconsistency. What's the obvious order for "plot X,Y on map M?" Is it {{mylib_plot (x, y, map)}}?
+
+The obvious rule when we imitate objects is to pass the object reference as first argument. So we'd say {{mymap_plot (map, x, y)}}.
+
+//Solution: pass the object reference as first argument to methods.//
+
+Remember this advice:
+
+> Don't surprise your future self.
+
+++ Problem: what do we call the object reference, in a method?
+
+//Solution: use 'self' inside methods, consistently.//
+
+Remember this advice:
+
+> Don't use C++ keywords like {{this}} as we need to be nice to C++ compilers.
+
+++ Problem: how does a constructor work?
+
+A constructor has to allocate the memory for an object, and then initialize it. This is easy to do once you've learned a few subtle and non-obvious rules:
+
+* Try to keep constructors simple, and only pass arguments if you really want to use them in every case.
+
+* Use the zmalloc macro to allocate and nullify memory. It means you don't need to initialize individual properties. This is like calloc with some extra wrapping. Take a look at {{czmq_prelude.h}} if you want to know more.
+
+* Aim to initialize all properties to null/zero/false/empty by default. This means choosing names carefully. For example if you have an active yes/no property, and the object starts active, then use "disabled" instead of "active" as property name.
+
+* If your object contains large blocks of memory, do not use zmalloc as it takes more time. Instead, use malloc and then initialize properties individually.
+
+* If memory allocation fails, in general, give up with an assertion. In specific cases (e.g. allocating buffers for input from the network) you can hope to catch and deal with the error. Most often you can't. Too little memory is a configuration error in most cases.
+
+//Solution: use the standard constructor style.//
+
+So let's look at a the standard constructor style:
+
+[[code]]
+struct _myp_myclass_t {
+    char *myprop;
+    zlist_t *children;
+};
+
+myp_myclass_t *
+myp_myclass_new (void)
+{
+    myp_myclass_t *self = (myp_myclass_t *) zmalloc (sizeof (myp_myclass_t));
+    assert (self);
+    self->zlist = zlist_new ();
+    return self;
+}
+[[/code]]
+
+Note how the code does a cast from zmalloc. We need this on Windows to satisfy the compiler.
+
+++ Problem: how does a destructor work?
+
+A destructor does the opposite of the constructor. That's a comfortable statement, isn't it.
+
+Yet it's not entirely obvious. The biggest gotcha with destructors in C is how to make them idempotent. It is something the standard C library got entirely wrong. Let me show you:
+
+```
+byte *buffer = malloc (100);
+free (buffer);
+...
+free (buffer);
+```
+
+//Wham!// You have silently and violently corrupted the heap. What happens next is anyone's guess. The standard advice is to add {{buffer = NULL;}} after the free. Yet if a developer is unskilled enough to lose track of their pointers, will they remember to nullify them? No, they won't.
+
+We need a style that removes the guess work. It's remarkably easy and it works well. My team invented this (as far as I know, in 2006. It was part of another [http://www.openamq.org/doc:tech-icl object oriented C language] as a platform for OpenAMQ:
+
+```
+safe_free (&buffer);
+```
+
+//Solution: pass a pointer to the object reference, so the destructor can nullify it.//
+
+This gives us the following destructor template:
+
+[[code]]
+void
+myp_myclass_destroy (myp_myclass_t **self_p)
+{
+    assert (self_p);
+    if (*self_p) {
+        myp_myclass_t *self = *self_p;
+        zlist_destroy (&self->children);
+        free (self);
+        *self_p = NULL;
+    }
+}
+[[/code]]
+
+Remember this advice:
+
+> If you see '&' before an argument, that means "destructive"
+
+Incidentally, this is another reason to //never// return values by reference.
+
+++ Problem: how do we deal with errors?
+
+Speaking of memory exhaustion, let's discuss error handling. Classic error handling assumes we're tired/dumb enough to make silly requests, yet smart enough to handle complex responses. I've used plenty of systems that returned dozens of different error codes. It becomes a leaky and fuzzy contract. We see error codes that aren't even errors, like POSIX's EAGAIN, which means "no data available now, try again later."
+
+The theory that rich error handling makes the world a better place is widespread. It's a bogus theory, in my experience. Simplicity is always better than complexity.
+
+To get to specific answers, we must untangle the different kinds of failure in software, and deal with each one separately.
+
+//Solution: error handling must be simple and foolproof.//
+
+Let's break down the kinds of errors we typically see, and solve each one in the simplest way.
+
++++ Problem: the system ran out of resources
+
++++ Problem: caller passed us garbage
+
++++ Problem: the user passed us garbage
+
++++ Problem: our own state is garbage
+
++++ Problem: a library behaved unexpectedly
+
+
+++
 .end
 
-- zmalloc or malloc
-- assert on heap exhaustion
-- destruction wipes caller reference
-    - we see destructors
 
 
 
@@ -326,10 +510,6 @@ Each class implements a series of //methods//, where each method performs one ta
 
 
 
-++ Problem: how do I organize my project?
-
-- inconsistent means we can't automate
-- means we have to do things by hand, not scalable
 
 
 The project MAY contain these files and directories which MUST have these names if present at all:
@@ -356,6 +536,8 @@ The project SHALL provide two services via header files:
 # A public API that calling applications can access with a single {{include}} statement.
 
 These two services MAY be combined into one project header file (({{include/myproj.h}}), or MAY be split into an external header file ({{myproj.h}}) and an internal header file ({{src/myproj_classes.h}}). The project MAY further break down these header files if necessary.
+
+++ Problem: how do I version my API?
 
 The external header file SHALL define a version number for the project as follows:
 
@@ -766,7 +948,7 @@ myp_myclass_next (myp_myclass_t *self)
 
 * If the class offers a method to remove a list item, this SHALL be called {{myp_myclass_delete ()}}; it SHALL take the item reference as argument, and it SHALL delete the first matching item in the list, if any.
 
-* If the class maintains multiple lists, it SHALL create unique method names for each list by adding a list name, e.g., {{myp_momod_myitem_first ()}}.
+* If the class maintains multiple lists, it SHALL create unique method names for each list by adding a list name, e.g., {{myp_myclass_myitem_first ()}}.
 
 ++++ Accessor Methods
 

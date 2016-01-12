@@ -80,3 +80,21 @@
     portable
 
 # Further Reading
+
+
+There are a few patterns. For simple commands, no handshaking is
+needed. The default is to handshake (with a signal, which is a special
+short message) only at actor startup and at destruction.
+
+For more complex protocols, or for cases where you need to wait for
+command completion, it's a good idea to switch to fully synchronous,
+with handshaking on every command. This is the zauth case. If you
+configure security and don't wait for that to end, things get
+confused.
+
+And then for complex protocols + data flow, we open a second socket to
+the actor on which we send data (in one or both directions), which is
+async and not handshaked.
+
+The mlm_server API falls into the "simple" category.
+
