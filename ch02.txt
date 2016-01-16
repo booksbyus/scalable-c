@@ -10,7 +10,7 @@ C has few abstractions. It's a blank page language: you can write code in any sh
 
 The economics work against creating new projects. It is cheaper and easier to extend existing ones, as you can use the work already done. This is a Bad Thing. Creating new projects must cost nothing, so we are free to experiment, reshape, copy, and learn.
 
-One reason git (sorry, I know I promised to shut up about it, this is the last time) beat old Subversion hands down is that it erased the cost of creating a code repository. In the Old Times, creating a repository was days, weeks of work. Seriously, in my firm we could only afford one repository (we were poor if not humble). All projects sat inside that.
+One reason git (sorry, I know I promised to shut up about it, this is the last time) beat old Subversion hands down is that it erased the cost of creating a code repository. In the Old Times, creating a repository and setting it up for remote access was days of work. In my firm we could only afford one repository (we were poor if not humble). All projects sat inside that.
 
 To fix blank page syndrome, we look at C projects and we realize, they could all look much the same. Sure, they all look different today. Yet that's just historical accident. With a little care and design we can model them all around the same template. Then, to create a new project, we just grab an empty template.
 
@@ -114,13 +114,13 @@ Thus it is better to document the project's style, and ask people to respect it.
 
 //Solution: use a style guide document.//
 
-You should be totalitarian about style. Every space and dot matters. For example these two pieces of C are entirely different:
+You should be totalitarian about style. Every space and dot matters. Compare these two fragments of C:
 
 ```
 int i;
 for( i=0 ; i<10; i++ )
 {
-   printf ("%d\n", i) ;
+   printf ("%d\n", i);
 }
 ```
 
@@ -129,7 +129,7 @@ and
 ```
 int counter;
 for (counter = 0; counter < 10; counter++)
-    printf ("%d\n", counter) ;
+    printf ("%d\n", counter);
 ```
 
 Remember this lesson:

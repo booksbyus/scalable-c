@@ -237,6 +237,7 @@ Jargon file:
 Remember this rule:
 
 > Git master should be almost perfect, almost all the time.
+
 ++ Problem: building CZMQ fails! I need libzmq...
 
 Ah, yes. Sorry to make you work backwards here. Let's grab the projects that CZMQ needs, so we can build it. There are two: libzmq, the ZeroMQ messaging library, and libsodium, for encryption.
@@ -279,9 +280,11 @@ sudo make check install
 
 Then any test files that {{make check}} produces have root permissions. So, future {{make check}} steps will fail. Also it sudo asks for passwords, making it harder to script. Aagh!
 
-//Solution: make /usr/local writeable.//
+//Solution: make /usr/local writable.//
 
-This is a brutal and effective solution, the best kind of solution:
+Do I need to say, do this on your personal machine, your laptop or your workstation, where you are the only user? Seems so, since a lot of people who read this advice on Reddit and Hacker News seemed to feel it was crazy. For me, the insane behavior is to blindly enforce policies for multiuser timesharing systems in 2016 when fully functional computers capable of running Linux and a C compiler cost $20. We haven't share our development boxes since the late 20th century.
+
+Making your install space writable is a brutal and effective solution:
 
 ```
 cd /usr/local

@@ -28,9 +28,10 @@ COPYRIGHT=Copyright © 2016 Pieter Hintjens
 LICENSE=Free to share and remix under CC-BY-SA-4.0
 TRADEMARKS="Scalable C" is a trademark of Pieter Hintjens
 PUBLISHER=Published by Pieter Hintjens
+BLURB=Enjoyed the first three chapters of 'Scalable C'! Thanks for the practical tips and principles, will help greatly in my coding -- @robdelacruz
 CREDITS1=
-CREDITS2=Cover by westinCovers, www.westincovers.com. Cover font: Kontrapunkt by Bo Linnemann, Kontrapunkt A/S. Text fonts: EB Garamond by Georg Duffner, MonospaceTypewriter by Manfred Klein.
-PURCHASE=http://www.amazon.com/dp/B016MRW9KS
+CREDITS2=Cover font: Kontrapunkt by Bo Linnemann, Kontrapunkt A/S. Text fonts: EB Garamond by Georg Duffner, MonospaceTypewriter by Manfred Klein.
+PURCHASE=http://hintjens.com/books
 
 #   Author page
 BIOGRAPHY=Pieter Hintjens has been programming C since 1985. He is the author of many free software products written in C: Libero (1991), SFL (1996), Xitami (1998), OpenAMQ (2004). In 2007 he founded the ZeroMQ community. His github profile is https://github.com/hintjens.
