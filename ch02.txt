@@ -84,7 +84,7 @@ A key side-effect to this arrangement is that it is //expensive// to change the 
 
 You need a way to collect patches and merge them onto master. Some projects use email lists. Some projects have maintainers who pick patches, review them, merge the ones they like.
 
-You need to avoid commits directly to master, as these are silent. It is more fun to have a ping-pong between the person who wrote a patch, and someone else (the nominal maintainer.)
+You need to avoid commits directly to master, as these are silent. It is more fun to have a ping-pong between the person who wrote a patch, and someone else (the nominal maintainer).
 
 My pattern for success is to solicit so-called "pull requests" onto master, then to merge them as rapidly as possible. One can discuss them after merging.
 
