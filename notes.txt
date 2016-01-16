@@ -15,6 +15,12 @@
     zproject
         what it produces
         how to use it
+    - bindings
+    - builds
+    - model language
+    - building hello for every platform
+        indeed unto Android :)
+    - SBOM
 
 # Using ZeroMQ
     what it does, and how

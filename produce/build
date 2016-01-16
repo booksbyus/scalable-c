@@ -8,3 +8,4 @@ md2html main.book
 ebook-convert main.mobi main.epub
 rm -rf output
 cp gitbook/*.md ../../gitbook/scalable-c/
+( cd ../../gitbook/scalable-c && git commit -a && git push origin master )
