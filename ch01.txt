@@ -105,7 +105,7 @@ Jargon file:
 
 Remember this rule:
 
-> If you have't committed your work and pushed it to GitHub, it is already dead.
+> If you haven't committed your work and pushed it to GitHub, it is already dead.
 
 ++ Problem: git asks for login and password
 
