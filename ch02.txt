@@ -893,7 +893,7 @@ In technical terms:
 
 * We publish the results on-line, or in our git repository, or as man pages.
 
-We use a tool [https://github.com/zeromq/gitdown called gitdown]] to do all this. It also produces a detailed {{README.md}} file with class and method documentation. Install that tool, you will appreciate it, and we'll depend on it later.
+We use a tool [https://github.com/zeromq/gitdown called gitdown] to do all this. It also produces a detailed {{README.md}} file with class and method documentation. Install that tool, you will appreciate it, and we'll depend on it later.
 
 I need to briefly explain how to tag your sources to tell {{gitdown}} what is what. Each tag sits on a line by itself, with or without a comment:
 
@@ -983,7 +983,7 @@ In CZMQ we call these {{include/czmq_library.h}} and {{src/czmq_classes.h}}. The
 
 Remember this lesson:
 
-> Your exported API is in {[include}}. All other sources go into {{src}}.
+> Your exported API is in {{include}}. All other sources go into {{src}}.
 
 +++ Problem: my source file has private classes
 
