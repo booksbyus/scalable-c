@@ -527,7 +527,7 @@ Examples:
 * Return next message received, or NULL if there is none.
 * Return number of network interfaces, or zero if there is no networking.
 
-When you do this well, your API fits like a soft glove. For instance, imagine these two methods for iterating through the set of users in a group (these classes don''t exist, it's imaginary):
+When you do this well, your API fits like a soft glove. For instance, imagine these two methods for iterating through the set of users in a group (this class doesn't exist, it's imaginary):
 
 ```
 myp_user_t *myp_group_first (myp_group_t *group);
@@ -729,11 +729,11 @@ Remember this lesson:
 
 > Design your APIs by using them. Be intolerant when an API is irritating.
 
-++ Problem: how do export my APIs?
+++ Problem: how do I export my APIs?
 
 After lots of writing, compiling, testing, cursing, and repeating, you get two things. One, a "library file" that contains your precious "object code," which is the compiled version of your source code. These terms were invented by mad scientists at IBM in the 1970s.
 
-Libraries come in various flavors, notably static ({libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you have have with {{file}}:
+Libraries come in various flavors, notably static ({libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you can have with {{file}}:
 
 ```
 $ file /usr/local/lib/libmyp.la
@@ -749,13 +749,13 @@ dynamically linked, BuildID[sha1]=007...
 not stripped
 ```
 
-I'll come to how we build and install these. Don't stress it, it's simpler than you might think. (Hint: magic.)
+I'll come to how we build and install these. Don't stress, it's simpler than you might think. (Hint: magic.)
 
 As well as these library files, your users need header files to define prototypes for all the methods you export.
 
 //Solution: export your API as a single public header file.//
 
-In practice we use one main header file plus one header file per class. Take a look at {{/usr/local/include}} and you'll see what I mean. If this mass of header files distresses you, take a pill. There is no cost. In older projects we used to generate single project header files with all classes included in line. That turns out to be more work than it's worth.
+In practice we use one main header file plus one header file per class. Take a look at {{/usr/local/include}} and you'll see what I mean. If this mass of header files distresses you, take a pill. There is no cost. In older projects we used to generate single project header files with all classes included inline. That turns out to be more work than it's worth.
 
 The project header file goes into {{include/myproject.h}}. The library files will be called {{libmyp.something}}.
 
@@ -795,7 +795,7 @@ This means a new version of your library is always backwards compatible with old
 
 Remember this lesson:
 
-> Versioning is a unsolved mess.
+> Versioning is an unsolved mess.
 
 ++ Problem: I need to define my software version somewhere
 
@@ -893,7 +893,7 @@ In technical terms:
 
 * We publish the results on-line, or in our git repository, or as man pages.
 
-We use a tool [https://github.com/zeromq/gitdown called gitdown]] to do all this. It also produces a detailed {{README.md}} file with class and method documentation. Install that tool, you will appreciate it, and we'll depend on it later.
+We use a tool [https://github.com/zeromq/gitdown called gitdown] to do all this. It also produces a detailed {{README.md}} file with class and method documentation. Install that tool, you will appreciate it, and we'll depend on it later.
 
 I need to briefly explain how to tag your sources to tell {{gitdown}} what is what. Each tag sits on a line by itself, with or without a comment:
 
@@ -983,7 +983,7 @@ In CZMQ we call these {{include/czmq_library.h}} and {{src/czmq_classes.h}}. The
 
 Remember this lesson:
 
-> Your exported API is in {[include}}. All other sources go into {{src}}.
+> Your exported API is in {{include}}. All other sources go into {{src}}.
 
 +++ Problem: my source file has private classes
 
@@ -1312,7 +1312,7 @@ There are at least five cases to choose from:
 
 I'll contrast conventional "pessimistic merging" with "optimistic merging." My strong advice is to merge rapidly, and optimistically. This is driven by experience and trial-and-error. Conventional merge strategies enforce deliberate, single-threaded, slow thinking. Optimistic merging allows more casual, concurrent, fast thinking. The results seem to be measurably better.
 
-Standard practice (Pessimistic Merging, or PM) is to wait until continuous integration testing is is done, then do a code review. One then tests the patch on a branch, and provides feedback to the author. The author may fix the patch and the test/review cycle starts again. At this stage the maintainer can (and often does) make value judgments such as "I don't like how you do this" or "this doesn't fit with our project vision."
+Standard practice (Pessimistic Merging, or PM) is to wait until continuous integration testing is done, then do a code review. One then tests the patch on a branch, and provides feedback to the author. The author may fix the patch and the test/review cycle starts again. At this stage the maintainer can (and often does) make value judgments such as "I don't like how you do this" or "this doesn't fit with our project vision."
 
 In the worst case, patches can wait for weeks, or months, to be accepted. Or they are never accepted. Or, they are rejected with various excuses and argumentation. Or, the author vanishes, leaving the maintainer with a distressing choice.
 
@@ -1326,7 +1326,7 @@ PM is how most projects work, and I believe most projects get it wrong. Let me s
 
 * //It slows down the learning cycle//. Innovation demands rapid experiment-failure-success cycles. Someone identifies a problem or inefficiency in a product. Someone proposes a fix. The fix is tested and works or fails. We have learned something new. The faster this cycle happens, the faster and more accurately the project can move.
 
-* //It gives outsiders the chance to troll the project//. It is a simple as raising an objection to a new patch. "I don't like this code." Discussions over details can use up much more effort than writing code. It is far cheaper to attack a patch than to make one. These economics favor the trolls and punish the honest contributors.
+* //It gives outsiders the chance to troll the project//. It is as simple as raising an objection to a new patch. "I don't like this code." Discussions over details can use up much more effort than writing code. It is far cheaper to attack a patch than to make one. These economics favor the trolls and punish the honest contributors.
 
 * //It puts the burden of work on individual contributors//, which is ironic and sad for open source. We want to work together yet we're told to fix our work alone.
 
