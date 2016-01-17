@@ -1,3 +1,17 @@
+#if defined (__WINDOWS__)
+#   if defined LIBGDOM_STATIC
+#       define GDOM_EXPORT
+#   elif defined LIBGDOM_EXPORTS
+#       define GDOM_EXPORT __declspec(dllexport)
+#   else
+#       define GDOM_EXPORT __declspec(dllimport)
+#   endif
+#else
+#   define GDOM_EXPORT
+#endif
+
+
+
 ++ Memory Checking with Valgrind
 
 The one add-on I really recommend for C development on Linux is Valgrind. This has a number of tools, but the one I use systematically is the Memcheck tool, which catches memory leaks and illegal accesses. Here's how I run the hello program under Valgrind:

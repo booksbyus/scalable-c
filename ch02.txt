@@ -6,11 +6,11 @@ In this chapter we'll look at the C style we use in Scalable C. Like all styles 
 
 ++ Problem: blank page syndrome
 
-C has few abstractions. It's a blank page language: you can write code in any shape and form. Yet this creates many problems. The worst problem is that every developer does it differently. Every project is unique. Often, even inside a project there is little or no consistency.
+C has few abstractions. It's a blank page language: you can write code in any shape and form. Yet this creates many problems. The worst problem is that every developer does it their own way. Every project is unique. Often, even inside a project there is little or no consistency.
 
-The economics work against creating new projects. It is cheaper and easier to extend existing ones, as you can use the work already done. This is a Bad Thing. Creating new projects must cost nothing, so we are free to experiment, reshape, copy, and learn.
+The economics work against creating new projects. It is cheaper and easier to extend existing ones, as you can use the work already done. This is a Bad Thing. Creating new projects must cost nothing. This frees us to experiment, reshape, copy, and learn.
 
-One reason git (sorry, I know I promised to shut up about it, this is the last time) beat old Subversion hands down is that it erased the cost of creating a code repository. In the Old Times, creating a repository and setting it up for remote access was days of work. In my firm we could only afford one repository (we were poor if not humble). All projects sat inside that.
+One reason git beat old Subversion hands down is that it erased the cost of creating a code repository. In the Old Times, creating a repository and setting it up for remote access was days of work. In my firm we could only afford one repository (we were poor if not humble). All projects sat inside that.
 
 To fix blank page syndrome, we look at C projects and we realize, they could all look much the same. Sure, they all look different today. Yet that's just historical accident. With a little care and design we can model them all around the same template. Then, to create a new project, we just grab an empty template.
 
@@ -20,25 +20,25 @@ We already saw the basics for that:
 
 * One project = one git source code repository. Is that obvious? It wasn't, a few years ago.
 
-* Each project has a unique name. The name space is ideally all of GitHub, though it can be a given language community. I doubt that Java developers care what names Perl projects use.
+* Each project has a unique name. The name space is GitHub, though it can be a given language community. I doubt that Java developers care what names Perl projects use.
 
 ++ Problem: how do explain my project to others?
 
-You could hire a designer, and build a beautiful web site. Yet the essence of "scalable" is So Cheap It Costs You Nothing To Fail. Web sites aren't scalable.
+You could hire a designer, and build a beautiful web site. Yet the essence of "scalable" is So Cheap It Costs You Nothing To Fail. Hand-crafted web sites aren't scalable.
 
 GitHub to the rescue: stick a README in your project root, and it appears on your project's home screen.
 
 //Solution: write a minimal README.//
 
-You'll probably use {{README.md}}, which uses Markdown formatting. Your README has to explain at least:
+You'll want to use {{README.md}}, which uses Markdown formatting. Your README has to explain at least:
 
-* The goal of the project (or better, the overall problem it aims to solve).
+* The goal of the project (or better, the broad problem it aims to solve).
 
-* The license (under what terms people can use, distribute, and modify the code).
+* The license (under what terms people can use, distribute, and remix the code).
 
 * The contribution policy (how people can contribute their patches).
 
-And probably also:
+And then if you like:
 
 * A style guide (what the code should look like).
 
@@ -46,9 +46,9 @@ And probably also:
 
 ++ Problem: my public project has no license
 
-Many public projects on GitHub don't use a license. Don't follow their example. Without a license, others cannot use, distribute, or modify your code. It doesn't matter that you've published it. If your code has no license, only uninformed people use it, or send you patches. The failure to properly license code can kill a project.
+Many public projects on GitHub don't use a license. Don't follow their example. Without a license, others cannot use, distribute, or remix your code. It doesn't matter that you've published it. If your code has no license, only uninformed people use it, or send you patches. The failure to license code the right way can kill a project.
 
-As I'll explain in the dialectics, the Mozilla Public License version 2.0 (MPLv2) is the currently the best choice for public works.
+For reasons I'll explain in the dialectics, I recommend the Mozilla Public License version 2.0 (MPLv2) for public works.
 
 //Solution: use the Mozilla Public License version 2.0.//
 
@@ -66,39 +66,39 @@ Remember this lesson:
 
 ++ Problem: how do I manage copyrights?
 
-I'll assume you are making public software, and you accepted my recommendation to use the MPLv2. We now come to the question of ownership. The copyright to any non-trivial work (thus, ownership of code) lies with its author, a person or business. By default, no-one can use or distribute the work without permission of the copyright owner.
+I'll assume you are making public software, and you accepted my recommendation to use the MPLv2. We now come to the question of ownership. The copyright to any non-trivial work (thus, ownership of code) lies with its author, a person or business. By default, no-one can use or distribute the work without the owner's OK.
 
-A license grants others the rights to use, modify, distribute the work under certain conditions. It is like putting up a sign saying, "You may walk on my lawn if you don't damage it."
+A license grants others the rights to use, remix, and distribute the work under certain conditions. It is like putting up a sign saying, "You may walk on my lawn if you don't damage it."
 
 Asking contributors to give copyrights to a project is clumsy and ponderous. It is simpler that they license their contributions under the project license. This creates a collective work owned by many people, under a single license. If you use the MPLv2 and the GitHub fork and merge model, then patches are by default also licensed under MPLv2.
 
-Thus, you can merge them safely without asking the contributor for a license grant.
+Thus, you can merge them without asking the contributor for a license grant, and without risk.
 
-You do need to watch out for "unsafe" patches. This means, ones that change the project LICENSE, the blurb in any source, or which add sources with new blurbs.
+You do need to watch out for "unsafe" patches. This means, ones that change the project LICENSE or the blurb in any source, or which add sources with new blurbs.
 
 //Solution: everyone keeps ownership of their own copyrights.//
 
-A key side-effect to this arrangement is that it is //expensive// to change the license on an existing work with many owners. You need explicit permission from every contributor, or you have to rewrite or remove their patches. This side-effect is often desirable, as it is a poison pill against hostile takeover.
+A key side-effect to this arrangement is that it is //expensive// to change the license on an existing work with many owners. You need explicit permission from every contributor. Or, you must rewrite or remove their patches. This side-effect is often desirable, as it is a poison pill against hostile takeover.
 
 ++ Problem: how do I manage contributions?
 
 You need a way to collect patches and merge them onto master. Some projects use email lists. Some projects have maintainers who pick patches, review them, merge the ones they like.
 
-You need to avoid commits directly to master, as these are silent. It is more fun to have a ping-pong between the person who wrote a patch, and someone else (the nominal maintainer).
+You need to avoid commits straight to master, as these are silent. It is more fun to have a ping-pong between the person who wrote a patch, and another human. This is a nominal maintainer.
 
-My pattern for success is to solicit so-called "pull requests" onto master, then to merge them as rapidly as possible. One can discuss them after merging.
+My pattern for success is to get "pull requests" onto master, then to merge them as fast as possible. One can discuss them after merging.
 
-//Solution: use pull requests and merge aggressively.//
+//Solution: use pull requests and merge with haste.//
 
-I'll explain the "aggressive" part in the dialectics of this chapter. There are a few rules:
+I'll explain the "with haste" part in the dialectics of this chapter. There are a few rules:
 
 * You never merge your own pull requests. Every project needs at least two minds.
 
 * It is better to make a new pull request with changes, than to discuss a commit. The former creates a team; the latter creates an argument.
 
-* Continuous integration testing (CI) is a Good Idea yet it's not essential. Errors are an excuse for others to get involved.
+* Continuous integration testing (CI) is a Good Idea yet it's not essential. Errors are an opportunity for others to get involved.
 
-* The only good reason to refuse a change is, "the author is a bad actor and has been banned."
+* The only good reason to refuse a change is, "the author is a bad actor and we banned them."
 
 Remember this lesson:
 
@@ -108,7 +108,7 @@ Remember this lesson:
 
 It is painful to read code that has no style. A good project looks like it has a single author. Consistency is gold. Yet every contributor comes with their own habits.
 
-A solution some projects use is to mechanically clean up code, using a code beautifier. This does create a consistent style. Yet that does more harm than good, in my experience. It turns out that "cannot respect project style" is key data for detecting so-called "bad actors." It's a specific case of bad actors' general disrespect for social norms and rules.
+A solution some projects use is to clean up code using a code beautifier. This does create a consistent style. Yet that does more harm than good, in my experience. It turns out that "cannot respect project style" is key data for detecting bad actors. It's a specific case of their general disrespect for social norms and rules.
 
 Thus it is better to document the project's style, and ask people to respect it. They won't, and so you can fix their patches and they should learn. If they don't, over time, you start to build a case for banning them.
 
@@ -144,11 +144,11 @@ Finally, a non-contentious problem.
 
 //Solution: put headers into include, and sources into src.//
 
-If we have private headers (that are used only by sources in this project), place them in {{src}} as well. This way, {{include}} contains our public API.
+If we have private headers (that only sources in this project use), place them in {{src}} as well. This way, {{include}} contains our public API.
 
 ++ Problem: how do I organize my code?
 
-Even a C application (a command-line tool, perhaps) needs some internal structure. Some tools are written as massive single C files. It's not a good way to work. It is far better to build up libraries, which the final application uses.
+Even a C application (a command-line tool, perhaps) needs some internal structure. Some tools exist as massive single C files. It's not a good way to work. It is far better to build up libraries, which the final application uses.
 
 For example, I've written a messaging broker called Malamute. It's a C application. Here is the command line {{malamute.c}} tool (stripped down to show the essence):
 
@@ -164,9 +164,9 @@ int main (void)
 }
 [[/code]]
 
-All the actual server code is in a class called {{mlm_server}}. The command line tool parses the command line, mucks about with some configuration, then starts the server. It runs until interrupted, then destroys the server (ending it).
+All the actual server code is in a class called {{mlm_server}}. The command line tool parses arguments, mucks about with configs, then starts the server. It runs until interrupted, then destroys the server (ending it).
 
-This is a clean and powerful way to write services and other code. In fact, all C code except the thin UI.
+This is a clean and powerful way to write services and other code. In fact, all C code except the thin user interface.
 
 //Solution: organize your code into classes.//
 
@@ -174,11 +174,11 @@ Remember this lesson:
 
 > Everything a class. You can definitely make singleton methods (which do not work on a specific instance).
 
-By freaky coincidence, [http://rfc.zeromq.org/spec:21 the style guide] for Scalable C is called "CLASS."  What can I say... acronyms suddenly came back into fashion around 2001.
+By freaky coincidence, we called [http://rfc.zeromq.org/spec:21 the style guide for Scalable C] "CLASS."  What can I say... acronyms came back into fashion around 2001.
 
 ++ Problem: what compilers can I rely on?
 
-In general, every C compiler worth using will support the C99 standard. There are two specific C99 features we use a lot: in-line declarations, and in-line comments.
+In general, every C compiler worth using will support the C99 standard. We use two specific C99 features a lot: in-line declarations and in-line comments.
 
 So we can write this:
 
@@ -196,14 +196,11 @@ zlist_t *list;
 /*  Code starts after all declarations  */
 list = zlist_new ();
 [[/code]]
-
-The first is friendly to copy/paste. The second is a nasty reminder of the old days when computers stored data and code on different kinds of rust, and languages enforced that.
-
-On Windows, Microsoft never got around to upgrading their C compiler to C99, so we have to use the misnamed "Visual" C++. Luckily C++ is almost a pure superset of C99. (Some unkind folk argue that the C99 committee cleverly stole the few bits of C++ that weren't utter mind rotting garbage.)
+On Windows, Microsoft never got around to upgrading their C compiler to C99, so we have to use the misnamed "Visual" C++. Luckily C++ is almost a pure superset of C99. (Some unkind folks say that the C99 committee stole the few bits of C++ that weren't utter mind rotting garbage. That seems unfair. "Stole" is such a harsh word.)
 
 //Solution: use C99 on real operating systems, and C++ on Windows.//
 
-And further, only use C99 syntax that is a pure subset of C++. Otherwise, no portability. It is extremely useful to be able to use C++ compilers to build your projects.
+And further, only use C99 syntax that is a pure subset of C++. Otherwise, no portability. It is rather useful to be able to use C++ compilers to build your projects.
 
 Remember this lesson:
 
@@ -219,31 +216,31 @@ zactor_t *server = zactor_new (mlm_server, "Malamute");
 
 Better still, don't imagine it, since I just showed you the code. Twice, since you weren't paying attention the first time. Where would you expect to find the method called {{zactor_new}}?
 
-The best solutions to problems are the most obvious ones, if they work. This takes out the guesswork. The most obvious place to find this method is in a file called {{src/zactor.c}}. It would be bizarre to put every method into its own source file. It would be silly to put multiple public classes into one source file. (While it is obvious to put private classes into the source file that uses them.)
+The best solutions to problems are the most obvious ones, if they work. This takes out the guesswork. The most obvious place to find this method is in a file called {{src/zactor.c}}. It would be bizarre to put every method into its own source file. It would be silly to put more than one public class into one source file. (While it is obvious to put private classes into the source file that uses them.)
 
 //Use the class name as the source file name.//
 
-So for a class called {{zactor}} we expect to have {{src/zactor.c}} containing the code, and {{include/zactor.h}} with the public API. That is, function prototypes, typedefs, and constants.
+So for a class called {{zactor}} we want {{src/zactor.c}} with the code, and {{include/zactor.h}} with the public API. That is, function prototypes, typedefs, and constants.
 
 Remember this lesson:
 
-> Be fanatically consistent. Your users will love you for surprising them in nice ways only.
+> Be fanatic about consistency. Your users will love you for surprising them in nice ways only.
 
 ++ Problem: I need to name my classes
 
 Naming is like all hard problems: break it down, and it becomes easy. As often, look for the obvious and most usable answers rather than the "best" or "most consistent" answers.
 
-A "best" name for a human is a 12-digit number that encodes their date of birth and acts like a global roaming phone number. Yet it is neither obvious nor usable. A person needs a unique name within their close family (a "personal name"). Then, a family name that identifies them more broadly (a "family name"). Then, decoration to make their name unique (middle initials, titles). Then, short names for their social networks (GitHub login).
+A "best" name for a human is a 12-digit number that encodes their date of birth and acts like a global roaming phone number. Yet it is neither obvious nor usable. A person needs a unique name within their close family (a "personal name"). Then, a family name that identifies them to strangers  (a "family name"). Then, decoration to make their name unique (middle initials, titles). Then, short names for their social networks (GitHub login).
 
 When choosing a name, the more often we use a name, the shorter it should be. This is why we like short personal names, and tolerate long family names. The other way around is surprising to us.
 
-A class needs a unique name within their library. Ideally this is a single word that expresses what the class does. It then needs a family name that identifies it more broadly. We use this family name most often of all, so it must be even shorter than the class name.
+A class needs a unique name within their library. Try to find a single word that expresses what the class does. It then needs a family name that identifies it to strangers. We use this family name most often of all, so it must be even shorter than the class name.
 
 //Solution: use a unique prefix for classes in a project.//
 
 You do not need //global// uniqueness. Somewhere out there, people may be writing C code with the same class names. That is fine so long as your prospective users aren't pulling in both libraries.
 
-The prefix I used for CZMQ was "z" since this was originally a ZeroMQ wrapper, and I wanted the shortest possible prefix. For Zyre I chose "zyre" since that is short, and unique, and clear. For Malamute I chose "mlm" since "malamute" felt too long.
+The prefix I used for CZMQ was "z" since this started life as a ZeroMQ wrapper, and I wanted the shortest possible prefix. For Zyre I chose "zyre" since that is short, and unique, and clear. For Malamute I chose "mlm" since "malamute" felt too long.
 
 I'll use "myp" as the prefix, in example code that follows. We usually use an underscore between the prefix and the rest of the name.
 
@@ -265,7 +262,7 @@ Except the method still needs the object to work with, so it looks like this:
 myobject->method (myobject, arguments)
 ```
 
-In theory you could get rid of the myobject argument. You'd need to create a structure that holds the object reference together with each method pointer. If we were generating code, this is how I might do it. Yet we want a design that can be built by hand, and which is simple and obvious. Code generation adds too much of its own complexity.
+In theory you could get rid of the myobject argument. You'd need to create a structure that holds the object reference together with each method pointer. If we were generating code, this is how I might do it. Yet we want a design that fits our hand, and which is simple and obvious. Code generation often adds too much of its own complexity.
 
 //Solution: construct a full method name out of project prefix, class, and method.//
 
@@ -275,7 +272,7 @@ So we get:
 myp_myclass_mymethod (myobject)
 ```
 
-From experience, people get this style at once, and it works. It is a little more typing, yet it has the advantage that construction, destruction, and methods all have a consistent style. Take a look at this fragment, without comments or explanation:
+From experience, people get this style at once, and it works. It is a little more to type. Yet it has the advantage that construction, destruction, and methods all have a consistent style. Take a look at this fragment, without comments or explanation:
 
 [[code]]
 mlm_client_t *writer = mlm_client_new ();
@@ -294,7 +291,7 @@ Remember this lesson:
 
 ++ Problem: how do we isolate our objects?
 
-The natural way to represent a random "thing" in C is a structure. You can, as POSIX does, make these structures public, and document them. The problem with this is that it creates a complex and fragile contract. What happens if the caller modifies a field? How do you extend and evolve the structure over time?
+The natural way to represent a random constructed "thing" in C is a structure. You can, as POSIX often does, make these structures public, and document them. The problem with this is that it creates a complex and fragile contract. What happens if the caller modifies a field? How do you extend and evolve the structure over time?
 
 //Solution: use an opaque structure, and getter-setter methods.//
 
@@ -304,7 +301,7 @@ C lets us make "opaque structures" which callers know nothing about except their
 typedef struct _myp_myclass_t myp_myclass_t;
 ```
 
-And in the class source file {{src/myp_myclass.c}} we define the structure, and provide methods to work with it:
+In the class source file {{src/myp_myclass.c}} we define the structure and provide methods to work with it:
 
 ```
 struct _myp_myclass_t {
@@ -336,14 +333,17 @@ myp_myclass_set_myprop (myp_myclass_t *self, const char *myprop)
 
 C has no garbage collection, and it's not something you can add into a language. Yet allowing random blocks of memory and strings to float around your code is fragile. It leads to fuzzy internal contracts, memory leaks, bugs.
 
-After much experimentation, it turns out that we can hide almost all memory management inside classes. That is:
+After much experimentation, we learned how to hide almost all memory management inside classes. That is:
 
 * Every class has a constructor and a destructor.
-* The constructor allocates the object instance.
-* Further methods can allocate properties and object structures (lists, and such).
-* When you call the destructor, all memory that the class has allocated is freed.
 
-The caller never sees this work, it is entirely hidden in the class. This means we can change it arbitrarily, so long as we don't change the methods (the class API).
+* The constructor allocates the object instance.
+
+* Further methods can allocate properties and object structures (lists, and such).
+
+* When you call the destructor, it frees all memory that the class allocated.
+
+The caller never sees this work, it hides inside the class. This means we can change it as we like, so long as we don't change the methods (the class API).
 
 //Solution: hide all allocations inside the class.//
 
@@ -390,7 +390,7 @@ Which is rather cleaner. It is also fully abstract. Perhaps zchunk consists just
 
 //Solution: return objects, not blocks of memory.//
 
-The only exception that works is strings, which are a native C object. You can safely return a fresh string and tell the caller to free them when done. Inventing a more abstract string type is fun, yet it breaks the standard C library. I don't advise doing it.
+The only exception that works is strings, which are a native C object. It is safe to return a fresh string and tell the caller to free it when done. Inventing a more abstract string type is fun, yet it breaks the standard C library. I don't recommend doing it.
 
 Remember this lesson:
 
@@ -400,9 +400,9 @@ Remember this lesson:
 
 Not all methods work on objects. Some are "singletons" which just means "not a class method but that other kind of thing we used to call a 'function' and now call 'singletons'."
 
-Apart from singletons, all methods take an object reference. This is a pointer. It is the thing that constructors (the _new method) return. As objects are abstract and hidden inside their classes, we do not work with them directly. There are exceptions -- private classes -- that I'll explain later.
+Apart from singletons, all methods take an object reference. This is a pointer. It is the thing that constructors (the _new method) return. As objects are abstract and hidden inside their classes, we work with them only via methods. There are exceptions -- private classes -- that I'll explain later.
 
-In C there is no real convention for the order of arguments. The standard C library often puts destination arguments first, which is a hangover from assembly language. {{MOV X, Y.}}  A good designer aims to make the order obvious, unsurprising. Yet that can lead to inconsistency. What's the obvious order for "plot X,Y on map M?" Is it {{mylib_plot (x, y, map)}}?
+In C there is no real convention for the order of arguments. The standard C library often puts destination arguments first. This perhaps comes from right-to-left assignment. That in turn is a hangover from assembler. {{MOV X, Y.}}  A good designer aims to make the order obvious, unsurprising. Yet that can lead to inconsistency. What's the obvious order for "plot X,Y on map M?" Is it {{mylib_plot (x, y, map)}}?
 
 The obvious rule when we imitate objects is to pass the object reference as first argument. So we'd say {{mymap_plot (map, x, y)}}.
 
@@ -414,7 +414,7 @@ Remember this lesson:
 
 ++ Problem: what do we call the object reference, in a method?
 
-//Solution: use 'self' inside methods, consistently.//
+//Solution: use 'self' inside methods to refer to the object reference.//
 
 Remember this lesson:
 
@@ -422,17 +422,17 @@ Remember this lesson:
 
 ++ Problem: how does a constructor work?
 
-A constructor has to allocate the memory for an object, and then initialize it. This is easy to do once you've learned a few subtle and non-obvious rules:
+A constructor must allocate the memory for an object, and then initialize it. This is easy to do once you've learned a few subtle and non-obvious rules:
 
-* Try to keep constructors simple, and only pass arguments if you really want to use them in every case.
+* Try to keep constructors simple, and only pass arguments if it is a natural part of the constructor.
 
 * Use the zmalloc macro to allocate and nullify memory. It means you don't need to initialize individual properties. This is like calloc with some extra wrapping. Take a look at {{czmq_prelude.h}} if you want to know more.
 
-* Aim to initialize all properties to null/zero/false/empty by default. This means choosing names carefully. For example if you have an active yes/no property, and the object starts active, then use "disabled" instead of "active" as property name.
+* Aim to initialize all properties to null/zero/false/empty by default. This means choosing names with care. For example if you have an active yes/no property, and the object starts active, then use "disabled" instead of "active" as property name.
 
-* If your object contains large blocks of memory, do not use zmalloc as it takes more time. Instead, use malloc and then initialize properties individually.
+* If your object contains large blocks of memory, do not use zmalloc as it takes more time. Instead, use malloc and then initialize properties one by one.
 
-* If memory allocation fails, in general, give up with an assertion. In specific cases (e.g. allocating buffers for input from the network) you can hope to catch and deal with the error. Most often you can't. Too little memory is a configuration error in most cases.
+* If memory allocation fails, in general, give up with an assertion. In specific cases you can hope to catch and deal with the error. Most often you can't. Too little memory is a configuration error in most cases.
 
 //Solution: use the standard constructor style.//
 
@@ -454,13 +454,13 @@ myp_myclass_new (void)
 }
 [[/code]]
 
-Note how the code does a cast from zmalloc. We need this on Windows to satisfy the compiler.
+Note how the code does a cast from zmalloc. We need this on Windows to keep the C++ compiler happy.
 
 ++ Problem: how does a destructor work?
 
 A destructor does the opposite of the constructor. That's a comfortable statement, isn't it.
 
-Yet it's not entirely obvious. The biggest gotcha with destructors in C is how to make them idempotent. It is something the standard C library got entirely wrong. Let me show you:
+Yet it's not obvious. The biggest gotcha with destructors in C is how to make them idempotent. It is something the standard C library got  wrong. Let me show you:
 
 ```
 byte *buffer = malloc (100);
@@ -469,9 +469,9 @@ free (buffer);
 free (buffer);
 ```
 
-//Wham!// You have silently and violently corrupted the heap. What happens next is anyone's guess. The standard advice is to add {{buffer = NULL;}} after the free. Yet if a developer is unskilled enough to lose track of their pointers, will they remember to nullify them? No, they won't.
+//Wham!// You have corrupted the heap. What happens next is anyone's guess. The standard advice is to add {{buffer = NULL;}} after the free. Yet if a developer is weak enough to lose track of their pointers, will they remember to nullify them? No, they won't.
 
-We need a style that removes the guess work. It's remarkably easy and it works well. My team invented this (as far as I know, in 2006. It was part of another [http://www.openamq.org/doc:tech-icl object oriented C language] as a platform for OpenAMQ:
+We need a style that removes the guess work. It's easy and it works well. My team invented this (as far as I know, in 2006. It was part of another [http://www.openamq.org/doc:tech-icl object oriented C language] as a platform for OpenAMQ:
 
 ```
 safe_free (&buffer);
@@ -499,23 +499,23 @@ Remember this lesson:
 
 > If you see '&' before an argument, that means "destructive"
 
-Incidentally, this is another reason to //never// return values by reference.
+The normal use for '&' is to return values by reference. That is a bad idea in most cases, as I'll explain later.
 
 ++ Problem: how do we deal with exceptions?
 
-Speaking of memory exhaustion, let's discuss what we do when things don't work as planned. Classic C error handling assumes we're tired/dumb enough to make silly requests, yet smart enough to handle complex responses. I've used plenty of systems that returned dozens of different error codes. It becomes a leaky and fuzzy contract.
+Speaking of exhaustion, let's discuss what we do when things don't work as planned. Classic C error handling assumes we're tired/dumb enough to make silly requests, yet smart enough to handle complex responses. I've used plenty of systems that returned dozens of different error codes. It becomes a leaky and fuzzy contract.
 
 The theory that rich exception handling makes the world a better place is widespread. It's a bogus theory, in my experience. Simplicity is always better than complexity.
 
-To get to specific answers, we must untangle the different kinds of failure in software, and deal with each one separately.
+To get to specific answers, we must untangle the different kinds of failure in software. We can then deal with them one-by-one.
 
 //Solution: use simple, foolproof exception handling.//
 
-Let's break down the kinds of exceptions we typically see, and solve each one in the simplest way.
+Let's break down the kinds of exceptions we tend to hit, and solve each one in the simplest way.
 
 +++ Problem: nothing to report
 
-In a real time system, "nothing" is such a common case that it's not exceptional. The simplest solution is to return "nothing" to the caller. If there are different kinds of "nothing" that the caller //must// distinguish, turn these into meaningful pieces of the API.
+In a real time system, "nothing" is such a common case that it's not exceptional. The simplest solution is to return "nothing" to the caller. If there are different kinds of "nothing" that we must distinguish, turn these into meaningful pieces of the API.
 
 While you may feel compelled to tell the caller //why// nothing happened ("timeout error!"), this is like talking to strangers about your private life. It's what you don't say that lets people respect you.
 
@@ -527,7 +527,7 @@ Examples:
 * Return next message received, or NULL if there is none.
 * Return number of network interfaces, or zero if there is no networking.
 
-When you do this well, your API fits like a soft glove. For instance, imagine these two methods for iterating through the set of users in a group (this class doesn't exist, it's imaginary):
+When you do this well, your API fits like a soft glove. For instance, imagine these two methods for iterating through the users in a group:
 
 ```
 myp_user_t *myp_group_first (myp_group_t *group);
@@ -544,7 +544,7 @@ while (user) {
 }
 [[/code]]
 
-While is tidy, safe and obviously correct.
+Which is tidy, safe and hard to get wrong.
 
 Remember this lesson:
 
@@ -552,21 +552,23 @@ Remember this lesson:
 
 +++ Problem: caller passed us garbage
 
-Library authors (as we strive to be, when we write C) get this a lot. Things crash weirdly. It's always our fault. We hunt and dig, and finally we discover the cause. The calling code, our dear users, passed garbage. We didn't check it, and our own state got corrupted.
+Library authors (as we strive to be, when we write C) get this a lot. Things crash with weird errors. It's always our fault. We hunt and dig, and finally we discover the cause. The calling code, our dear users, passed us garbage. We didn't check it, and our own state got corrupted.
 
-Even the standard C libraries have this problem. What does code do, if you call {{free ()}} twice on the same pointer? The results are undefined. It may do nothing. It may crash immediately. It may run a while, then start to behave weirdly.
+Even the standard C libraries have this problem. What does code do, if you call {{free ()}} twice on the same pointer? The results are not defined. It may do nothing. It may crash immediately. It may run a while, then start to do strange stuff.
 
 Passing garbage to library functions is a common mistake, especially with beginners. There are three things you should aim to do, as library author:
 
 * Design your APIs to remove the potential for obvious mistakes.
+
 * Be cynical about what people give you, and use techniques to detect mistakes.
+
 * When you detect a mistake in your calling code, assert immediately and without pity.
 
 //Solution: detect garbage, then fail fast.//
 
 I've explained our destructor pattern, and how we nullify the caller's reference. This fixes the common mistake of trying to work with a destroyed object. Code can still do that, and it will pass NULL to a method.
 
-It is trivial and costs nothing to check for NULL, so you will see this in all properly-written methods:
+It is trivial and costs nothing to check for NULL, so you will see this in all well-written methods:
 
 [[code]]
 void *
@@ -581,15 +583,17 @@ Since we use strong types, it is hard to pass random data to a method. One must 
 
 Why assert, instead of returning an error code? There are a few good reasons:
 
-* If a developer is making such mistakes, they won't be capable of handling errors properly.
+* If a developer is making such mistakes, they won't be capable of handling errors.
+
 * If the code is faulty, it is irresponsible to continue running it. Bad Things can happen.
+
 * The fastest way to fix the problem is to assert and tell the developer exactly when it broke.
 
-An assert that creates a core dump and call stack gives a developer enough information to fix common mistakes.
+An assert that creates a core dump and call stack gives a developer the means to fix common mistakes.
 
 Remember this lesson:
 
-> Developers make mistakes. You cannot expect perfection. Asserts are the best teacher.
+> Developers make mistakes. You cannot expect perfection. Asserts are a good teacher.
 
 +++ Problem: the outside world passed us garbage
 
@@ -604,9 +608,10 @@ If [https://xkcd.com/327/ little Bobby Tables] taught us anything, it is that al
 To deal with garbage input depends on how well you know the culprit:
 
 * When you get garbage from total strangers on the Internet, you discard it.
+
 * When you get garbage from your dear users, you try to tell them what they did wrong. Then you discard it.
 
-So taking the second case, this means returning an "invalid" response to the caller, and providing the details via some other means. Here is how I'd design this for a HTTP parser:
+So in the second case we return an "invalid" response to the caller, and provide the details via some other means. Here is how I'd design this for a HTTP parser:
 
 [[code]]
 //  http_client_t holds a connection to a remote web browser
@@ -639,11 +644,11 @@ There are a few basic rules to observe:
 
 * Don't assign void pointers to typed pointers without a cast. Dereferencing the wrong pointer type will cause trouble. The cast is optional in C99, yet it forces you to double-check your code. C++ (as on Windows) insists on the cast.
 
-* Do compile your code on different platforms, regularly. Different compilers catch different mistakes.
+* Do compile your code on different platforms, often. Different compilers catch different mistakes.
 
 * Always use {{return}} in non-void functions (and never do this in void functions).
 
-* Never use a variable as a format string in printf-style calls. It invites disaster. The gcc compiler will complain if you try to do this.
+* Never use a variable as a format string in {{printf}}-style calls. It invites disaster. A good compiler will complain if you try to do this.
 
 * When you read input from the network, assume the sender is a malicious psychopath. If the input is too long, chop it and throw away the excess.
 
@@ -653,27 +658,27 @@ There are a few basic rules to observe:
 
 As well as checking for caller mistakes, we use asserts to check internal consistency. After all, we also make errors in our code, at a constant rate. These often show up as data with impossible values.
 
-//Solution: use asserts internally, to catch impossible conditions.//
+//Solution: use asserts to catch impossible conditions.//
 
-Some people may complain that a library filled with {{assert}} statements is untrustworthy. Ignore such people. They make poor contributors, and worse clients. The truth is that a C library which does not use assertions properly is unreliable.
+Some people may complain that a library filled with {{assert}} statements is untrustworthy. Ignore such people. They are poor contributors, and worse clients. The truth is that a C library which does not use assertions to self-check is unreliable.
 
 Remember this lesson:
 
 > The faster you fail, the faster you can recover.
 
-When you use assertions, do no work in an assertion (a so-called "side-effect"). Optimizing compilers (or naive users looking for a cheap yet meaningless kick) may remove assertions. Any side-effects also disappear. This is an example of what //not// to do:
+When you use assertions, do no work in an assertion (a so-called "side-effect"). Naive users looking for a cheap yet meaningless kick may remove assertions. Any side-effects also disappear. This is an example of what //not// to do:
 
 [[code]]
 //  This is unsafe as whole assert () may disappear
-//  if compiler is aggressive, or user is foolish.
+//  if the user is foolish
 assert (myp_myclass_dowork (thing) != -1);
 [[/code]]
 
-+++ Problem: a library behaved unexpectedly
++++ Problem: a library misbehaved
 
-A perfectly working piece of code can stop working for the stupidest reasons. One classic cause is when a sub-library changes its behavior. ZeroMQ used to be guilty of this until we banned such changes. (Changing a version number doesn't help applications that break.)
+A working piece of code can stop working for the stupidest reasons. One classic cause is when a sub-library changes its behavior. ZeroMQ used to be guilty of this until we banned such changes. (Changing a version number doesn't help applications that break.)
 
-The user can't do much except complain and report an error message to the developers. Then the wailing and gnashing of teeth begins. And eventually there is a new release that works again.
+The user can't do much except complain and report an error message to the developers. Then the wailing and gnashing of teeth begins. After a while, maybe, there is a new release that works again.
 
 //Solution: if components don't behave as documented, assert.//
 
@@ -683,15 +688,15 @@ Remember this lesson:
 
 +++ Problem: system ran out of resources
 
-This is probably the most difficult problem to handle. Most developers are not aware of the specific limits of every operating system. On OS/X there is a default limit of 255 sockets per process. A busy server will easily run out.
+This is I think the hardest problem to handle. Most developers are not aware of the specific limits of every operating system. On OS/X there is a default limit of 255 sockets per process. A busy server will soon run out.
 
-In theory a server can adapt its behavior to the capabilities of the system. Yet in practice that is nearly impossible. Even if your code handles "out of memory" neatly, modern systems use virtual memory. Long before {{malloc}} calls start to fail, your program is thrashing in and out of swap.
+In theory a server can adapt its behavior to the capabilities of the system. Yet in practice that is close to impossible. Even if your code handles "out of memory" failures, modern systems use virtual memory. Long before {{malloc}} calls start to fail, your program is thrashing in and out of swap.
 
 Trying to recover from resource exhaustion makes code more complex. That makes it more fragile, and more likely to have hidden errors. This is not a good path towards stable, long-running code.
 
 //Solution: if you do run out of memory, assert.//
 
-There are several strategies to deal sanely with resource exhaustion:
+There are several winning strategies to deal with resource exhaustion:
 
 * Print a helpful error message, then assert. This forces someone to re-tune the system.
 
@@ -709,13 +714,13 @@ I've already argued against returning values via parameters. In C, functions ret
 
 * Return nothing.
 
-* Return success/failure as {{int}}, with values zero and -1 respectively.
+* Return success/failure as {{int}}, with values zero and -1.
 
-* Return yes/no as {{bool}}, with values true and false respectively (works best if the method takes the form of a question).
+* Return yes/no as {{bool}}, with values true and false (works best if the method takes the form of a question).
 
 * Return a fresh string to the caller as {{char *}}; caller owns and must free such strings.
 
-* Return a constant string to the caller as {{const char *}}; the caller may not modify or free these.
+* Return a constant string to the caller as {{const char *}}; the caller may not change or free these.
 
 * Return a cardinal value (positions, quantities, indexes) as {{size_t}}.
 
@@ -723,7 +728,7 @@ I've already argued against returning values via parameters. In C, functions ret
 
 * Return other integer values using the least surprising type.
 
-* Return a composed value (list, hash, array, buffer) as a fresh object instance. Try to avoid returning composed values that the user may //not// modify, as this is asking for trouble.
+* Return a composed value (list, hash, array, buffer) as a fresh object instance. Try to avoid returning composed values that the user may //not// change, as this is asking for trouble.
 
 Remember this lesson:
 
@@ -733,7 +738,7 @@ Remember this lesson:
 
 After lots of writing, compiling, testing, cursing, and repeating, you get two things. One, a "library file" that contains your precious "object code," which is the compiled version of your source code. These terms were invented by mad scientists at IBM in the 1970s.
 
-Libraries come in various flavors, notably static ({libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you can have with {{file}}:
+Libraries come in two flavors: static ({libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you can have with {{file}}:
 
 ```
 $ file /usr/local/lib/libmyp.la
@@ -749,7 +754,7 @@ dynamically linked, BuildID[sha1]=007...
 not stripped
 ```
 
-I'll come to how we build and install these. Don't stress, it's simpler than you might think. (Hint: magic.)
+I'll explain in [#zproject] how we build and install these. Don't stress, it's simpler than you might think. (Hint: magic.)
 
 As well as these library files, your users need header files to define prototypes for all the methods you export.
 
@@ -757,15 +762,15 @@ As well as these library files, your users need header files to define prototype
 
 In practice we use one main header file plus one header file per class. Take a look at {{/usr/local/include}} and you'll see what I mean. If this mass of header files distresses you, take a pill. There is no cost. In older projects we used to generate single project header files with all classes included inline. That turns out to be more work than it's worth.
 
-The project header file goes into {{include/myproject.h}}. The library files will be called {{libmyp.something}}.
+The project header file goes into {{include/myproject.h}}. The library files will be {{libmyp.something}}.
 
-Your project may also produce command line tools (aka "binaries"). You'll probably want to install some of these too.
+Your project may also produce command line tools (aka "binaries" or "mains"). You may want to install some of these too.
 
 Remember this lesson:
 
 > Give your users a single header file that does everything.
 
-This means, for instance, including all dependent header files //automatically//. It's just polite.
+This means, for instance, including all dependent header files. It's just polite.
 
 ++ Problem: how do I version my API?
 
@@ -775,7 +780,7 @@ Look at the Smart Peoples' Choice for Versioning, aka [http://semver.org/ Semant
 
 This teaches us an important lesson about the stupidity of smart people. Breaking user space is not OK. It doesn't matter what numbers you stick on things. Yes, vendors do this all the time. No, it's still not OK.
 
-There are a number of difficulties in versioning an API:
+There are several difficulties in versioning an API:
 
 * Different pieces of the API evolve at different speeds. Some are stable while others are experimental. So, sticking a single version number on the API is like giving a family of thirteen children a single first name. It's so simple, yet so wrong.
 
@@ -783,13 +788,13 @@ There are a number of difficulties in versioning an API:
 
 * Shareable libraries, under Linux, get named with an "ABI version" which has nothing to do with the software version. Ah, and sometimes the library version is just one digit. And sometimes it is three digits. It depends on what distribution you use.
 
-The science of API versioning has a way to go. [http://hintjens.com/blog:85 I've proposed] that we version individual methods and classes using a "software bill of materials."  As you'll learn later, we're starting to get the tools for this. We need to be able to tag classes and methods as draft, stable, or deprecated.
+The science of API versioning has a way to go. [http://hintjens.com/blog:85 I've proposed] that we version individual methods and classes using a "software bill of materials."  As you'll learn later, we're developing the tools for this.
 
-For today, the best solution we've found is to never break APIs that people depend on.
+For today, the best solution we've found is to not break APIs that people depend on.
 
 //Solution: don't break user space.//
 
-If you do need to break stable, shipped APIs, do it by adding new classes and methods, and deprecating the old ones.
+If you do need to change stable APIs, do it by adding new classes and methods, and deprecating the old ones.
 
 This means a new version of your library is always backwards compatible with older ones. At least where it matters. Then, the actual numbers you use become secondary.
 
@@ -827,15 +832,15 @@ Remember this lesson:
 
 ++ Problem: my users demand documentation
 
-As they should. Documentation makes or breaks a project. We all know this: shitty docs means shitty code. Look at the code someone writes, and you instantly get a "like" or "dislike" emotion. Pay attention to this emotion! It will save you from pain, if you listen to it.
+As they should. Documentation makes or breaks a project. We all know this: shitty docs means shitty code. Look at the code someone writes, and you get an instant "like" or "dislike" emotion. Pay attention to this emotion! It will save you from pain, if you listen to it.
 
-People have tried to automate API documentation using tools like doxygen. The results [http://www.alsa-project.org/alsa-doc/alsa-lib/ tend to be mediocre]. Look at [http://api.zeromq.org/czmq3-0:_start CZMQ's documentation]. It's far simpler and yet instantly familiar.
+People have tried to automate API documentation using tools like doxygen. The results [http://www.alsa-project.org/alsa-doc/alsa-lib/ tend to be mediocre]. Look at [http://api.zeromq.org/czmq3-0:_start CZMQ's documentation]. It's far simpler and yet at once familiar.
 
-As I keep saying, when we write C, we build APIs. That means we talk to other programmers. The best language for explaining a C API is more C. Period.
+As I keep saying, when we write C, we build APIs. That means we talk to other programmers. The most accurate language for explaining a C API is more C. Period.
 
 When we reach for documentation we are looking for something specific. The documentation must give us the fastest path to this answer. No waffle or preamble.
 
-Ideally, the fastest way to get answers is to read the source code. This is not a failure of documentation. It is a success of style. This chapter is all about structure and readability. The goal is to produce source code that people can read, and enjoy reading, and get benefit from reading.
+In an ideal world, the answers lie in the source code. Reading source code is not a failure of documentation. It is a success of style. This chapter is all about structure and readability. The goal is to produce source code that people can enjoy reading for profit.
 
 Code is language, and the classes and methods we write are a form of literature. I'm not being poetic. This is key to writing systems that survive over the long term.
 
@@ -843,29 +848,29 @@ Code is language, and the classes and methods we write are a form of literature.
 
 The key pieces we need are:
 
-* The public API for a class and method. This must show the prototype, plus a few lines of explanation. It does not need to be pretty. In fact, if it looks like C code it's far easier to read and understand.
+* The public API for a class and method. This must show the prototype, plus a few lines of explanation. It does not need to be pretty in the "ooh sans-serif and pastels!" sense. In fact, if it looks like C code it's easier to read and understand.
 
-* Examples of using the API. These must be simple, reusable, and clean. Also, they must work. That means, they must be part of each class.
+* Examples of using the API. These must be simple, reusable, and clean. Also, they must work. That means, they must be part of the project, built and tested with classes.
 
-External examples are also great, especially if you want to build larger teaching projects, yet they are secondary. People need to learn one step at a time.
+External examples are also great, especially if you want to build larger teaching projects. I've done a lot of this. Yet it comes second to API man pages. People need to learn one step at a time.
 
 Remember this lesson:
 
-> The best way to teach code is by showing code.
+> The best way to teach code is to show code.
 
 ++ Problem: how do I test my API?
 
 When someone says "trust me, I've tested it," your natural reaction should be cynical. So tests that are part of a project are only good up to a point. Any smart user builds their own tests.
 
-Yet we need to know if a patch broke something. When we work collectively, this translates to "I trust your patch so long as it didn't break our test cases."  In the ZeroMQ core library {{libzmq}} we turned this around quite neatly, to encourage people to write test cases. "If you write a test case for method X, there's less chance someone will break it in the future."
+Yet we need to know if a patch broke something. When we work in groups, this translates to "I trust your patch so long as it didn't break our test cases."  In the ZeroMQ core library we turned this around to encourage people to write test cases. "If you write a test case for method X, there's less chance someone will break it in the future."
 
-When working with others, test cases are a form of insurance. They also teach users how to use the API. More users means extra lives. When thousands of people use a particular class and method, the chances of it surviving another ten years increase.
+When working with others, test cases are a form of insurance. They also teach users how to use the API. More users means extra lives. The more thousands of people use a piece of code, the better its chances of survival.
 
 //Solution: every class has a test method.//
 
 We can then call the test methods when we do "make check" and in continuous integration testing. This turns out to be a good place to stick our example code too.
 
-The test method needs no error handling. If any given test fails, it simply asserts. This kills the crab and makes sure someone steps up to fix things. Or not, if no-one cares. Both are valid scenarios.
+The test method needs no error handling. If any given test fails, it asserts. This kills the crab and makes sure someone steps up to fix things. Or not, if no-one cares. Both are valid scenarios.
 
 Remember this lesson:
 
@@ -873,7 +878,7 @@ Remember this lesson:
 
 ++ Problem: how do I actually produce the docs?
 
-This rule applies to generated documentation: garbage in, garbage out. We still want to generate the docs, for numerous reasons:
+This rule applies to generated documentation: garbage in, garbage out. We still want to generate the docs, for several reasons:
 
 * It is the safest and fastest way to produce accurate docs.
 
@@ -881,7 +886,7 @@ This rule applies to generated documentation: garbage in, garbage out. We still 
 
 * It encourages a literate coding style.
 
-* It exposes poor code rapidly, so we can fix or remove it.
+* It exposes poor code, so we can fix or remove it.
 
 In technical terms:
 
@@ -895,10 +900,12 @@ In technical terms:
 
 We use a tool [https://github.com/zeromq/gitdown called gitdown] to do all this. It also produces a detailed {{README.md}} file with class and method documentation. Install that tool, you will appreciate it, and we'll depend on it later.
 
-I need to briefly explain how to tag your sources to tell {{gitdown}} what is what. Each tag sits on a line by itself, with or without a comment:
+I need to explain how to tag your sources to tell {{gitdown}} what is what. Each tag sits on a line by itself, with or without a comment:
 
 * In the class header, mark the public API with {{@interface}}, ending with {{@end}}.
+
 * In your class source, explain the class using {{@header}} to mark a summary, {{@discuss}} for details, and {{@end}} to finish.
+
 * In the test method, mark example code with {{@selftest}} and {{@end}}.
 
 Take a look at any CZMQ source or header to see what I mean. It looks like this (from {{zuuid.h}}):
@@ -966,16 +973,17 @@ Any realistic project needs private classes. Not every API is worth exporting, o
 
 * Classes used in a single source file only.
 
-In both cases, keeping the class private lets us change it arbitrarily. I'll cover these two cases separately.
+In both cases, keeping the class private lets us change it as we like.
 
 +++ Problem: my library has private classes
 
 A private class can follow almost the same style as a public class, except:
 
 * Its header file should be in {{src}} and not in {{include}}.
-* The project header file won't include it, and it won't be installed.
 
-For pragmatic reasons we need a second include file in {{src}} that includes all private class headers.
+* The project header file won't include it.
+
+So we need a second include file in {{src}} that includes all private class headers.
 
 //Solution: use two project headers, one public and one private.//
 
@@ -987,7 +995,7 @@ Remember this lesson:
 
 +++ Problem: my source file has private classes
 
-When we start to manage data structures, we often need classes to hold individual pieces. It is simplest to write these in the source file. Our API is constrained and we can cheat, to keep code simple and minimal.
+When we start to manage data structures, we often need classes to hold individual pieces. It is simplest to write these in the source file. We can get away with less abstraction, and less work.
 
 We define a private class as a structure:
 
@@ -1042,7 +1050,7 @@ s_peer_connect (s_peer_t *self)
 }
 [[/code]]
 
-And we can honestly also access and work with its properties directly:
+And we can access and work with its properties without getter/setter methods:
 
 [[code]]
 s_peer_t *peer = s_peer_new ("server", "ipc://@/server");
@@ -1051,7 +1059,7 @@ zmsg_t *msg = zmsg_recv (peer->sock);
 ...
 [[/code]]
 
-As the class is private, changes are safe. The compiler will catch errors immediately. We stick to the constructor/destructor pattern because it makes readable code.
+As the class is private, changes are low-risk. The compiler will catch errors immediately. We stick to the constructor/destructor pattern because it hides heap access. Getters/setters are overkill.
 
 A few notes:
 
@@ -1067,20 +1075,23 @@ Remember this lesson:
 
 ++ Problem: is my code thread-safe?
 
-Thread-safe code can be used from multiple threads without crashing. C is by default not thread-safe. You do need to take specific steps to make it so. If you are using the CLASS style then you're already taking those steps.
+Thread-safe code can handle calls from many threads at once without crashing. "Re-entrant" code is a similar thing, though just within one thread. For example, an interrupt handler that calls code that calls the same interrupt handler again.
 
-//Solution: avoid static or global data.//
+To start with, re-entrant C code must not use static variables. Each entry to a function gets its own stack, so local variables (held on the stack) are safe. If the function uses the heap, and stores its references in local variables, that is also safe.
 
-In C, this is an unsafe global declaration:
+Thread-safe C code must at least be re-entrant. It then also needs rules to prohibit the sharing of data between threads. Or, it needs mutexes around code that works on shared state.
 
-```
-//  Used only by our code!
-int private_variable;
-```
+I've built large concurrent servers (OpenAMQ) that used mutexes to share data between threads. Trust me when I say you don't want to use this approach. We spent as long hunting down threading issues as we did writing the original code.
 
-The comment and variable name lie. If you write this, outside any function, then any code that uses the library can read and modify {{private_variable}}. And two threads can modify it at the same time, and things will go hairy.
+Conventional multi-threading is a nightmare. The code seems to work, then as you run it under load, with more and more threads, it starts to crash. You cannot serialize everything, or you might as well run on one thread.
 
-We allocate object instances on the heap, then we pass around references to those instances. Nice and safe. Unless two threads get hold of the same reference. Then we're back to pain and angst.
+There are nicer, smarter ways of building concurrent C architectures. In Scalable C we use actors and messages, a design taken from Erlang and Akka. It simple to understand, and to use. I'll come to this later in the book.
+
+So we make code thread-safe by banning static and global variables. And then by banning any attempts at using shared state. That means an ironic and yet satisfying ban on mutexes.
+
+//Solution: ban static/global variables, and mutexes.//
+
+In Scalable C, we allocate object instances on the heap, then we store those references on the stack. It is nice and safe. Unless two threads get hold of the same reference. Then we're back to pain and angst.
 
 * There are some system calls that aren't thread safe. One culprit is {{basename}}. You just need to learn these over time, and avoid them.
 
@@ -1090,49 +1101,83 @@ We allocate object instances on the heap, then we pass around references to thos
 
 * The one exception is in cross-thread layers. We do this in a few cases in CZMQ. Then we need mutexes. I'm not going to explain how we do this. If you need it, read zsys.c. Otherwise, please don't.
 
+This code is re-entrant and thread-safe:
+
+[[code]]
+int myfunction (int argument)
+{
+    //  Each call to myfunction has its own copy and buffer
+    int copy = argument * 3;
+    byte *buffer = (byte *) malloc (copy);
+    return buffer;
+}
+[[/code]]
+
+This code will likely crash if used from several threads:
+
+[[code]]
+//  The entire process shares the same 'buffer'
+byte *buffer = (byte *) malloc (copy);
+
+int myfunction (int argument)
+{
+    //  Each call to myfunction shares the same copy
+    static int copy = argument * 3;
+    return buffer;
+}
+[[/code]]
+
+Remember this lesson:
+
+> A Scalable C developer never shares mutable state between threads.
+
 ++ Problem: my code does not build on system X!
 
-Writing portable code is like not dating crazy people. It sounds boring and pragmatic. Surely a little insanity is fun? Well, no. Pain may be educational, if you can learn to not take it personally. Yet if you aren't careful, it will damage you. I'm talking about the way vendors suck you in with promises and lies, only to trap you and rip you off.
+Writing portable code is like not dating crazy people. It sounds boring and pragmatic. A little insanity is fun, no? Well, no. Pain may be educational, if you can learn to step out of the experience. Yet if you aren't careful, it will damage you. I'm talking about the way vendors suck you in with promises and lies, only to trap you and rip you off.
 
-One of C's strengths is its portability, yet vendors keep pushing their weird non-portable APIs. I've been building portable libraries and tools for around 30 years. It is something of a black art, yet all "black art" means is "lacks sufficient documentation." The payoffs of full portability are worth gold:
+One of C's strengths is its portability, yet vendors keep pushing weird non-portable APIs. I've been building portable libraries and tools for around 30 years. It is something of a black art, yet all "black art" means is "lacks documentation."
 
-* You will reach a far wider market for your work.
+The payoffs of full portability are worth gold:
 
-* You can work with a more diverse crowd of people.
+* You will reach a far wider market for your work, as your code will run on any platform your clients might use.
 
-* Your code will survive as operating systems die.
+* You can work with a more diverse crowd of people, rather than appeal only to those who use a given operating system.
+
+* Your code will survive as operating systems die, which happens many times in the life of good code.
+
+* You can work faster and with less stress, as portable code tends to be cleaner and simpler.
 
 The main rules for building portable code, in any language are:
 
 * Isolate all system-specific knowledge in a single layer.
 
-* Create portable abstractions that hide system details, and implement as much of these yourself as you need to.
+* Create portable abstractions that hide system details. Write as much of these yourself as you need to.
 
 * Ban the use of non-portable code in applications.
 
 //Solution: create a portability layer and enforce its use.//
 
-A major benefit of a library like libzmq is precisely that it hides non-portable networking APIs under a single standard API.
+One benefit of libzmq is that it hides non-portable networking calls under a single standard API.
 
-CZMQ takes this a step further. It does a number of things for you:
+CZMQ takes this a step further. It does several things for you:
 
 * It pulls in system headers so you don't need to (in {{include/czmq_prelude.h}}).
 
 * It detects the system type so your portability layer can be smart (in {{include/czmq_prelude.h}}).
 
-* It smooths out differences between systems, e.g. defining macros to hide library differences (in {{include/czmq_prelude.h}}).
+* It hides differences between systems, e.g. defining macros to hide library dialects. See  {{include/czmq_prelude.h}}.
 
 * It wraps various system functions in a single API (in the {{zsys}} class).
 
 * It creates higher level abstractions for non-portable work (the {{zactor}}, {{zbeacon}}, {{zclock}}, {{zdir}}, {{zfile}}, {{ziflist}} and {{zuuid}} classes).
 
-* It defines a set of types and macros that you can use safely in all code: {{byte}}, {{uint}}, {{streq}} and {{strneq}} are the most useful ones. Look at include/czmq_prelude.h for details.
+* It defines a set of types and macros that you can use in all code: {{byte}}, {{uint}}, {{streq}} and {{strneq}} are the most useful ones. See {{include/czmq_prelude.h}} for details.
 
 You should understand and follow these rules:
 
 * Only write non-portable code in private classes, so your public API is always 100% portable.
 
-* Regularly build and test your code on at least Linux and Windows to catch portability faults.
+* Build and test your code on at least Linux and Windows, often, to catch portability faults.
 
 * Read and take the time to understand {{include/czmq_prelude.h}}. It will pay off.
 
@@ -1142,22 +1187,21 @@ Remember this lesson:
 
 ++ Problem: what coding style do I use?
 
-Tastes vary, so what follows is just my personal style. It comes from a few decades of experimentation. There are patterns that work well, and some that work poorly.
+Tastes vary and style is often personal. Yet there are patterns that work well, and those that don't. I've collected good patterns for years. What follows is my best advice for writing clear, legible C code.
 
 Compare this chunk of code:
 
 [[code]]
 if ( i==0 )
 {
-    printf ("succeeded");
+    printf ( "succeeded" );
 }
 else
 {
     if ( i==-1 )
     {
-        printf ("failed");
-    } else
-    {
+        printf ( "failed" );
+    } else {
         printf ("uncertain");
     }
 }
@@ -1175,36 +1219,34 @@ else
     printf ("uncertain");
 [[/code]]
 
-It's shorter and tidier. I find it ironic how people will use short useless names like {{i}} and yet waste precious space with parentheses no-one cares about. Readability means removing noise and promoting signal.
+Which one is easier to understand?  I find it ironic how people will use short useless names like {{i}} and yet waste precious space with parentheses no-one cares about.
 
-//Solution: aim above all at readability, a good signal-to-noise ratio.//
+//Solution: aim above all at readability, and a good signal-to-noise ratio.//
 
-Here is a list of recommendations. These are taken from the [http://rfc.zeromq.org/spec:21 Scalable C RFC]:
+Here is my list of recommendations. I'll explain my reason in each case. Often the argument is "closer to natural language," which means less work to write, and read. This reduces mistakes.
 
-* Do not use "magic numbers" (numeric constants). Define these in the project headers.
+* Do not use "magic numbers" (numeric constants) in code. Numbers say nothing and create space for mistakes (change in one place, yet not in another). Define constants in the project headers.
 
-* Use all uppercase for macro names, unless they act as functions, in which case use lowercase.
+* Use all uppercase for macro names, unless they act as functions, in which case use lowercase. This tells the reader immediately when you're using a constant.
 
-* Use all lowercase for variable and function names.
+* Use all lowercase for variable and function names. It is closer to natural language, and thus easier to type and read than MixedCase.
 
-* Use underscores to separate parts of a name.
+* Use underscores to separate parts of a name. Again, this is closer to natural language.
 
-* Indent four spaces per level, and do not use tabs.
+* Indent four spaces per level, and do not use tabs unless the case demands it (as in Makefiles). Tabs are a hangover from ancient computers.
 
-* Use meaningful variable names, and never names like {{i}} and {{temp}}.
+* Use variable names that explain themselves. Do not use names like {{i}} or {{p}}. The only story these tell is "the author was lazy."
 
-* Fold long lines at around 80-100 characters.
+* Fold long lines at around 80-100 characters. This ensures legibility: our eyes are good at reading in columns and poor at reading long lines.
 
-* Do not enclose single-statement blocks in brackets:
+* Do not enclose single-statement blocks in brackets. This is again for legibility. Single-statement blocks are more common than you would think. CZMQ has 1,750 if statements of which over 1,000 have single-statement blocks. It is worth prioritizing these.
 
 [[code]]
 if (comma == NULL)
     comma = surname;
 [[/code]]
 
-* In {{else}} statements, put the {{else}} on a line by itself.
-
-* If you have multiple choices, stack the {{if}}/{{else}} vertically to indicate that the order is arbitrary:
+* In {{else}} statements, put the {{else}} on a line by itself, and align with the previous {{if}}. Aligns {{if}} keywords when selecting between choices.
 
 [[code]]
 if (command == CMD_HELLO)
@@ -1219,9 +1261,18 @@ if (command == CMD_ERROR) {
 }
 [[/code]]
 
-* Use {{while (true)}}, with {{break}} statements to write open-ended loops.
+* Use {{while (true)}}, with {{break}} statements to write open-ended loops. Avoid {{do}}..{{while}} as it's hard to write in a nice way.
 
-* Use {{while}} loops with first/next tests to iterate through lists:
+[[code]]
+while (true) {
+    zmsg_t *msg = zmsg_recv (pipe);
+    if (!msg)
+        break;          //  Interrupted
+    //  Process incoming message now
+}
+[[/code]]
+
+* Use {{while}} loops with first/next tests to iterate through lists. You set-up the condition, enter the loop, and re-test the condition at the block. This creates a consistent style that is easy to write and read. Consistency means fewer errors.
 
 [[code]]
 //  Scan a name for commas
@@ -1239,21 +1290,22 @@ while (myclass) {
 }
 [[/code]]
 
-* Use for () to iterate through arrays:
+* Use {{for (index = 0; index < max; index++)}} to iterate through arrays. This creates a consistent style that is easy to write and read. Your brain's pattern matching sees this as a single pattern. Don't be cute and do more work in the {{for}} statement (like increment other variables). All this does is interfere with that pattern matching.
 
 [[code]]
 for (index = 0; index < array_size; index++) {
     //  Access element [index]
+    other_var++;    //  Do this in the body
 }
 [[/code]]
 
-* Use blank lines between functions, and to group code into blocks of 6-8 lines if needed.
+* Use blank lines between functions, and to group code into blocks of 6-8 lines if needed. This matches the natural language pattern of a paragraph. Avoid single lines of code surrounded by white space unless they must stand out.
 
-* Put a blank line after a single-statement {{if}} but not after a parenthesis.
+* Put a blank line after a single-statement {{if}} but not after a parenthesis. The parenthesis already provides white space and you do not want to waste vertical space. Vertical screen space is always precious.
 
-* Do not use extra spacing to create vertical alignment.
+* Do not use extra spacing or tabs (no!) to create vertical alignment. It looks cute yet is annoying to keep up. Train your brain to pattern match from the left, using consistent method names.
 
-* Follow the English rules for punctuation as far as possible:
+* Follow the English rules for punctuation as far as possible. This is partly to reuse our English pattern matching, and partly for pragmatic reasons.
 
 [[code]]
 //  Unary operators stick to their operands
@@ -1265,7 +1317,7 @@ comma = comma + 1;
 //  ? and : stick to the left
 comma = comma? comma + 1: strchr (name, '.');
 
-//  Parentheses stick inwards
+//  ( ) push inwards like hands
 for (char_nbr = 0; *char_nbr; char_nbr++)
     char_nbr++;
 
@@ -1273,58 +1325,72 @@ node = (node_t *) zmalloc (sizeof (node_t));
 if (!node)
     return -1;
 
-//  Square brackets stick inwards
+//  [ and ] push inwards like awkward hands
 comma = name [char_nbr];
 
-//  Pointer dereference has no space left or right
+//  { introduces a multi-statement block
+//  } gets its own line for vertical alignment
+if (condition) {
+    do first thing
+    do other thing
+}
+
+//  -> is glue that creates a longer name
 self->name = strdup (name);
+
+//  * is a unary operator so sticks right
+void *reference = **name;
 [[/code]]
 
-* Use {{return}} at any point to exit a function.
+* In conditional code always do the normal flow first, and exception handling last. Resist the common pattern of checking for failure, then falling through to normal flow. It hides the critical path from the reader.
 
-* Use {{goto}} the end of the function, if you have complex clean-up after an error.
+* Use {{return}} at any point to leave a function, if there is no cleanup. This is neater than trying to collect various exit routes into a single one at the end.
+
+* Use {{goto}} the end of the function, if you have complex clean-up after an error. You rarely see this in hand-written code as it usually means a function is too complex. In generated code, it's more common.
 
 ++ Dialectics
 
 +++ Choosing an Open Source License
 
-There is a lot of debate about open source licenses. Much of it is uninformed, naive, and wishful. Copyrights and legal issues aren't fun and we all start with happy, wrong assumptions.
+There is a lot of debate about open source licenses. It is often uninformed, naive, and wishful. I'm not blaming people. Copyrights and legal issues aren't fun and we all start with happy, wrong assumptions.
 
-If you expect people to be "ethical," you will be disappointed. The license is a tool for getting certain results. Don't complain if your fork can't cut the meat, or your knife stabs your tongue. Rather, learn to use a knife and a fork.
+If you expect people to be "ethical," you will learn disappointment. The license is a tool for getting certain results. Don't complain if your fork can't cut the meat, or your knife stabs your tongue. Rather, learn to use a knife and a fork.
 
-If you use a "liberal license" (BSD or MIT/X11), do not expect people to share their forks and patches. They may. Most will not. If you depend on reciprocity, //use a share-alike license.//
+If you use a "liberal license" (BSD or MIT/X11), do not expect people to share their forks and patches. They may. Most will not. The license tells them they do not need to. If you depend on reciprocity, //use a share-alike license.//
 
-//Solution: learn how licenses work.//
+//Solution: learn how licenses work or find someone who knows this.//
 
 There are at least five cases to choose from:
 
 * You are making private commercial software with the explicit goal of making profits. You have no intention to build a community. You want every user to pay, in cash or credit. In that case you use a proprietary license designed by your expensive lawyers. Contact me if you want expensive help on that.
 
-* You are making public software with the explicit goal of benefiting other public software projects. You wish to build a large, strong community. You have no intention of profit-taking. You prefer to exclude private commercial software projects. In this case you use the GPLv3 license.
+* You are making public software, and want to benefit other public software projects. You wish to grow a large, strong community. You have no intention of profit-taking. You prefer to exclude private commercial software projects. In this case you use the GPLv3 license.
 
-* You are making public software with the goal of dumping your code into the market. You have no intention of building a community. You have no intention of profit-taking. Your main goal is to hurt competitors. In this case you use the MIT/X11 or BSD license.
+* You are making public software with the goal of dumping your code into the market. You have no intention of growing a community. You have no intention of profit-taking. Your main goal is to hurt competitors. In this case you use the MIT/X11 or BSD license.
 
-* You are making public software with the goal of building a community. You wish to see your code used as widely as possible. You have no intention of profit-taking. You want to rope your competitors in as partners. In this case you use the MPLv2 license.
+* You are making public software with the explicit goal of growing a community. You wish to see your code used as far and wide as possible. You wish to make profits. You want businesses to use your software and become clients. You want their engineers as contributors. You want to rope your competitors in as partners. In this case you use the MPLv2 license.
 
 * You are making public software with the goal of huge profits. You expect the "community" to make your software for you. You wish to see your code used everywhere. You want to make hundreds of millions in support licenses. You want to destroy your competitors. In this case you stop taking whatever drugs you're on, and come back to the Real World.
 
 +++ How to Merge Patches
 
-I'll contrast conventional "pessimistic merging" with "optimistic merging." My strong advice is to merge rapidly, and optimistically. This is driven by experience and trial-and-error. Conventional merge strategies enforce deliberate, single-threaded, slow thinking. Optimistic merging allows more casual, concurrent, fast thinking. The results seem to be measurably better.
+I'll contrast conventional "pessimistic merging" with "optimistic merging." My strong advice is to merge as soon as you see a pull request, with optimism. This advice comes from experience, not wishful thinking.
 
-Standard practice (Pessimistic Merging, or PM) is to wait until continuous integration testing is done, then do a code review. One then tests the patch on a branch, and provides feedback to the author. The author may fix the patch and the test/review cycle starts again. At this stage the maintainer can (and often does) make value judgments such as "I don't like how you do this" or "this doesn't fit with our project vision."
+Conventional merge strategies enforce deliberate, single-threaded, slow thinking. Optimistic merging allows more casual, concurrent, fast thinking. The results appear to be better.
 
-In the worst case, patches can wait for weeks, or months, to be accepted. Or they are never accepted. Or, they are rejected with various excuses and argumentation. Or, the author vanishes, leaving the maintainer with a distressing choice.
+Standard practice (Pessimistic Merging, or PM) is to wait until continuous integration (CI) testing clears, then do a code review. One then tests the patch on a branch, and provides feedback to the author. The author may fix the patch and the test/review cycle starts again. At this stage the maintainer can (and often does) make value judgments such as "I don't like how you do this" or "this doesn't fit with our project vision."
+
+In the worst case, patches can wait for weeks or months before a maintainer merges them. Or they are never accepted. Or, maintainers reject them with various excuses and argumentation. Or, the author vanishes, leaving the maintainers with a distressing choice.
 
 PM is how most projects work, and I believe most projects get it wrong. Let me start by listing the problems PM creates:
 
-* //It tells new contributors, "guilty until proven innocent,"// which is a negative message that creates negative emotions. Contributors who feel unwelcome will always look for alternatives. Driving away contributors is bad. Making slow, quiet enemies is worse.
+* //It tells new contributors, "guilty until proven innocent,"// a negative message that creates negative emotions. Contributors who feel unwelcome will always look for alternatives. Driving away contributors is bad. Making slow, quiet enemies is worse.
 
-* //It gives maintainers power over new contributors//, which many maintainers abuse. This abuse can be subconscious. Yet it is widespread. Maintainers inherently strive to remain important in their project. If they can keep out potential competitors by delaying and blocking their patches, they will.
+* //It gives maintainers power over new contributors//, which many maintainers abuse. This abuse can be subconscious. Yet it is widespread. Most maintainers strive to remain important in their project. If they can keep out potential competitors by delaying and blocking their patches, they will.
 
-* //It opens the door to discrimination//. One can argue, a project belongs to its maintainers, so they can choose who they want to work with. My response is: projects that are not aggressively inclusive will die, and deserve to die.
+* //It opens the door to discrimination//. One can argue, a project belongs to its maintainers, so they can choose who they want to work with. My response is: projects that are not inclusive deserve to die, and by competition, will die.
 
-* //It slows down the learning cycle//. Innovation demands rapid experiment-failure-success cycles. Someone identifies a problem or inefficiency in a product. Someone proposes a fix. The fix is tested and works or fails. We have learned something new. The faster this cycle happens, the faster and more accurately the project can move.
+* //It slows down the learning cycle//. Innovation demands rapid experiment-failure-success cycles. Someone identifies a problem or inefficiency in a product. Someone proposes a fix. Someone else tests the fix and accepts or rejects it. We have learned something new. The faster this cycle happens, the faster and accurately the project can move.
 
 * //It gives outsiders the chance to troll the project//. It is as simple as raising an objection to a new patch. "I don't like this code." Discussions over details can use up much more effort than writing code. It is far cheaper to attack a patch than to make one. These economics favor the trolls and punish the honest contributors.
 
@@ -1340,11 +1406,11 @@ Now let's see how this works when we use Optimistic Merge. To start with, unders
 
 * Trollish contributors who ignore the rules, and who write toxic patches.
 
-PM assumes all patches are toxic until proven good. Whereas in my experience, most patches tend to be useful, and worth improving. This is easy to measure from git history. In CZMQ's history, for instance, there are 36 reverts out of 3,200 commits.
+PM assumes all patches are toxic until proven good. Whereas in my experience, most patches tend to be useful, and worth improving. This is easy to measure from git history. In CZMQ's history, for instance, there are 36 reverts out of 3,200 commits. Most of these are to fix mistakes, not bad patches.
 
 Let's see how each scenario works, with PM and OM:
 
-* PM: depending on unspecified, arbitrary criteria, patch may be merged rapidly or slowly. At least sometimes, a good contributor will be left with bad feelings. OM: good contributors feel happy and appreciated, and continue to provide excellent patches until they are done using the project.
+* PM: depending on unspecified, arbitrary criteria, the merge may be fast, or slow. At least sometimes, a good contributor will leave with bad feelings. OM: merges are always fast. Good contributors feel happy and appreciated. They continue to provide excellent patches as long as they are using the project.
 
 * PM: contributor retreats, fixes patch, comes back somewhat humiliated. OM: second contributor joins in to help first fix their patch. We get a short, happy patch party. New contributor now has a coach and friend in the project.
 

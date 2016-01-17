@@ -236,4 +236,6 @@ int main (void)
 
 The C code is a little more verbose. It has to pass the list object to every method. It cannot do tricks like overloading "++" to move the list pointer. It must destroy its own objects. Yet it's clear, and explicit.
 
+Sure, there are more compact ways of writing this example, both in C and in C++. That isn't the point.
+
 I'm not claiming that Scalable C can do everything C++ can. Nor will it be as compact. Yet it is immediately familiar, explicit, and transparent. I'd much rather write and read 100 lines of code like this than 10 lines of code that rely on inheritance, operator overloading, and other syntactic tricks.

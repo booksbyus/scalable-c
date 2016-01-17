@@ -34,12 +34,6 @@
         pub, sub
     zsock, zstr, zmsg, zframe
 
-# Working Together
-    optimistic merging
-    worked example of a patch
-        break it down
-    RFC 22, explained
-
 # Actor-Based Concurrency
     why and how it works
     hello actor example

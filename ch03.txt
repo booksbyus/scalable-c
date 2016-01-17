@@ -1,7 +1,139 @@
 // kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
 .bookmark zproject
-+ Building and Binding
++ Packaging
 
-Writing code code is only half the struggle. Worse is the infinite sucking pit of darkness we call "build systems." Legend tells of a time of 
+In the last chapter I explained a lot of rules and conventions for writing a Scalable C project. It looks like a lot to remember. The good news is that if we are consistent, it pays off. For example if we always put our sources into {{src}} and our headers into {{include}}, it is easier to reuse build scripts between projects.
 
-++ Problem: blank page syndrome
+Speaking of build scripts...
+
+++ Problem: Infinite Sucking Pits of Darkness
+
+I'm speaking of Makefiles. Wikipedia tells us Make was invented by Bell Labs in 1976. //Wikipedia lies!// The real truth is that Makefiles are digital demon devisements from the darkest depths of Dis. Some say Bell Labs was the portal through which they clawed their way into our innocent world. We still don't know their true purpose. All we know is, they are eternal and cannot be killed. And we know the dying sound our soul makes as it leaves our body.
+
+Makefiles spawned an entire legion of descendant demons called the {{autotools}}. There are said to be ancient scrolls that provide the incantations to tame {{autotool}} demons. A piece of one landed on my desk. This is what it said:
+
+[[code]]
+# Resolve issue #355, "client wants to replace me"
+AC_ARG_WITH([pkgconfigdir],
+    AS_HELP_STRING([--with-pkgconfigdir=PATH],
+    [Path to the pkgconfig directory [[LIBDIR/pkgconfig]]]),
+    [pkgconfigdir="$withval"],
+    [pkgconfigdir='${libdir}/pkgconfig'])
+AC_SUBST([pkgconfigdir])
+[[/code]]
+
+Makefiles and build systems that laughing call themselves "makefile generators" as if that made things simpler are inevitable. There is no escape to an alternate universe, if you are writing C code. Oh, please someone tell me how "you need make to reduce build times." I need a good laugh while Travis CI trundles through a fifteen-minute build, every time I push a commit to GitHub.
+
+That being said...
+
+//Solution: make it someone else's problem.//
+
+Happily, this solution actually worked. It comes as close to killing makefiles as possible, after about 25 years of research. As often, the brilliance and genius comes from the collective mind.
+
+What my team, at iMatix did, many years ago, was to build [https://github.com/imatix/gsl a way to generate code] from high level models. We used this a lot and got good at it. Our gsl language makes it possible to develop DSLs (domain specific languages) quickly, and then build backends that turn these DSLs into code.
+
+What the ZeroMQ community did, over about two years, was build [https://github.com/zeromq/zproject/graphs/contributors a DSL for packaging], and write dozens of backends for it. This tool is called {{zproject}}, and it is what I'll explain in this chapter.
+
+Remember this lesson:
+
+> Never give up.
+
+++ Problem: I don't got zproject
+
+//Solution: take it from GitHub.//
+
+```
+#   Install gsl first
+git clone https://github.com/imatix/gsl
+cd gsl/src
+make -j 4 && sudo make install
+cd ..
+#   Install zproject
+git clone https://github.com/zeromq/zproject
+cd zproject
+./autogen.sh && ./configure
+make && make install
+```
+
+Remember this lesson:
+
+> Once you go master, you never go back.
+
+++ Problem: we need an example
+
+The fastest way to learn any new tool is by example. Let's make a minimal project by hand, then apply magic. Our project is called "Global Domination." Right now version 0.1 is small and modest. It is a skeleton project that fits the rules of Chapter 2, and does nothing more.
+
+//Solution: get the code from GitHub.//
+
+```
+git clone https://github.com/scalable-c/globdom
+cd globdom
+git reset --hard version-0.1
+cat README.md
+```
+
+The minimal project contains one empty class, and supporting files:
+
+* {{LICENSE}} -- MPLv2 license text
+* {{README.md}} -- this file
+* {{include/globaldom.h}} -- project public header
+* {{include/gdom_server.h}} -- Global Domination server API
+* {{src/gdom_server.c}} -- Global Domination server
+* {{src/gdom_classes.h}} -- project private header
+* {{src/gdom_selftest.c}} -- project selftest tool
+* {{build.sh}} -- build and test Global Domination
+* {{.gitignore}} -- tell git what files to ignore
+
+To build and test GlobDom 0.1, run {{build.sh}}.
+
+++ Problem: people expect "./configure && make"
+
+It is possible, and I've done this on real projects, to work without Makefiles. You compile stuff, chuck it into libraries, and link your executables. Yet it bounces off the wall of expectations. Also, the endless weirdness of the real world. Any real build process gets complex. And so people turn to Makefile generators, much like the victim of a street mugging turning to Somali warlords for help.
+
+Let me be frank, for once. I do not like autotools. It uses a flat yet vast macro language to generate Makefiles by sheer brute force. It may be powerful, yet so are the technicals those Somali warlords like to drive to work. The only good thing about autotools is that if (and this is a large if) you find someone who understands it, then it can work really well.
+
+Happily we figured out how to use autotools without knowing anything about it. Let me tell you how.
+
+First, create a file {{project.xml}} in the globdom root directory, like this:
+
+```
+<project
+    name = "Global Domination"
+    script = "zproject.gsl"
+    prefix = "gdom" >
+    <use project = "czmq" />
+    <class name = "gdom_server" />
+</project>
+```
+
+Second, run this command:
+
+```
+gsl project.xml
+```
+
+And now, all this works:
+
+```
+./autogen.sh
+./configure && make
+make check
+make dist
+```
+
+//Solution: write a project.xml file, then run zproject.//
+
+++ Problem: sorry, I meant "cmake..."
+
+No problems. We knew this was coming. Try the following:
+
+```
+gsl project.xml     #  If you didn't just do this
+cmake .
+make
+make test
+```
+
+.end
+
+Problem:

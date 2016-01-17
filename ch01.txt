@@ -20,7 +20,7 @@ Deciding what to do next is always a tricky thing. I like to solve this using a 
 
 So this will be the structure of the book. Every section states a problem, and then solves it. This approach makes it easy for you to know why I'm explaining a particular topic. More to the point, it makes it easier for me to write the book.
 
-Remember this rule:
+Remember this lesson:
 
 > Don't add features or explore maybes. Solve real problems one by one with minimal, testable solutions.
 
@@ -103,9 +103,9 @@ Jargon file:
 * "pull" is getting changes from a remote to your local repo.
 * "branches" are a thing git does to confuse you. We always use one branch called "master." I'll explain more about that later.
 
-Remember this rule:
+Remember this lesson:
 
-> If you haven't committed your work and pushed it to GitHub, it is already dead.
+> If you haven't committed your work and pushed it to GitHub, your work is already dead.
 
 ++ Problem: git asks for login and password
 
@@ -130,7 +130,8 @@ git push origin master
 Jargon file:
 
 * "SSH" - the secure shell protocol, often used when A wants to talk to B without C snooping.
-* "Two-factor authentication" or 2FA - stops people accessing your account if they steal your password. Learn it, and use it.
+
+* "Two-factor authentication" or 2FA - keeps crooks out of your account even if they get your password. Learn it, and use it.
 
 ++ Problem: the C preprocessor
 
@@ -174,10 +175,12 @@ These days we've moved on, so this looks somewhat different:
 Jargon file:
 
 * "header" - for historical reasons, C splits its code into two pieces. The "header" defines function signatures ("prototypes"), constants, and data types. The "source" contains the actual functional code. A clean project does this in a consistent way (and we'll come to that). Most projects are kind of random about it.
+
 * "include file" - another name for "header."
+
 * "punched cards" - the 1960's and 70's USB stick, capable of holding a massive 80 bytes per card.
 
-Remember this rule:
+Remember this lesson:
 
 > If code looks ugly, it's not scalable. Work on it until it looks nice.
 
@@ -204,27 +207,24 @@ Note that we're using HTTPS again here. SSH would also work:
 git clone git@github.com:zeromq/czmq
 ```
 
-Except, don't. If you had commit rights to CZMQ, the second form would let you push changes straight to the repo. That's a "no no" for reasons I'll explain later. So remember this rule:
+Except, don't. If you had commit rights to CZMQ, the second form would let you push changes straight to the repo. That's a "no no" for reasons I'll explain later. So remember this lesson:
 
 > When you clone projects from outside your own account, always use the HTTPS form.
 
 Next, we build and install CZMQ. There are two ways, and I'll show both of them. Here is the more traditional way:
 
 ```
-./autogen.sh
-./configure
-make -j 4
-make check
-make install
+./autogen.sh && ./configure
+make -j 4 && make check
+make install && sudo ldconfig
 ```
 
 And here is the more modern way, using CMake:
 
 ```
 cmake .
-make -j 4
-make test
-make install
+make -j 4 && make test
+make install && sudo ldconfig
 ```
 
 The {{-j 4}} option to {{make}} runs parallel jobs to make use of a dual or quad core box. CMake runs somewhat faster. If you're going to learn either of these two, CMake is easier, and autoconf is better for job security.
@@ -232,9 +232,12 @@ The {{-j 4}} option to {{make}} runs parallel jobs to make use of a dual or quad
 Jargon file:
 
 * "git master" - the common name for the latest version of a project living on GitHub (or a similar site).
-* "cloning" - means making a local copy of a remote repo. This automatically sets up a remote called "origin" that points back to the original repo.
 
-Remember this rule:
+* "cloning" - means making a local copy of a remote repo. This also sets up a remote called "origin" that points back to the original repo.
+
+* "ldconfig" - fixes up dynamic link libraries after you install them. Run this /usr/local/lib already has a different version of the library you are installing.
+
+Remember this lesson:
 
 > Git master should be almost perfect, almost all the time.
 
@@ -250,23 +253,30 @@ cd $HOME/projects
 # Install libsodium
 git clone https://github.com/jedisct1/libsodium
 cd libsodium
-./autogen.sh && ./configure && make -j 4
-make install
+./autogen.sh && ./configure
+make -j 4 && make check
+make install && sudo ldconfig
 cd ..
 
 # Install libzmq
 git clone https://github.com/zeromq/libzmq
 cd libzmq
-./autogen.sh && ./configure && make -j 4
-make install
+./autogen.sh && ./configure
+make -j 4 && make check
+make install && sudo ldconfig
 cd ..
 
 # Build CZMQ again...
 cd czmq
-./configure && make -j 4
-make install
+./autogen.sh && ./configure
+make -j 4 && make check
+make install && sudo ldconfig
 cd ..
 ```
+
+Remember this lesson:
+
+> If you have several versions of a shared library, weird stuff can happen. Don't be afraid to delete stuff from /usr/local/lib.
 
 ++ Problem: 'make install' fails with a permission error
 
@@ -282,9 +292,11 @@ Then any test files that {{make check}} produces have root permissions. So, futu
 
 //Solution: make /usr/local writable.//
 
-Do I need to say, do this on your personal machine, your laptop or your workstation, where you are the only user? Seems so, since a lot of people who read this advice on Reddit and Hacker News seemed to feel it was crazy. For me, the insane behavior is to blindly enforce policies for multiuser timesharing systems in 2016 when fully functional computers capable of running Linux and a C compiler cost $20. We haven't share our development boxes since the late 20th century.
+Do I need to say "personal computer" again? Do this on your personal machine, your laptop or your workstation, where you are the only user. Don't do it on shared servers. People will tell you it's insane to make these system directories writable by anyone. Imagine that anyone could use your kitchen! The chaos! The panic! The pancakes and pizzas!
 
-Making your install space writable is a brutal and effective solution:
+Computers capable of running Linux and a C compiler cost $20. We haven't shared our development boxes since the late 20th century.
+
+Making your default install space writable is a brutal and effective solution:
 
 ```
 cd /usr/local
@@ -297,9 +309,9 @@ Jargon file:
 
 * "sudo" - run a command as "super user", so with root permissions.
 
-Remember this rule:
+Remember this lesson:
 
-> The computer should not make your life harder without good reason.
+> The computer should not make your life harder without good reason. Also, people often have a poor assessment of risks and benefits.
 
 ++ Problem: I'm on Windows and these commands don't work
 
@@ -320,7 +332,7 @@ cd builds\msvc\vs2013
 
 You will want to clone and build libsodium and libzmq first. A warning: libsodium master sometimes does not build on Windows. Check out the latest stable release tag if you get compile errors.
 
-Having said that, remember this rule:
+Having said that, remember this lesson:
 
 > Linux is the native environment for C development.
 
@@ -339,7 +351,9 @@ CZMQ uses the pattern of treating pull requests as good by definition. Some patc
 Let me walk you through the steps of making a pull request to CZMQ:
 
 * Go to https://github.com/zeromq/czmq.
+
 * Click the "Fork" button at the top right and fork to your personal account.
+
 * When that's done, go to your laptop and clone it (your forked project, not the laptop):
 
 ```
@@ -352,6 +366,7 @@ cmake . && make -j 4
 ```
 
 * Next, make your changes in the cloned CZMQ.
+
 * Commit your changes using a good message. A good commit title starts with "Problem:" and then explains the solution.
 
 To commit all changes to a project, do this:
@@ -416,7 +431,7 @@ git pull --rebase upstream master
 git log
 ```
 
-The {{--rebase}} option stops git from adding spurious "Hey I merged some stuff, look at me!" commits. If you don't use this option, your git history gets messy. It should be the default. It's not. So just always use it. Or, do add this to your $HOME/.bashrc:
+The {{--rebase}} option stops git from adding spurious "Hey I merged some stuff, lookieme!" commits. If you don't use this option, your git history gets messy. It should be the default. It's not. So just always use it. Or, do add this to your $HOME/.bashrc:
 
 ```
 alias gdn='git pull --rebase origin master'
@@ -429,13 +444,14 @@ And then you can type {{gdn}}, {{gdu}} and {{gup}}.
 Jargon file:
 
 * "upstream repo" - the "real" repo that you forked from.
+
 * "rebasing" - a synonym for smoking whatever it was the git developers were on when they wrote the git pull command.
 
 ++ Problem: git isn't working
 
-Ah, git. We love you because you made repositories cheap and scalable. And we hate you because you act weird a lot of the time. There are several ways that git will manage to confuse you. In general, you try a git command that should work, and it fails with some bizarre message.
+Ah, git. We love you because you made repositories cheap and scalable. And we hate you because you act weird a lot of the time. There are several ways that you confuse us. Most often we just ask you to do something for us, and you tell us your whole life story, and break down in a confused mess.
 
-The most common problem is that having repositories with conflicting commits. This can show as different problems:
+The most common problem with a git repository is conflicting commits from different places. This can show as different problems:
 
 * {{git pull}} fails. Someone else changed the same files at you, at the same time. This is rare, and git explains exactly what you need to do to resolve the conflicts.
 
@@ -481,11 +497,11 @@ It can happen for all kinds of reasons, from sunspots to brainfarts. Sometimes a
 
 * Save the files you need to, then delete your repository, re-clone it, and copy the changed files back into it.
 
-I'm sure there are more elegant ways. It doesn't matter: this happens once a year and damn elegance. Recover your work, wipe the slate, and start again.
+I'm sure there are more elegant ways. It doesn't matter: this happens once a year and damn elegance. Recover your work, wipe the slate, start again, and drink to forget.
 
 ++ Problem: git is confusing!
 
-Git is great, yet far from perfect. The command syntax is inconsistent, complex, and arbitrary. It has far too many commands, and often makes us feel stupid.
+Funny how git manages to stay the center of attention. Its command syntax is inconsistent, complex, and arbitrary. It has far too many commands, and often makes us feel stupid.
 
 One of git's neat features is how {{git checkout}}, {{git revert}}, and {{git reset}} all seem to do roughly the same thing in different ways. I'm being sarcastic. It's not neat, it's pathological.
 
@@ -507,7 +523,7 @@ You'd think this was a good thing, right? Well, my experience tells the opposite
 
 Branches epitomize our cargo cult approach to programming. We do it because we believe it will bring us success. We do not ask //why//, only //how//. We make the ritual sacrifice of our time and effort because we believe: //if it hurts it must be healthy.//
 
-Branches existed before git, and they were always nasty. The original rationale for branches is two-fold. First, git's predecessors (like Subversion) were centralized. This meant you made commits straight to the main repository. No ifs or buts. This made it impossible to work on stuff in isolation.
+Branches existed before git, and they were always nasty. The original rationale for branches is two-fold. First, git's predecessors (like Subversion) were thin-client, fat-server. This meant you made commits straight to the main repository. No ifs or buts. This made it impossible to work on stuff in isolation.
 
 Subversion's branches were like fast copies, within a repository. Let's say I wanted to work on /stuff/main/czmq for a week. I could branch it to /stuff/branches/pieter/experiment/czmq/ and then work there.
 
@@ -532,11 +548,13 @@ Git has over 150 commands according to {{git help -a}}.  If we stop using branch
 Most shared repositories use long-lasting branches. We have rituals on how to use these. Vincent Driessen's git-flow may be the best known. It has master and develop "base branches." It has feature branches, release branches, hotfix branches, and support branches. Many teams have adopted git-flow, which even has git extensions to support it.
 
 This complexity demands training and consensus. It lets every project to be different. It keeps out newcomers away. It pulls power towards central repositories, and then towards their administrators. That is ironic, when git is about decentralization.
+
 The cost of this complexity might be acceptable if it solves a worse problem. Yet it doesn't.
 
 The second reason for branches is the assumption we need to make large and disruptive sets of changes. It has always been a poor way of working. Already in 1999 my team built large apps through continuous integration and delivery. Every change was small, and done straight onto the master.
 
 For isolation, we broke large projects into pieces. We defined formal APIs and protocols between the pieces. We had no more that one or two people working on a piece. It worked without flaw.
+
 We have learned a lot in the last 20 years about how to work together. This knowledge is difficult for many to accept. It often goes against our fundamental assumptions and teachings. And yet the data is there. Let me state some key emergent truths:
 
 * //Good software is the product of collaboration between many people, rather than individual brilliance or corporate muscle.// You are on the Internet, built by collaboration between millions of people. The many well-funded competitors to this public project are all dead.
@@ -567,15 +585,16 @@ Branches encourage an opposing theory of change:
 
 * Only qualified people can make changes, based on careful analysis.
 
-* Changes may be broad and deep, especially within large systems that lack internal contracts.
+* Changes may be broad and deep, especially within large systems without internal contracts.
 
-* Changes should stay away from public view until fully tested (using artificial test code).
+* Changes should stay away from public view until well-tested (using artificial test code).
 
 * We assume changes to be valid, if they pass their (artificial) tests. The cost of arguing or removing a change can be significant.
 
 Banning branches forces us to work in smarter ways. There are no guarantees of success. Yet the economics will push us to smaller, safer, cheaper commits. This produces better software.
+
 If you have worked this way, you will appreciate it. If you are working the old fashioned way, my arguments will confuse and annoy you. All I can say is, give it a shot in your next project. If it fails, let me know where and how.
 
 ++ Conclusions
 
-Sorry for all the git. It was inevitable, as this tool has become so central to our work and identity as developers. In the next chapter I'll start to explore what a Scalable C project looks like.
+Sorry for all the git. It was inevitable, as this tool has become so central to our work and identity as developers. In the next chapter I'll start to explore what Scalable C actually looks like.
