@@ -172,7 +172,7 @@ This is a clean and powerful way to write services and other code. In fact, all 
 
 Remember this lesson:
 
-> Everything a class. You can definitely make singleton methods (which do not work on a specific instance).
+> Everything is a class. You can definitely make singleton methods (which do not work on a specific instance).
 
 By freaky coincidence, we called [http://rfc.zeromq.org/spec:21 the style guide for Scalable C] "CLASS."  What can I say... acronyms came back into fashion around 2001.
 
