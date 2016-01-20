@@ -144,7 +144,7 @@ Plus some others:
 
 * asciidoc - which we use to build manual pages.
 
-* uuid-dev - utility libraries.
+* uuid-dev, libpcre3-dev - utility libraries.
 
 * valgrind - a useful tool for checking your code.
 
@@ -154,7 +154,7 @@ Which we install like this (using the Debian-style apt-get package manager):
 sudo apt-get install -y
     git-all build-essential libtool \
     pkg-config autotools-dev autoconf automake cmake \
-    asciidoc uuid-dev valgrind
+    asciidoc uuid-dev libpcre3-dev valgrind
 ```
 
 The LearnXinYMinutes project has good quick guides to many languages. Here are its guides [https://learnxinyminutes.com/docs/bash/ to Bash], [https://learnxinyminutes.com/docs/c/ to C],
