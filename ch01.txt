@@ -288,7 +288,7 @@ On Linux, {{/usr/local/}} is the normal place to install headers and libraries y
 sudo make check install
 ```
 
-Then any test files that {{make check}} produces have root permissions. So, future {{make check}} steps will fail. Also it sudo asks for passwords, making it harder to script. Aagh!
+Then any test files that {{make check}} produces have root permissions. So, future {{make check}} steps will fail. Also sudo asking for passwords, makes it harder to script. Aagh!
 
 //Solution: make /usr/local writable.//
 
