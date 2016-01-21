@@ -22,7 +22,7 @@ We already saw the basics for that:
 
 * Each project has a unique name. The name space is GitHub, though it can be a given language community. I doubt that Java developers care what names Perl projects use.
 
-++ Problem: how do explain my project to others?
+++ Problem: how do I explain my project to others?
 
 You could hire a designer, and build a beautiful web site. Yet the essence of "scalable" is So Cheap It Costs You Nothing To Fail. Hand-crafted web sites aren't scalable.
 
@@ -320,7 +320,7 @@ myp_myclass_myprop (myp_myclass_t *self)
 }
 
 //  Set myprop property
-char *
+void
 myp_myclass_set_myprop (myp_myclass_t *self, const char *myprop)
 {
     assert (self);
@@ -353,37 +353,37 @@ Remember this lesson:
 
 ++ Problem: how do we return freshly-allocated data?
 
-Here is a method that returns a fresh buffer:
+Here is a method that returns a fresh buffer holding some content:
 
 [[code]]
 byte *
-myclass_buffer (size_t *buffer_size)
+myp_myclass_content (size_t *content_size)
 {
     ...
-    *buffer_size = ...
-    byte *buffer = malloc (*buffer_size);
+    *content_size = ...
+    byte *content = malloc (*content_size);
     ...
-    return buffer;
+    return content;
 }
 [[/code]]
 
-The author wants to return a buffer, yet also needs to return the buffer size. So, they add an argument which is a pointer to a returned buffer_size.
+The author wants to return a buffer, yet also needs to return the buffer size. So, they add an argument which is a pointer to a returned content_size.
 
-You call this method, it's not immediately obvious what it's doing:
+When you call this method, it's not immediately obvious what it's doing:
 
 ```
-size_t buffer_size;
-byte *buffer = myclass_buffer (&buffer_size);
+size_t content_size;
+byte *content = myclass_content (&content_size);
 ...
-free (buffer);
+free (content);
 ```
 
 If we're designing from the user's perspective (always a better idea), we'd want to get a buffer object that we could destroy. We don't need to invent a buffer type, since CZMQ gives us a zchunk class. So, we can write:
 
 ```
-zchunk_t *buffer = myclass_buffer ();
+zchunk_t *content = myclass_content ();
 ...
-zchunk_destroy (&buffer);
+zchunk_destroy (&content);
 ```
 
 Which is rather cleaner. It is also fully abstract. Perhaps zchunk consists just of a size and data. As it turns out, it has other, useful properties. Such as, the ability to resize chunks and append data to them.
@@ -572,7 +572,7 @@ It is trivial and costs nothing to check for NULL, so you will see this in all w
 
 [[code]]
 void *
-myp_myclass_mymethod (my_myclass_t *self)
+myp_myclass_mymethod (myp_myclass_t *self)
 {
     assert (self);
     ...
@@ -722,7 +722,7 @@ I've already argued against returning values via parameters. In C, functions ret
 
 * Return a constant string to the caller as {{const char *}}; the caller may not change or free these.
 
-* Return a cardinal value (positions, quantities, indexes) as {{size_t}}.
+* Return a ordinal value (positions, quantities, indexes) as {{size_t}}.
 
 * Return an object property (works best if the method has the name of the property).
 
@@ -738,7 +738,7 @@ Remember this lesson:
 
 After lots of writing, compiling, testing, cursing, and repeating, you get two things. One, a "library file" that contains your precious "object code," which is the compiled version of your source code. These terms were invented by mad scientists at IBM in the 1970s.
 
-Libraries come in two flavors: static ({libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you can have with {{file}}:
+Libraries come in two flavors: static {{libmyp.a}} and dynamic {{libmyp.so}} on Linux. If you are curious, use the {{file}} command to ask Linux what any given file is. Here's the kind of fun you can have with {{file}}:
 
 ```
 $ file /usr/local/lib/libmyp.la

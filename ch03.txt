@@ -10,7 +10,7 @@ Speaking of build scripts...
 
 I'm speaking of Makefiles. Wikipedia tells us Make was invented by Bell Labs in 1976. //Wikipedia lies!// The real truth is that Makefiles are digital demon devisements from the darkest depths of Dis. Some say Bell Labs was the portal through which they clawed their way into our innocent world. We still don't know their true purpose. All we know is, they are eternal and cannot be killed. And we know the dying sound our soul makes as it leaves our body.
 
-Makefiles spawned an entire legion of descendant demons called the {{autotools}}. There are said to be ancient scrolls that provide the incantations to tame {{autotool}} demons. A piece of one landed on my desk. This is what it said:
+Makefiles spawned an entire legion of descendant demons called the {{autotools}}. There are said to be ancient scrolls that provide the incantations to tame {{autotools}} demons. A piece of one landed on my desk. This is what it said:
 
 [[code]]
 # Resolve issue #355, "client wants to replace me"
@@ -36,11 +36,11 @@ What the ZeroMQ community did, over about two years, was build [https://github.c
 
 Remember this lesson:
 
-> Never give up.
+> Never give up. If you wait long enough, the ZeroMQ community may solve your problem for you.
 
 ++ Problem: I don't got zproject
 
-//Solution: take it from GitHub.//
+//Solution: get it from GitHub.//
 
 ```
 #   Install gsl first
@@ -90,9 +90,11 @@ To build and test GlobDom 0.1, run {{build.sh}}.
 
 It is possible, and I've done this on real projects, to work without Makefiles. You compile stuff, chuck it into libraries, and link your executables. Yet it bounces off the wall of expectations. Also, the endless weirdness of the real world. Any real build process gets complex. And so people turn to Makefile generators, much like the victim of a street mugging turning to Somali warlords for help.
 
-Let me be frank, for once. I do not like autotools. It uses a flat yet vast macro language to generate Makefiles by sheer brute force. It may be powerful, yet so are the technicals those Somali warlords like to drive to work. The only good thing about autotools is that if (and this is a large if) you find someone who understands it, then it can work really well.
+Let me be frank, for a change. I do not like the GNU build system, even after mastering it. It uses a flat yet vast macro language to generate Makefiles by sheer brute force. It may be powerful, yet so are the technicals those Somali warlords like to drive to work. The only good thing about autotools is that if (and this is a large if) you can master it, or find someone who's done this, then it is solid.
 
-Happily we figured out how to use autotools without knowing anything about it. Let me tell you how.
+Happily we figured out how to use autotools' considerable power from a position of blissful ignorance. Let me show you how.
+
+//Solution: tell zproject what your project looks like.//
 
 First, create a file {{project.xml}} in the globdom root directory, like this:
 
@@ -106,33 +108,500 @@ First, create a file {{project.xml}} in the globdom root directory, like this:
 </project>
 ```
 
-Second, run this command:
+This should be self-explanatory. If you've heard bad things about XML, or been traumatized by it in the past, my sympathies. Give some people a set of hammers, and they think they're rock star drummers. XML is not a programming language. It is however great for writing models to generate code from. You'll learn the fun and profit in this.
+
+Second, run the {{gsl}} command to build the project model:
 
 ```
-gsl project.xml
+globdom> gsl project.xml
+GSL/4.1c Copyright (c) 1996-2016 iMatix Corporation
+gsl/4 I: Processing project.xml...
+gsl/4 M: Building GNU build system (autotools)
+gsl/4 M: Building CMake build system (cmake)
 ```
 
-And now, all this works:
+And now, the "configure/make" thing works. Run "./autogen.sh" first, as that produces the configure script:
 
 ```
 ./autogen.sh
-./configure && make
+./configure
+make -j 4
 make check
-make dist
 ```
-
-//Solution: write a project.xml file, then run zproject.//
 
 ++ Problem: sorry, I meant "cmake..."
 
-No problems. We knew this was coming. Try the following:
+No problems. As you saw, zproject supports both CMake and the GNU build system. So:
 
 ```
-gsl project.xml     #  If you didn't just do this
 cmake .
-make
+make -j 4
 make test
 ```
+
+//Solution: zproject targets both autotools and CMake.//
+
+If autotools are the Somali warlords of build systems, then CMake is the Texas politician who promises wealth and power. CMake still wants your soul, yet it is has much more charisma. "I can take care of Visual Studio for you!" it says, smiling, playing off our inner fears.
+
+My main gripe with CMake is that it is just a better build scripting system. It doesn't change the basic fact that //I don't want to write build scripts because they're always doing the same bloody work!//
+
+//Solution: don't script when you can model.//
+
+With zproject we don't write scripts. Instead we document our projects as abstract XML models. Then, we can run arbitrary backends on this model, each doing what it must. It is a profound and valuable shift.
+
+Just to finish my complaints about CMake, it lacks a "clean" command. And since it leaves trash lying all over the place, and since that trash really gets in the way sometimes, this is bad. The solution people use is to [http://stackoverflow.com/questions/9680420/looking-for-a-cmake-clean-command-to-clear-up-cmake-output build in a temporary directory]. It isn't great.
+
+Still, since we get CMake support for free, why complain.
+
+Remember this lesson:
+
+> Even if you hate a particular build system, someone out there is addicted to it.
+
+++ Problem: what do I add to git?
+
+Ah, our directory is now a mess of different files. We have some made by hand, some produced by autotools, some by CMake, and some by the compiler and linker.
+
+We cannot add //everything// to git, because many of these files change every time we compile, and do not belong in the repository. Yet we need the basic build scripts in git, otherwise no-one will know how to use our code.
+
+//Solution: put the output of zproject in git.//
+
+Let's rewind. First, save project.xml. Then reset the clock using {{git clean}}. Then run zproject again:
+
+```
+mv project.xml ..
+git clean -d -f -x
+mv ../project.xml .
+gsl project.xml
+```
+
+Let's look at what zproject actually generated for us. Run {{git status}} to see all new and changed files:
+
+```
+globdom> git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+    modified:   src/gdom_classes.h
+    modified:   src/gdom_selftest.c
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+    CMakeLists.txt
+    Findczmq.cmake
+    Findlibsodium.cmake
+    Findlibzmq.cmake
+    Makefile.am
+    autogen.sh
+    configure.ac
+    doc/
+    include/gdom_library.h
+    include/global_domination.h
+    project.xml
+    src/.valgrind.supp
+    src/Makemodule.am
+    src/libgdom.pc.in
+    version.sh
+```
+
+Two of our hand-written files got smashed by generated versions. That's intentional. We won't modify these by hand ever again, as they track the project. Then we got a lot of new files, for autotools and for CMake. And then we got a project header called {{include/global_domination.h}}. Cute! But useless! Let's tolerate that for now, and fix it later.
+
+Add these files to git and commit:
+
+```
+git add .
+git commit -m "Problem: git repo doesn't contain build scripts
+
+Solution: add everything that zproject generates"
+```
+
+Now run {{./autogen.sh && ./configure && make check}} again. You should lots of output, ending like this:
+
+```
+/bin/bash ./libtool --mode=execute ./src/gdom_selftest
+Running global domination selftests...
+ * gdom_server: OK
+Tests passed OK
+...
+```
+
+Remember this lesson:
+
+> When using {{git clean}}, save any hand-written files first.
+
+++ Problem: {{git status}} shows lots of junk
+
+Building your project will produce lots of files and directories scattered around. Running {{git clean}} too often is a bad idea, as it will wipe any new files you've written.
+
+//Solution: use a more complete .gitignore file.//
+
+It gets tedious to write a complete .gitignore file. Happily we have a tool whose intention is precisely to do the tedious things involved in building Scalable C projects. Here is how we get a complete .gitignore file:
+
+```
+rm .gitignore
+gsl project.xml
+```
+
+You'll see this in the output:
+
+```
+gsl/4 M: Generating initial .gitignore file
+```
+
+Now type {{git status}} and the image comes in focus:
+
+```
+git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+    modified:   .gitignore
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+Let's add this and commit:
+
+```
+git add .
+git commit -m "Problem: .gitignore needs more beef
+
+Solution: delete and regenerate via zproject"
+```
+
+Remember this lesson:
+
+> zproject generates .gitignore for us, if we don't have it.
+
+++ Problem: I need to make a new class
+
+Global domination is well on the way! Now we'd like to add a client class. We'll offer two APIs. One is for those who wish to run the GlobDom server in their code. The second is for those who want to access it, over the network. So let's make a client class. Like our server class, it'll do nothing, yet. First draw the outline, then fill it in.
+
+//Solution: add new classes to project.xml.//
+
+Here is how we define the client class in {{project.xml}}:
+
+```
+<project
+    ...
+    <class name = "gdom_client" />
+</project>
+```
+
+Then we run {{gsl project.xml}} again and see what {{git status}} gives us. There's a few changes to build scripts, then two new files:
+
+```
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+    include/gdom_client.h
+    src/gdom_client.c
+```
+
+Take a quick look at these generated files. The {{include/gdom_client.h}} header defines a bare minimum for a typical class:
+
+[[code]]
+/*  =========================================================================
+    gdom_client - class description
+
+    Copyright (c) the Authors
+    =========================================================================
+*/
+
+#ifndef GDOM_CLIENT_H_INCLUDED
+#define GDOM_CLIENT_H_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//  @interface
+//  Create a new gdom_client
+GDOM_EXPORT gdom_client_t *
+    gdom_client_new (void);
+
+//  Destroy the gdom_client
+GDOM_EXPORT void
+    gdom_client_destroy (gdom_client_t **self_p);
+
+//  Print properties of object
+GDOM_EXPORT void
+    gdom_client_print (gdom_client_t *self);
+
+//  Self test of this class
+GDOM_EXPORT void
+    gdom_client_test (bool verbose);
+//  @end
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+[[/code]]
+
+And {{src/gdom_client.c}} implements these three methods with little more than air and used chewing gum. Let's do the usual sanity check:
+
+```
+make check
+```
+
+Remember this lesson:
+
+> zproject generates classes for you if you need them.
+
+++ Problem: generated sources don't have a license
+
+These two new files need a license blurb at their start. Now, we could add the license blurb by hand. zproject does not touch the class header or source once those files exist. Plus, there are other files that zproject gives us, like gdom_selftest.c, which also need a license blurb.
+
+//Solution: specify a blurb in our project model.//
+
+We'll put the blurb into a separate XML file so it doesn't clutter our project model. Create a file {{license.xml}} with this content:
+
+[[code]]
+<license>
+Copyright (c) the Contributors as noted in the AUTHORS file.
+This file is part of Global Domination. Resistance is useless.
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+</license>
+[[/code]]
+
+And now include that into your {{project.xml}} thus:
+
+[[code]
+<project ...>
+    <include filename = "license.xml" />
+    ...
+</project>
+[[/code]]
+
+Now, let's check that this works:
+
+```
+rm src/gdom_client.c
+rm include/gdom_client.h
+gsl project.xml
+```
+
+If {{gsl}} complains, fix the XML syntax and try again. Now look at the {{src/gdom_client.c}} file. It should start like this:
+
+[[code]]
+/*  ===================================================================
+    gdom_client - class description
+
+    Copyright (c) the Contributors as noted in the AUTHORS file.
+    This file is part of Global Domination. Resistance is useless.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+    ===================================================================
+[[/code]]
+
+Take a peek at {{src/gdom_selftest.c}} and you will see the same blurb.
+
+Remember this lesson:
+
+> Stop deleting src/gdom_client.c. From now you, you edit this by hand.
+
+++ Problem: the client wants to run a server
+
+As luck would have it, Global Domination's sales team already has a potential customer, who's offering good money for a server. You just need a demo, and the sooner the better.
+
+//Solution: write a server program.//
+
+What the server program does is create a {{gdom_server}} instance, print an optimistic message, wait for Ctrl-C, and then exit. How hard can it be?
+
+Let's start by adding a 'main' element to {{project.xml}}:
+
+```
+<main name = "gdomd">Global Domination Demon</main>
+```
+
+Now regenerate the project with the usual {{gsl project.xml}}. You'll notice that zproject tells you:
+
+```
+gsl/4 M: Generating skeleton for src/gdomd.c
+```
+
+The skeleton {{src/gdomd.c}} doesn't do anything useful, or even pretend to. Let's open it up in an editor and add some body to it:
+
+[[code]]
+    ...
+    //  Insert main code here
+    if (verbose)
+        zsys_info ("Welcome to Global Domination v0.1");
+    zsys_info ("starting Global Domination server...");
+    gdom_server_t *server = gdom_server_new ();
+    assert (server);
+    while (!zsys_interrupted) {
+        sleep (1);
+    }
+    zsys_info ("terminating Global Domination server...");
+    gdom_server_destroy (&server);
+    return 0;
+}
+[[/code]]
+
+The {{zsys_info}} method is one of a bunch that do system logging. The others are:
+
+* {{zsys_error}} - log error condition - highest priority.
+* {{zsys_warning}} - log warning condition - high priority.
+* {{zsys_notice}} - log normal condition - normal priority.
+* {{zsys_info}} - log information message - low priority.
+
+Run {{man zsys}} to see some of the other methods in the CZMQ {{zsys}} class.
+
+Let's build and test our new server:
+
+```
+make
+src/gdomd -v
+```
+
+It should say:
+
+```
+gdomd - Global Domination Demon
+I: 16-01-20 18:11:07 Welcome to Global Domination v0.1
+I: 16-01-20 18:11:07 starting Global Domination server...
+```
+
+++ Problem: update the version number
+
+After such a lot of work we should release a new version. We defined the version number in our public header file, {{include/globdom.h}}. It should be simple to bump it:
+
+* Edit {{include/globdom.h}} to say {{#define GLOBDOM_VERSION_MINOR 2}}
+* Print the version number from the header:
+
+[[code]]
+zsys_info ("Welcome to Global Domination v%d.%d",
+            GLOBDOM_VERSION_MAJOR, GLOBDOM_VERSION_MINOR);
+[[/code]]
+
+Run {{make}} and... we get compile errors like this:
+
+```
+gdomd.c: In function ‘main’:
+gdomd.c:46:21: error: ‘GLOBDOM_VERSION_MAJOR’ undeclared
+```
+
+The reason is that our project header files are confused. We have a mix of hand-written files (the original {{include/globdom.h}}) and generated files doing the same thing. Take a look at {{include/gdom_library.h}} and you'll see it does the same (and more) as we did by hand.
+
+//Solution: define the version and header in our project model.//
+
+First, let's fix the header mismatch. Add this {{header}} attribute to the project item:
+
+```
+<project
+    name = "Global Domination"
+    script = "zproject.gsl"
+    prefix = "gdom"
+    header = "globaldom.h">
+    ...
+```
+
+Now delete these two files:
+
+```
+rm include/global_domination.h
+rm include/globaldom.h
+```
+
+The first is junk and has to go. The second is our hand-written project header. When we delete it, and then build the project again, zproject gives us a new skeleton header. It does nothing except include gdom_library.h, which has all of our public API. This split lets us add hand-written code (to {{globaldom.h}}) while also generating the public API (in {{gdom_library.h}}).
+
+It sounds tricky yet once things are working, you can more or less forget about it. Rebuild the project with {{gsl project.xml}} as usual. You should see this output:
+
+```
+gsl/4 M: Generating skeleton for include/globaldom.h
+```
+
+Now look at the version macros in {{include/gdom_library.h}}:
+
+[[code]]
+#define GDOM_VERSION_MAJOR 0
+#define GDOM_VERSION_MINOR 0
+#define GDOM_VERSION_PATCH 0
+[[/code]]
+
+To define a version in the project, we add a 'version' item like this:
+
+[[code]]
+<version major = "0" minor = "2" />
+[[/code]]
+
+Run {{gsl project.xml}} again and see how {{include/gdom_library.h}} changes. Now we can fix our main program, and make the project:
+
+[[code]]
+zsys_info ("Welcome to Global Domination v%d.%d",
+            GDOM_VERSION_MAJOR, GDOM_VERSION_MINOR);
+[[/code]]
+
+```
+make
+src/gdomd -v
+```
+
+Remember this lesson:
+
+> Simple is hard.
+
+.end
+
+++ Problem:
+
+
+
+
+daemon
+    - show some zsys stuff
+
+++ Problem: the server blocks my main thread
+
+<actor> -> generate
+
+++ Problem: self tests are slow
+
+selftest command line tool
+
+++ Problem: I keep making stupid mistakes
+
+<target name = "travis" />
+travis CI
+
+++ Problem: I got asked for a Windows build
+
+<target name = "msvc*" />
+
+++ Problem: someone asked me for packages
+
+debian, redhat, nuget, docker packaging
+
+++ Problem: Java
+
+ah yes JNI
+introduce API model
+
+++ Problem: my stuff is getting popular
+
+bindings for ruby, python, QML
+
+++ Problem: can I Globally Dominate Android?
+
+yes you can!
+In two ways!
+
+++ Problem: zproject doesn't support X
+
 
 .end
 
