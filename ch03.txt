@@ -1,6 +1,6 @@
 // kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
 .bookmark zproject
-+ Packaging
++ Packaging and Binding
 
 In the last chapter I explained a lot of rules and conventions for writing a Scalable C project. It looks like a lot to remember. The good news is that if we are consistent, it pays off. For example if we always put our sources into {{src}} and our headers into {{include}}, it is easier to reuse build scripts between projects.
 
@@ -377,7 +377,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 And now include that into your {{project.xml}} thus:
 
-[[code]
+[[code]]
 <project ...>
     <include filename = "license.xml" />
     ...
