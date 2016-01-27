@@ -1213,7 +1213,7 @@ With this one:
 if (status == 0)
     printf ("succeeded");
 else
-if (status == 1)
+if (status == -1)
     printf ("failed");
 else
     printf ("uncertain");
