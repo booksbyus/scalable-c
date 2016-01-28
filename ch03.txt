@@ -227,7 +227,7 @@ git commit -m "Problem: git repo doesn't contain build scripts
 Solution: add everything that zproject generates"
 ```
 
-Now run {{./autogen.sh && ./configure && make check}} again. You should lots of output, ending like this:
+Now run {{./autogen.sh && ./configure && make check}} again. You should see lots of output, ending like this:
 
 ```
 /bin/bash ./libtool --mode=execute ./src/gdom_selftest
@@ -289,7 +289,7 @@ Remember this lesson:
 
 ++ Problem: I need to make a new class
 
-Global domination is well on the way! Now we'd like to add a client class. We'll offer two APIs. One is for those who wish to run the GlobDom server in their code. The second is for those who want to access it, over the network. So let's make a client class. Like our server class, it'll do nothing, yet. First draw the outline, then fill it in.
+Global domination is well on the way! Now we'd like to add a client class. We'll offer two APIs. One is for those who wish to run the GlobDom server in their code. The second is for those who want to access it over the network. So let's make a client class. Like our server class, it'll do nothing, yet. First draw the outline, then fill it in.
 
 //Solution: add new classes to project.xml.//
 
@@ -807,7 +807,7 @@ Remember this lesson:
 
 //Solution: use GitHub's release page.//
 
-GitHub offers one-click downloads of the tarballs and zip files for [https://github.com/scalable-c/globdom/releases/tag/version-0.2 any given release of a project]. There really isn't a better way of distributing tarballs.The ZeroMQ project uses a download server, yet that's an historical artifact, not a preference over GitHub.
+GitHub offers one-click downloads of the tarballs and zip files for [https://github.com/scalable-c/globdom/releases/tag/version-0.2 any given release of a project]. There really isn't a better way of distributing tarballs.The ZeroMQ project uses a download server, yet that's a historical artifact, not a preference over GitHub.
 
 If you want a specific tagged release from git, there are two ways. Either way you first clone the git repository. Then you can do either of these:
 
@@ -836,7 +836,7 @@ I'll summarize what you need to have, know, and do in order to build your projec
 
 * You need a Visual Studio compiler. You can use the Community Edition for free.
 
-* Ensure the {[programfiles}} environment variable is set properly. Use the command line (or PowerShell! if you want a Kung Fury-style retro experience).
+* Ensure the {{programfiles}} environment variable is set properly. Use the command line (or PowerShell! if you want a Kung Fury-style retro experience).
 
 * You need to install git and/or unzip for the command line. I'd recommend to build from git.
 
