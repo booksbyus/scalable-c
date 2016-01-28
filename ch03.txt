@@ -1,6 +1,6 @@
 // kate: font Liberation Sans; font-size 16; syntax None; bom off; indent-mode none;
 .bookmark zproject
-+ Packaging and Binding
++ The zproject Tool
 
 In the last chapter I explained a lot of rules and conventions for writing a Scalable C project. It looks like a lot to remember. The good news is that if we are consistent, it pays off. For example if we always put our sources into {{src}} and our headers into {{include}}, it is easier to reuse build scripts between projects.
 
@@ -86,6 +86,10 @@ The minimal project contains one empty class, and supporting files:
 
 To build and test GlobDom 0.1, run {{build.sh}}.
 
+Remember this lesson:
+
+> Learn the basics of Bash, it will save your life many times.
+
 ++ Problem: people expect "./configure && make"
 
 It is possible, and I've done this on real projects, to work without Makefiles. You compile stuff, chuck it into libraries, and link your executables. Yet it bounces off the wall of expectations. Also, the endless weirdness of the real world. Any real build process gets complex. And so people turn to Makefile generators, much like the victim of a street mugging turning to Somali warlords for help.
@@ -128,6 +132,10 @@ And now, the "configure/make" thing works. Run "./autogen.sh" first, as that pro
 make -j 4
 make check
 ```
+
+Remember this lesson:
+
+> If everyone expects cake, give them cake.
 
 ++ Problem: sorry, I meant "cmake..."
 
@@ -476,6 +484,10 @@ I: 16-01-20 18:11:07 Welcome to Global Domination v0.1
 I: 16-01-20 18:11:07 starting Global Domination server...
 ```
 
+Remember this lesson:
+
+> Better a hundred small steps than one giant leap.
+
 ++ Problem: update the version number
 
 After such a lot of work we should release a new version. We defined the version number in our public header file, {{include/globdom.h}}. It should be simple to bump it:
@@ -517,7 +529,7 @@ rm include/global_domination.h
 rm include/globaldom.h
 ```
 
-The first is junk and has to go. The second is our hand-written project header. When we delete it, and then build the project again, zproject gives us a new skeleton header. It does nothing except include gdom_library.h, which has all of our public API. This split lets us add hand-written code (to {{globaldom.h}}) while also generating the public API (in {{gdom_library.h}}).
+The first is junk and has to go. The second is our hand-written project header. When we delete it, and then build the project again, zproject gives us a new skeleton header. It does nothing except pull in {{gdom_library.h}}, which has all of our public API. This split lets us add hand-written code (to {{globaldom.h}}) while also generating the public API (in {{gdom_library.h}}).
 
 It sounds tricky yet once things are working, you can more or less forget about it. Rebuild the project with {{gsl project.xml}} as usual. You should see this output:
 
@@ -555,15 +567,392 @@ Remember this lesson:
 
 > Simple is hard.
 
+++ Problem: someone's patch broke my code
+
+Congratulations, you got a contributor! It is a precious thing, someone joining your project. To criticize their work is clumsy, and foolish. Yet most open source projects treat patches like lollipops offered by strangers in a park. I've already discussed why optimistic merging is sane and effective.
+
+Yet, it's nice to give people rapid feedback on their work. It might take us a day to see someone's patch and spot a mistake. We have computers to do this kind of stuff.
+
+//Solution: enable Travis CI on your project.//
+
+"CI" is short for "build everything and run make check, and see if it works." I'm sure there are other CI systems yet Travis wins for being simple, fast, and reliable.
+
+To enable Travis, add this line to your project.xml:
+
+[[code]]
+<target name = "travis" />
+[[/code]]
+
+Run {{gsl project.xml}} again and you'll see this output:
+
+[[code]]
+gsl/4 I: Processing project.xml...
+gsl/4 M: Building GNU build system (autotools)
+gsl/4 M: Building CMake build system (cmake)
+gsl/4 M: Building Travis CI scripts (travis)
+gsl/4 M: Generating skeleton .travis.yml script
+[[/code]]
+
+In all cases, zproject builds the {{autotools}} and {{cmake}} targets. We've now added one more target, {{travis}}. The {{.travis.yml}} script is where we tell Travis what to do.
+
+Do {{git status}} and you'll see two new files:
+
+[[code]]
+Untracked files:
+    .travis.yml
+    ci_build.sh
+[[/code]]
+
+The ci_build.sh file is always generated, whereas we will modify .travis.yml by hand, as we decide to expand our test cover. Here is what the skeleton Travis script looks like:
+
+[[code]]
+# Travis CI script
+language: c
+
+os:
+- linux
+
+sudo: false
+
+env:
+- BUILD_TYPE=default
+#- BUILD_TYPE=android
+#- BUILD_TYPE=check-py
+#- BUILD_TYPE=cmake
+
+addons:
+  apt:
+    packages:
+    - valgrind
+
+before_install:
+- if [ $TRAVIS_OS_NAME == "osx" ] ; then stuff
+
+# Hand off to generated script for each BUILD_TYPE
+script: ./ci_build.sh
+[[/code]]
+
+You can, if this is your kind of soup, go and learn Travis' scripting language.
+
+* Go to travis-ci.org (not .com!).
+* Click "Log in with GitHub" at the top right.
+* Authorize Travis for your organizations.
+* When you return to Travis, click your user icon at the top right.
+* Click "Sync account" so Travis knows what repositories you have.
+* Find your Global Domination project.
+* Click the toggle to enable Travis.
+
+Nothing happens until you push the {{.travis.yml}} file to your repository. So:
+
+```
+git add .
+git commit -m "Problem: someone's patch broke my code
+
+Solution: enable Travis CI"
+git push origin master
+```
+
+Now Travis should start building and testing your project. Every time you push commits, it will run the .travis.yml script and report any errors.
+
+Remember this lesson:
+
+> Travis is there to help you, not add more stress.
+
+++ Problem: Travis isn't building my project :(
+
+The first time you try to use Travis it's not obvious. Just enabling builds on your repo does not start a build. So if you carefully pushed your new .travis.yml file, and then enabled builds, nothing happened.
+
+You need to push a commit before Travis wakes up. You don't need to change anything. Git lets you create empty commits.
+
+//Solution: push an empty commit.//
+
+Run these commands:
+
+```
+git commit --allow-empty -m "Problem: Travis isn't building my project
+
+Solution: push an empty commit"
+git push origin master
+```
+
+Remember this lesson:
+
+> With enough empty commits you can draw pictures on your GitHub profile.
+
+++ Problem: my client is using Windows
+
+Consider this an opportunity, not a problem. "We need support for Visual Studio 2010," says your client. "Hmm, that could take a week or more. Is that OK?" you reply. The client doesn't blink. "We could make it work with VS2015 too, that way you're compatible with the next Windows 10 service pack," you continue. The client still doesn't blink. "We put our best people on it... it'll cost more but you'll get it faster." The client finally blinks. "OK, make it happen," they say.
+
+//Solution: zproject does Visual Studio.//
+
+Here's a way to see all the targets that zproject supports. This is a growing list:
+
+```
+gsl -target:? project.xml
+```
+
+Here is the kind of thing that zproject will report:
+
+```
+Valid targets are:
+    android             Native shared library for Android
+    autotools           GNU build system
+    cmake               CMake build system
+    cygwin              Cygwin build system
+    debian              packaging for Debian
+    docker              packaging for Docker
+    java                Java JNI binding
+    java-msvc           MSVC builds for Java JNI binding
+    mingw32             Mingw32 build system
+    nuget               Packaging for NuGet
+    python              Python binding
+    qml                 QML binding
+    qt                  Qt binding
+    redhat              Packaging for RedHat
+    ruby                Ruby binding
+    travis              Travis CI scripts
+    vs2008              Microsoft Visual Studio 2008
+    vs2010              Microsoft Visual Studio 2010
+    vs2012              Microsoft Visual Studio 2012
+    vs2013              Microsoft Visual Studio 2013
+    vs2015              Microsoft Visual Studio 2015
+```
+
+So to support VS2010 and VS2015, we add these two targets to our {{project.xml}}:
+[[code]]
+<target name = "vs2010" />
+<target name = "vs2015" />
+[[/code]]
+
+And then we regenerate the project packaging with {{gsl project.xml}}. Here is what zproject reports now:
+
+```
+globdom> gsl project.xml
+GSL/4.1c Copyright (c) 1996-2016 iMatix Corporation
+gsl/4 I: Processing project.xml...
+gsl/4 M: Building GNU build system (autotools)
+gsl/4 M: Building CMake build system (cmake)
+gsl/4 M: Building Travis CI scripts (travis)
+gsl/4 M: Building Microsoft Visual Studio 2010 (vs2010)
+gsl/4 M: Building Microsoft Visual Studio 2015 (vs2015)
+```
+
+You can generate a single target using the {{-target}} command line switch. E.g.:
+
+```
+gsl -target:vs2010 project.xml
+```
+
+When you run {{git status}} you will now see a new subdirectory called {{builds}}. Add this to your repository, and commit it:
+
+```
+git add builds
+git add -u
+git commit -m "Problem: my client is using Windows
+
+Solution: add Visual Studio targets"
+git push origin master
+```
+
+Your repository now holds project files for two versions of Visual Studio.
+
+Remember this lesson:
+
+> zproject supports a lot of targets.
+
+++ Problem: my client wants a stable release
+
+Hold on to your horses, cowboy! One thing at a time. What the client //wants// and what the client //needs// are often two different things. Don't throw the word "stable" around lightly. It means different things to different people:
+
+* It means stuff that is firm, robust, and won't crash.
+* It means stuff that is resistant to change.
+* It means stuff that isn't screamingly insane.
+* It means stuff you put your horses in.
+
+Our code is definitely one of these, and definitely not one of these. The other two, //meh//.  As a compromise, let's "tag" the release. This is somewhat like shooting an orange dart, labeled "Little Buffy", into a wild buffalo. The tag is a short way of saying "that raging mountain of anger heading straight for you," or as we say in the trade, commit #bbc2c1.
+
+//Solution: tag this version.//
+
+Here is how we tag the current commit and send that off to GitHub:
+
+```
+git tag -m "This is version 0.2" version-0.2
+git push --tags origin master
+```
+
+Here's a subtle yet important detail. We change the version number, then we do work, and then we tag it. And then we change the version number again. That means after making our "stable release", we right away update the version number, then regenerate everything, then push it to GitHub again.
+
+In project.xml:
+
+```
+<version major = "0" minor = "3" />
+```
+
+And then:
+
+```
+gsl project.xml
+git add -u
+git commit -m "Problem: code version needs updating
+
+Solution: update to version 0.3"
+git push origin master
+```
+
+Remember this lesson:
+
+> The version in git master is always the //next version you intend to release//.
+
+++ Problem: how does my client get a tagged release?
+
+//Solution: use GitHub's release page.//
+
+GitHub offers one-click downloads of the tarballs and zip files for [https://github.com/scalable-c/globdom/releases/tag/version-0.2 any given release of a project]. There really isn't a better way of distributing tarballs.The ZeroMQ project uses a download server, yet that's an historical artifact, not a preference over GitHub.
+
+If you want a specific tagged release from git, there are two ways. Either way you first clone the git repository. Then you can do either of these:
+
+```
+git checkout version-0.2
+git reset --hard version-0.2
+```
+
+I tend to use the second form, as it leaves me with a clean state. It is exactly as if I rewound history. The first form leaves the repository in a "detached head" state. Unless you are a masochist, forget it. The hard reset is clean and effective. You can make commits, and they'll be in the right place. Just do {{git pull origin master}} before sending your commits back to GitHub.
+
+Remember this lesson:
+
+> When it comes to git, ignorance is bliss.
+
+++ Problem: how do I build my project on Windows?
+
+If you use Linux in your work, then Windows can be a bit of a mystery. I especially hate the Visual Studio user interface. It greeted me by asking me to register a new user account. It then tried to show me "cool" stuff about my project. The only cool stuff in a C project is the code, which seemed impossible to find. Windows 1.0 introduced flat frames without overlap, and Visual Studio has been trying to get back there ever since.
+
+Happily you can entirely ignore Visual Studio's aspirations to be an "environment", and treat it just like any other C/C++ compiler.
+
+//Solution: Windows has a command line.//
+
+I'll summarize what you need to have, know, and do in order to build your project via the command line:
+
+* You need a PC running Windows 8 or 10 with Internet connection.
+
+* You need a Visual Studio compiler. You can use the Community Edition for free.
+
+* Ensure the {[programfiles}} environment variable is set properly. Use the command line (or PowerShell! if you want a Kung Fury-style retro experience).
+
+* You need to install git and/or unzip for the command line. I'd recommend to build from git.
+
+* Using git, clone Global Domination plus all dependent projects:
+
+```
+git clone https://github.com/scalable-c/globdom
+git clone https://github.com/zeromq/czmq
+git clone https://github.com/zeromq/libzmq
+```
+
+* Build the projects in order:
+
+```
+cd libzmq\builds\msvc\vs2010
+.\build.bat
+cd ..\..\..\..
+cd czmq\builds\msvc\vs2010
+.\build.bat
+cd ..\..\..\..
+cd globdom\builds\msvc\vs2010
+.\build.bat
+cd ..\..\..\..
+```
+
+* Laugh with glee as you realize you just accomplished months of work in a few hours.
+
+Remember this lesson:
+
+> It is already amazing the horse can dance. Don't expect it to also keep a rhythm.
+
+++ Problem: Java
+
+//Ah, thither yon sweet Java! Thy perfumed voice lulls my dreams with paths untold! Let me count the ways I love thee...// OK, done.
+
+The main problem with Java is that people use the language. And not just a few people either. It is the COBOL of the 21st Century, built by Big Software and sold to managers. If C++ suffers from "hey, how abstract can we make this stuff before our brains strangle themselves?" syndrome, then Java suffers from "just one more path, I promise!" pain.
+
+Inevitably, a quiet and yet determined character will approach you on a dark street corner and offer you money. "Just give me Global Domination in Java," they'll say. "Just once," they'll insist, "How bad can it be?"
+
+The answer is, pretty bad. Java took the traditional way of integrating native C libraries into "higher-level" languages, which is to say "pain and grief." The official name for this torture chamber is JNI, which stands for "Just Nasty, Innit?" Like many parts of the thankless job of programming, it seems OK once you're used to it.
+
+Yet writing JNI code is a mind-numbing exercise that belies the delicacy of it. You need all the grace of an elephant hopping from rock to rock in a molten lava pool. Get it wrong and badness happens. Here's a slice of JNI:
+
+[[code]]
+JNIEXPORT jstring JNICALL
+Java_org_zeromq_zyre_Zyre__1_1name (JNIEnv *env, jclass c, jlong self)
+{
+    char *name_ = (char *) zyre_name ((zyre_t *) (intptr_t) self);
+    jstring return_string_ = (*env)->NewStringUTF (env, name_);
+    return return_string_;
+}
+[[/code]]
+
+I'm not going to explain this. You can find enough JNI tutorials on-line to decipher it. What I'm going to do is explain how to generate everything you need to make it Someone Else's Problem.
+
+//Solution: use the 'java' target.//
+
+Add this to {{project.xml}}:
+
+[[code]]
+<target name = "java" />
+[[/code]]
+
+And then {{gsl project.xml}} as usual. You'll see this output from zproject:
+
+```
+gsl/4 M: Building Java JNI binding (java)
+```
+
+And when you type {{git status}}, you will only {{project.xml}} changed, and nothing else. There is a new directory {{bindings/jni}} and it is empty.
+
+++ Problem: bindings/jni is empty
+
+To generate a binding we need a little more than just the class name. We need a description of the methods in the class. We call this the "API model" and it sits in a subdirectory called "api."
+
+//Solution: write an API model for gdom_client.//
+
+Create a new file {{api/gdom_client.xml}} with this content:
+
+[[code]]
+<class name = "gdom_client">
+    Global Domination client API
+    <constructor>
+        Create a new Global Domination client
+    </constructor>
+    <destructor>
+        Destroy a Global Domination client
+    </destructor>
+</class>
+[[/code]]
+
+And then run {{gsl project.xml}} as usual. It looks just like before, yet take a look at {{bindings/jni}} now. It's full of life. Let's quickly add the newly generated files to our repository:
+
+```
+git add api bindings
+git add -u
+git status
+```
+
 .end
 
-++ Problem:
+
+
+++ Problem: Android
 
 
 
 
-daemon
-    - show some zsys stuff
+
+
+
+
+
+
+
+
 
 ++ Problem: the server blocks my main thread
 
@@ -573,23 +962,9 @@ daemon
 
 selftest command line tool
 
-++ Problem: I keep making stupid mistakes
-
-<target name = "travis" />
-travis CI
-
-++ Problem: I got asked for a Windows build
-
-<target name = "msvc*" />
-
 ++ Problem: someone asked me for packages
 
 debian, redhat, nuget, docker packaging
-
-++ Problem: Java
-
-ah yes JNI
-introduce API model
 
 ++ Problem: my stuff is getting popular
 
@@ -602,6 +977,8 @@ In two ways!
 
 ++ Problem: zproject doesn't support X
 
+
+- draft/stable/legacy
 
 .end
 
