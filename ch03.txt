@@ -836,7 +836,7 @@ I'll summarize what you need to have, know, and do in order to build your projec
 
 * You need a Visual Studio compiler. You can use the Community Edition for free.
 
-* Ensure the {[programfiles}} environment variable is set properly. Use the command line (or PowerShell! if you want a Kung Fury-style retro experience).
+* Ensure the {{programfiles}} environment variable is set properly. Use the command line (or PowerShell! if you want a Kung Fury-style retro experience).
 
 * You need to install git and/or unzip for the command line. I'd recommend to build from git.
 
