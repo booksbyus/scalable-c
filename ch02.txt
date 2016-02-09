@@ -204,7 +204,7 @@ And further, only use C99 syntax that is a pure subset of C++. Otherwise, no por
 
 Remember this lesson:
 
-> Don't use C++ keywords like {{interface}} as variables.
+> Don't use C++ keywords like {{class}} as variables.
 
 ++ Problem: how do I name my source files?
 
