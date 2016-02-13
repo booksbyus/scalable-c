@@ -490,9 +490,9 @@ Remember this lesson:
 
 ++ Problem: update the version number
 
-After such a lot of work we should release a new version. We defined the version number in our public header file, {{include/globdom.h}}. It should be simple to bump it:
+After such a lot of work we should release a new version. We defined the version number in our public header file, {{include/globaldom.h}}. It should be simple to bump it:
 
-* Edit {{include/globdom.h}} to say {{#define GLOBDOM_VERSION_MINOR 2}}
+* Edit {{include/globaldom.h}} to say {{#define GLOBDOM_VERSION_MINOR 2}}
 * Print the version number from the header:
 
 [[code]]
@@ -507,7 +507,7 @@ gdomd.c: In function ‘main’:
 gdomd.c:46:21: error: ‘GLOBDOM_VERSION_MAJOR’ undeclared
 ```
 
-The reason is that our project header files are confused. We have a mix of hand-written files (the original {{include/globdom.h}}) and generated files doing the same thing. Take a look at {{include/gdom_library.h}} and you'll see it does the same (and more) as we did by hand.
+The reason is that our project header files are confused. We have a mix of hand-written files (the original {{include/globaldom.h}}) and generated files doing the same thing. Take a look at {{include/gdom_library.h}} and you'll see it does the same (and more) as we did by hand.
 
 //Solution: define the version and header in our project model.//
 
