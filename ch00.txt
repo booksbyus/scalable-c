@@ -166,6 +166,13 @@ git config --global user.name "Your Name"
 git config --global user.email your.name@example.com
 ```
 
+And then tell git to always //rebase// when it pulls commits from another repository:
+
+```
+git config --global pull.rebase true
+```
+
+
 ++ Why not C++?
 
 Don't laugh. This is a serious question people sometimes ask, even when "C" is clearly in the title of the book. The answer is roughly: "C++ encourages you to make worse code than even C does."

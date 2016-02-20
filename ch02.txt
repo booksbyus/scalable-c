@@ -108,7 +108,7 @@ Remember this lesson:
 
 It is painful to read code that has no style. A good project looks like it has a single author. Consistency is gold. Yet every contributor comes with their own habits.
 
-A solution some projects use is to clean up code using a code beautifier. This does create a consistent style. Yet that does more harm than good, in my experience. It turns out that "cannot respect project style" is key data for detecting bad actors. It's a specific case of their general disrespect for social norms and rules.
+One common answer is to clean up code using a code beautifier. This does create a consistent style. Yet that does more harm than good, in my experience. It turns out that "cannot respect project style" is key data for detecting bad actors. It's a specific case of their general disrespect for social norms and rules.
 
 Thus it is better to document the project's style, and ask people to respect it. They won't, and so you can fix their patches and they should learn. If they don't, over time, you start to build a case for banning them.
 
@@ -1224,6 +1224,8 @@ Which one is easier to understand?  I find it ironic how people will use short u
 //Solution: aim above all at readability, and a good signal-to-noise ratio.//
 
 Here is my list of recommendations. I'll explain my reason in each case. Often the argument is "closer to natural language," which means less work to write, and read. This reduces mistakes.
+
+We use this style in most of the ZeroMQ stack, so if you can use it, when you write C, that's a win. If you can't, or don't want to, that is entirely up to you. Please don't take this as dogma. It doesn't really matter what style you use, as long as your style is readable, and you are consistent.
 
 * Do not use "magic numbers" (numeric constants) in code. Numbers say nothing and create space for mistakes (change in one place, yet not in another). Define constants in the project headers.
 

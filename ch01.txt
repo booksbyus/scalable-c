@@ -427,9 +427,11 @@ git remote add upstream https://github.com/zeromq/czmq
 And then every time you want to "refresh" your local fork, you do this:
 
 ```
-git pull --rebase upstream master
+git pull upstream master
 git log
 ```
+
+I hope you configured git with {{git config --global pull.rebase true}}. You can get the same effect by passing {{--rebase}} to all {{pull}} commands, if you like doing extra work.
 
 The {{--rebase}} option stops git from adding spurious "Hey I merged some stuff, lookieme!" commits. If you don't use this option, your git history gets messy. It should be the default. It's not. So just always use it. Or, do add this to your $HOME/.bashrc:
 

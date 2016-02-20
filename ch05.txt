@@ -59,7 +59,7 @@ if (*p == '}') max = min; else
   }
 [[/code]]
 
-And this code, which is, I'm sure, technically solid, but is as friendly as a drunken Glaswegian who thinks you're making eyes at his girlfriend:
+And this code, which is, I'm sure, technically solid, but is as friendly as a drunken Glaswegian who thinks you're making eyes at their beer:
 
 [[code language="C"]]
 if (hdr.xid == WATCHER_EVENT_XID) {

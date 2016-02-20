@@ -213,7 +213,6 @@ Untracked files:
     src/.valgrind.supp
     src/Makemodule.am
     src/libgdom.pc.in
-    version.sh
 ```
 
 Two of our hand-written files got smashed by generated versions. That's intentional. We won't modify these by hand ever again, as they track the project. Then we got a lot of new files, for autotools and for CMake. And then we got a project header called {{include/global_domination.h}}. Cute! But useless! Let's tolerate that for now, and fix it later.
@@ -908,13 +907,13 @@ gsl/4 M: Building Java JNI binding (java)
 
 And when you type {{git status}}, you will only {{project.xml}} changed, and nothing else. There is a new directory {{bindings/jni}} and it is empty.
 
-++ Problem: bindings/jni is empty
+++ Problem: {{bindings/jni}} is empty
 
-To generate a binding we need a little more than just the class name. We need a description of the methods in the class. We call this the "API model" and it sits in a subdirectory called "api."
+To generate a binding we need a little more than just the class name. We need a description of the methods in the class. We call this the "API model" and it sits in a subdirectory called {{api}} and has the file extension {{.api}}. We write this file as XML, as we do all our models.
 
 //Solution: write an API model for gdom_client.//
 
-Create a new file {{api/gdom_client.xml}} with this content:
+Create a new file {{api/gdom_client.api}} with this content:
 
 [[code]]
 <class name = "gdom_client">
@@ -936,15 +935,121 @@ git add -u
 git status
 ```
 
-.end
+You should see a bunch of files in {{bindings/jni}}. Let's add these to git and push our changes:
+
+```
+git add bindings/jni
+git add -u
+git commit -m "Problem: bindings/jni is empty
+
+Solution: add minimal API model for gdom_client"
+git push origin master
+```
+
+Remember this lesson:
+
+> Small steps will lead you on a great journey.
+
+++ Problem: how do I build the Java binding?
+
+This is a part of zproject that will still change. Right now, every target in zproject has its own build process. It's easier than working entirely by hand. Yet, if you want to build several targets, it's inconsistent.
+
+Having said that...
+
+//Solution: use gradle.//
+
+Install Gradle if you don't already have it:
+
+```
+sudo apt-get install gradle
+```
+
+Then, install the Java Development Kit if you don't already have it installed. Check if you already have it:
+
+```
+javac
+```
+
+And then if you need it, go install a JDK. I'm not going to explain how, because documenting Java is like blowing on molten rock to cool it down. It is useless and painful, and one of those things other people do better.
+
+In the {{bindings/jni}} directory, this command does the work:
+
+```
+gradle build jar
+gradle test
+```
+
+This calls {{javah}} to build the JNI headers in {{src/native/include}}, and then compiles the C and Java pieces to create a jar file a sharable library (.so). It then runs the library test suite.
+
+The result is a pretty jar file: {{build/libs/gdom-jni-0.3.0.jar}}. I've no idea what people do with jars, to be honest. I assume one installs them somewhere in the seventh circle of Hell so that one's Java "apps" (the more horrid the tech, the cuter the euphemisms) can find them. If you ever figure this out, send me a pull request.
+
+++ Problem: the JNI layer does not build on Windows
+
+Windows means Microsoft Visual Studio, as we already know to our regret. To build the JNI layer on Windows, we ask for the {{java-msvc}} target. This generates all the solutions (note the cute euphemism again) and project files for various versions of MSVC, from VS 2010 onwards.
+
+//Solution: use the 'java-msvc' target.//
+
+Add this to {{project.xml}}:
+
+[[code]]
+<target name = "java-msvc" />
+[[/code]]
+
+And then {{gsl project.xml}} as usual. You'll see this output from zproject:
+
+```
+gsl/4 M: Building MSVC builds for Java JNI binding (java-msvc)
+```
 
 
 
-++ Problem: Android
+
+
+You need MS Visual Studio 2010 or later.
+
+You need the Java SDK. Set the JAVA_HOME environment to the installation location, e.g. C:Program FilesJavajdk1.8.0_66.
+
+1. Check out all dependent projects from github, at the same level as this project. E.g.: libsodium, libzmq, czmq.
+2. In each project, open a console in builds/msvc/vs2010 and run the build.bat batch file.
+3. In this project, open a console in bindings/jni/msvc/vs2010 and run the build.bat batch file.
+
+The resulting libraries (gdomjni.dll, gdomjni.lib) are created in bindings/jni/msvc/bin.
+
+
+Building the JNI Layer for Android
+
+See bindings/jni/android/build.sh.
+
+You need the Android Native Development Kit (NDK) installed.
+
+Set these environment variables, e.g:
+
+    ANDROID_NDK_ROOT=$HOME/android-ndk-r10e
+    TOOLCHAIN_NAME=arm-linux-androideabi-4.9
+    TOOLCHAIN_HOST=arm-linux-androideabi
+    TOOLCHAIN_ARCH=arm
+    TOOLCHAIN_PATH=$ANDROID_NDK_ROOT/toolchains/$TOOLCHAIN_NAME/prebuilt/linux-x86_64/bin
+
+Then in the android directory, run:
+
+    ./build.sh
+
+This does the following:
+
+* It compiles the Global Domination C sources for Android, into a native library libgdom.so in builds/android/
+* It compiles the JNI Java classes into a jar file gdom-jni-0.3.0.jar in bindings/jni/build/libs
+* It compiles the JNI C sources for Android, into a native library libgdomjni.so.
+* It combines all these into gdom-android.jar, which you can use in your Android projects.
 
 
 
 
+
+
+
+++ Problem: contributors aren't reading the C4
+
+CONTRIBUTING.md
 
 
 
