@@ -235,7 +235,7 @@ Jargon file:
 
 * "cloning" - means making a local copy of a remote repo. This also sets up a remote called "origin" that points back to the original repo.
 
-* "ldconfig" - fixes up dynamic link libraries after you install them. Run this /usr/local/lib already has a different version of the library you are installing.
+* "ldconfig" - fixes up dynamic link libraries after you install them. Run this if /usr/local/lib already has a different version of the library you are installing.
 
 Remember this lesson:
 
@@ -243,20 +243,12 @@ Remember this lesson:
 
 ++ Problem: building CZMQ fails! I need libzmq...
 
-Ah, yes. Sorry to make you work backwards here. Let's grab the projects that CZMQ needs, so we can build it. There are two: libzmq, the ZeroMQ messaging library, and libsodium, for encryption.
+Ah, yes. Sorry to make you work backwards here. Let's grab the projects that CZMQ needs, so we can build it. There is just one two: {{libzmq}}, the ZeroMQ messaging library. We used to also need {{libsodium}} for encryption, but since early 2016 ZeroMQ comes with a mini version of that, called {{tweetnacl}}, embedded. You can still use {{libsodium}} if you want. I won't explain that.
 
-//Solution: install libzmq and libsodium first//
+//Solution: install libzmq first//
 
 ```
 cd $HOME/projects
-
-# Install libsodium
-git clone https://github.com/jedisct1/libsodium
-cd libsodium
-./autogen.sh && ./configure
-make -j 4 && make check
-make install && sudo ldconfig
-cd ..
 
 # Install libzmq
 git clone https://github.com/zeromq/libzmq
@@ -321,7 +313,7 @@ Indeed. Windows boasts a thing called "PowerShell." The name already gives it aw
 
 I'm not kidding. You can google it. Every other command shell in the universe uses {{set}}. But hey, why make it simple when you can have job security, amirite?
 
-Turns out that libsodium, libzmq, CZMQ, and our other projects all support Visual Studio. If you don't have Visual Studio, grab the free 2013 Community Edition. Then, look in {{builds/msvc}}.
+Turns out that libzmq, CZMQ, and our other projects all support Visual Studio. If you don't have Visual Studio, grab the free 2013 Community Edition. Then, look in {{builds/msvc}}.
 
 For instance to build CZMQ, do this:
 
@@ -330,7 +322,7 @@ cd builds\msvc\vs2013
 .\build.bat
 ```
 
-You will want to clone and build libsodium and libzmq first. A warning: libsodium master sometimes does not build on Windows. Check out the latest stable release tag if you get compile errors.
+You will want to clone and build libzmq first.
 
 Having said that, remember this lesson:
 

@@ -1424,7 +1424,7 @@ In each case, OM has a better outcome than PM.
 
 In the majority case (patches that need further work), Optimistic Merge creates the conditions for mentoring and coaching. And indeed this is what we see in ZeroMQ projects, and is one of the reasons they are such fun to work on.
 
-For more details, read [http://rfc.zeromq.org/spec:22 ZeroMQ RFC 22], C4.1: the Collective Code Construction Contract.
+For more details, read [http://rfc.zeromq.org/spec:42 ZeroMQ RFC 42], C4: the Collective Code Construction Contract.
 
 ++ Conclusions
 

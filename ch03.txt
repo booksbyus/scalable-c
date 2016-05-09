@@ -30,7 +30,7 @@ That being said...
 
 Happily, this solution actually worked. It comes as close to killing makefiles as possible, after about 25 years of research. As often, the brilliance and genius comes from the collective mind.
 
-What my team, at iMatix did, many years ago, was to build [https://github.com/imatix/gsl a way to generate code] from high level models. We used this a lot and got good at it. Our gsl language makes it possible to develop DSLs (domain specific languages) quickly, and then build backends that turn these DSLs into code.
+What my team, at iMatix did, many years ago, was to build [https://github.com/imatix/gsl a way to generate code] from high level models. We used this a lot and got good at it. Our GSL language makes it possible to develop DSLs (domain specific languages) quickly, and then build backends that turn these DSLs into code. Not to be confused with the GNU Scientific Library (also known as GSL).
 
 What the ZeroMQ community did, over about two years, was build [https://github.com/zeromq/zproject/graphs/contributors a DSL for packaging], and write dozens of backends for it. This tool is called {{zproject}}, and it is what I'll explain in this chapter.
 
@@ -201,7 +201,6 @@ Untracked files:
 
     CMakeLists.txt
     Findczmq.cmake
-    Findlibsodium.cmake
     Findlibzmq.cmake
     Makefile.am
     autogen.sh
@@ -952,7 +951,7 @@ Remember this lesson:
 
 ++ Problem: how do I build the Java binding?
 
-This is a part of zproject that will still change. Right now, every target in zproject has its own build process. It's easier than working entirely by hand. Yet, if you want to build several targets, it's inconsistent.
+This is a part of zproject that will still change. Right now, every target in zproject has its own build process. It's easier than working entirely by hand. Yet, if you want to build several targets, it's inconsistent. If this bothers you, send a patch. For instance I've thought of writing a Bash front end script that would build any given target.
 
 Having said that...
 
@@ -970,7 +969,7 @@ Then, install the Java Development Kit if you don't already have it installed. C
 javac
 ```
 
-And then if you need it, go install a JDK. I'm not going to explain how, because documenting Java is like blowing on molten rock to cool it down. It is useless and painful, and one of those things other people do better.
+And then if you need it, go install a JDK. I'm not going to explain how, because documenting Java is like blowing on molten rock to cool it down. It is useless and you easily get burnt, and one of those things other people do better.
 
 In the {{bindings/jni}} directory, this command does the work:
 
@@ -985,7 +984,7 @@ The result is a pretty jar file: {{build/libs/gdom-jni-0.3.0.jar}}. I've no idea
 
 ++ Problem: the JNI layer does not build on Windows
 
-Windows means Microsoft Visual Studio, as we already know to our regret. To build the JNI layer on Windows, we ask for the {{java-msvc}} target. This generates all the solutions (note the cute euphemism again) and project files for various versions of MSVC, from VS 2010 onwards.
+Developing on Windows means using Microsoft Visual Studio, as we already know to our regret. To build the JNI layer on Windows, we ask for the {{java-msvc}} target. This generates all the 'solutions' (note again the cute euphemism) and project files for various versions of MSVS (aka MSVC for "Microsoft Visual C/C++").
 
 //Solution: use the 'java-msvc' target.//
 
@@ -1001,46 +1000,63 @@ And then {{gsl project.xml}} as usual. You'll see this output from zproject:
 gsl/4 M: Building MSVC builds for Java JNI binding (java-msvc)
 ```
 
+To actually build:
 
+* You need MS Visual Studio 2010 or later.
+* You need the Java SDK. Set the {{JAVA_HOME}} environment to the installation location, e.g. {{C:\Program Files\Javajdk1.8.0_66}}.
+* Check out dependent projects (libzmq, czmq) from github, at the same level as this project.
+* In each project, open a console in builds/msvc/vs2010 and run the build.bat batch file.
+* In this project, open a console in bindings/jni/msvc/vs2010 and run the build.bat batch file.
 
+The resulting libraries ({{gdomjni.dll}} and {{gdomjni.lib}}) should land in {{bindings/jni/msvc/bin}}, if my calculations are correct.
 
+Remember this lesson:
 
-You need MS Visual Studio 2010 or later.
+> Writing or creating these project files by hand would be painful. Code generation rocks!
 
-You need the Java SDK. Set the JAVA_HOME environment to the installation location, e.g. C:Program FilesJavajdk1.8.0_66.
+++ Problem: sorry, I meant "Android" not "Windows"
 
-1. Check out all dependent projects from github, at the same level as this project. E.g.: libsodium, libzmq, czmq.
-2. In each project, open a console in builds/msvc/vs2010 and run the build.bat batch file.
-3. In this project, open a console in bindings/jni/msvc/vs2010 and run the build.bat batch file.
+We get it. You deliver magic to a client, charge way too little, and instead of gratitude, the client swings around and demands more. "Windows is out. Can you make it run on Android? We need it on Android, we're going to demo in three days' time."
 
-The resulting libraries (gdomjni.dll, gdomjni.lib) are created in bindings/jni/msvc/bin.
+To compile C/C++ and JNI for Android is like tattooing your own back. "Difficult and painful" starts to describe it. You can make it work, if you are patient and willing to learn. The basic steps are:
 
+* Install a funky version of gcc called "the Android Native Development Kit" or NDK, which can compile your C/C++ code to the various different CPU architectures that Android runs on.
+* Set up a whole load of paths and environment variables so that the NDK can compile your code.
+* Compile it, and hope you've not any non-portable dependencies to trip you up.
 
-Building the JNI Layer for Android
+Much of the hard work is already done in zproject's {{jni}} target. You should probably read {{bindings/jni/android/build.sh}} and try to understand what it's doing.
 
-See bindings/jni/android/build.sh.
+//Solution: gratitude to whomever wrote the {{jni}} target in zproject.//
 
-You need the Android Native Development Kit (NDK) installed.
+* Install the latest Android Native Development Kit (NDK).
 
-Set these environment variables, e.g:
+* Set these environment variables, like this (to build for ARM, which is the most common Android CPU):
 
-    ANDROID_NDK_ROOT=$HOME/android-ndk-r10e
-    TOOLCHAIN_NAME=arm-linux-androideabi-4.9
-    TOOLCHAIN_HOST=arm-linux-androideabi
-    TOOLCHAIN_ARCH=arm
-    TOOLCHAIN_PATH=$ANDROID_NDK_ROOT/toolchains/$TOOLCHAIN_NAME/prebuilt/linux-x86_64/bin
+```
+ANDROID_NDK_ROOT=$HOME/android-ndk-r10e
+TOOLCHAIN_NAME=arm-linux-androideabi-4.9
+TOOLCHAIN_HOST=arm-linux-androideabi
+TOOLCHAIN_ARCH=arm
+TOOLCHAIN_PATH=$ANDROID_NDK_ROOT/toolchains/$TOOLCHAIN_NAME/prebuilt/linux-x86_64/bin
+```
 
-Then in the android directory, run:
-
-    ./build.sh
+* Then in the {{bindings/jni/android}} directory, run {{./build.sh}}.
 
 This does the following:
 
-* It compiles the Global Domination C sources for Android, into a native library libgdom.so in builds/android/
-* It compiles the JNI Java classes into a jar file gdom-jni-0.3.0.jar in bindings/jni/build/libs
-* It compiles the JNI C sources for Android, into a native library libgdomjni.so.
-* It combines all these into gdom-android.jar, which you can use in your Android projects.
+* It compiles the Global Domination C sources for Android, into a native library {{libgdom.so}} in {{builds/android/}}.
+* It compiles the JNI Java classes into a jar file {{gdom-jni-0.3.0.jar}} in {{bindings/jni/build/libs}}.
+* It compiles the JNI C sources for Android, into a native library {{libgdomjni.so}}.
+* It combines all these into {{gdom-android.jar}} (basically a zip file with a specific layout), that you can use in your Android projects.
 
+++ Problem: project name is not consistent
+
+Sometimes you 
+
+<project
+    name = "Global Domination"
+    script = "zproject.gsl"
+    prefix = "gdom" >
 
 
 

@@ -35,7 +35,7 @@ PURCHASE=http://hintjens.com/books
 
 #   Author page
 BIOGRAPHY=Pieter Hintjens has been programming C since 1985. He is the author of many free software products written in C: Libero (1991), SFL (1996), Xitami (1998), OpenAMQ (2004). In 2007 he founded the ZeroMQ community. His github profile is https://github.com/hintjens.
-OTHERBOOKS=Other books by the same author: "ZeroMQ - Messaging for Many Applications" (O'Reilly), "Culture and Empire: Digital Revolution" (Amazon.com), "The Psychopath Code" (Amazon.com).
+OTHERBOOKS=Other books by the same author: [http://www.amazon.com/ZeroMQ-Messaging-Applications-Pieter-Hintjens/dp/1449334067 "ZeroMQ - Messaging for Many Applications"] (O'Reilly), [http://cultureandempire.com "Culture and Empire: Digital Revolution"] (Amazon.com), [http://thepsychopathcode.com "The Psychopath Code"] (Amazon.com).
 
 #   Build index
 #INDEX=../index.txt

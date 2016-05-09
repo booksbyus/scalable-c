@@ -1,0 +1,64 @@
+Evgeny ‏@antaev  8h8 hours ago
+Evgeny Retweeted Digistani
+In "Scalable C" @hintjens shares a priceless experience. Thoughtful and influential so far. Can't wait to read cont. Evgeny added,
+
+
+Mathias Verraes ‏@mathiasverraes  11h11 hours ago
+“(…) If the solution works, keep it. Otherwise throw it out.
+Repeat until exhausted, broke, or dead.” @hintjens is writing a new book.
+
+James Nugent ‏@jen20  12h12 hours ago
+Just read the first parts of "Scalable C" by @hintjens - nodding vigorously right now.
+
+Raymond Roestenburg ‏@RayRoestenburg  12h12 hours ago
+Been a few years since I wrote a little C and it was.. painful. Now @hintjens is tempting me back :-) Scalable C book looks good so far..
+
+
+Scalable C. @hintjens is kicking off a new book. This will be interesting. https://www.gitbook.com/book/hintjens/scalable-c/details …
+
+
+Tommy Back ‏@murr3katt  Jan 16
+@hintjens The problem-solution format you have is very good and helpful. You've done a great job ordering them in a natural flow too.
+
+Tommy Back ‏@murr3katt  Jan 16
+haha. I was actually doing something else, but I couldn't help start reading Scalable C...I really like your humour @hintjens :-D
+
+Daniel Von Fange ‏@danielvf  Jan 16
+@hintjens Thanks for so much hard earned battle wisdom. Even if you are totally wrong about skipping braces on one line if statements.
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">In &quot;Scalable C&quot; <a href="https://twitter.com/hintjens">@hintjens</a> shares a priceless experience. Thoughtful and influential so far. Can&#39;t wait to read cont. <a href="https://t.co/APNa7J0S3o">https://t.co/APNa7J0S3o</a></p>&mdash; Evgeny (@antaev) <a href="https://twitter.com/antaev/status/688696280294514688">January 17, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">“(…) If the solution works, keep it. Otherwise throw it out.&#10;Repeat until exhausted, broke, or dead.” <a href="https://twitter.com/hintjens">@hintjens</a> is writing a new book.</p>&mdash; Mathias Verraes (@mathiasverraes) <a href="https://twitter.com/mathiasverraes/status/688659317227171840">January 17, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/jen20">@jen20</a> <a href="https://twitter.com/hintjens">@hintjens</a> Might be time for me to relearn C :)</p>&mdash; Jose Samonte Jr. (@dyowee) <a href="https://twitter.com/dyowee/status/688651960346488832">January 17, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">Just read the first parts of &quot;Scalable C&quot; by <a href="https://twitter.com/hintjens">@hintjens</a> - nodding vigorously right now.</p>&mdash; James Nugent (@jen20) <a href="https://twitter.com/jen20/status/688641327513366528">January 17, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">Been a few years since I wrote a little C and it was.. painful. Now <a href="https://twitter.com/hintjens">@hintjens</a> is tempting me back :-) Scalable C book looks good so far..</p>&mdash; Raymond Roestenburg (@RayRoestenburg) <a href="https://twitter.com/RayRoestenburg/status/688634994986737664">January 17, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/hintjens">@hintjens</a> :D, I look forward to your Scalable C. Thanks for taking up the torch to write it.</p>&mdash; NaN; a fremen 6int (@_ZPH) <a href="https://twitter.com/_ZPH/status/688463446115889152">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">&quot;99.99% of people doing an insane thing does not make it less insane&quot; <a href="https://twitter.com/hintjens">@hintjens</a></p>&mdash; Tom Van Looy (@tvlooy) <a href="https://twitter.com/tvlooy/status/688444571223764992">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">Scalable C. <a href="https://twitter.com/hintjens">@hintjens</a> is kicking off a new book. This will be interesting. <a href="https://t.co/QeMa9TpnkY">https://t.co/QeMa9TpnkY</a></p>&mdash; Jonas Bonér (@jboner) <a href="https://twitter.com/jboner/status/688426636992188417">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/hintjens">@hintjens</a> Enjoyed the first three chapters of &#39;Scalable C&#39;! Thanks for the practical tips and principles, will help greatly in my coding.</p>&mdash; Rob de la Cruz (@robdelacruz) <a href="https://twitter.com/robdelacruz/status/688421897491464192">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/hintjens">@hintjens</a> The problem-solution format you have is very good and helpful. You&#39;ve done a great job ordering them in a natural flow too.</p>&mdash; Tommy Back (@murr3katt) <a href="https://twitter.com/murr3katt/status/688416169179623424">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr">haha. I was actually doing something else, but I couldn&#39;t help start reading Scalable C...I really like your humour <a href="https://twitter.com/hintjens">@hintjens</a> :-D</p>&mdash; Tommy Back (@murr3katt) <a href="https://twitter.com/murr3katt/status/688409317524000768">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/hintjens">@hintjens</a> Thanks for so much hard earned battle wisdom. Even if you are totally wrong about skipping braces on one line if statements.</p>&mdash; Daniel Von Fange (@danielvf) <a href="https://twitter.com/danielvf/status/688370510594453505">January 16, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+

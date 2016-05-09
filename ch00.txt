@@ -64,7 +64,7 @@ Scalable C is standard portable C plus a mix of other technologies:
 
 * [https://github.com/zeromq/zproto zproto] provides client-server meta-programming.
 
-* The [http://rfc.zeromq.org/spec:22 C4.1 RFC] defines a collaborative process for scalability.
+* The [http://rfc.zeromq.org/spec:42 C4 RFC] defines a collaborative process for scalability.
 
 ++ How This Book Works
 
