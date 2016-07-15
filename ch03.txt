@@ -1051,7 +1051,7 @@ This does the following:
 
 ++ Problem: project name is not consistent
 
-Sometimes you 
+Sometimes you get it wrong. 
 
 <project
     name = "Global Domination"
