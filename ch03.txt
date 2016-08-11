@@ -157,7 +157,7 @@ My main gripe with CMake is that it is just a better build scripting system. It 
 
 With zproject we don't write scripts. Instead we document our projects as abstract XML models. Then, we can run arbitrary backends on this model, each doing what it must. It is a profound and valuable shift.
 
-Just to finish my complaints about CMake, it lacks a "clean" command. And since it leaves trash lying all over the place, and since that trash really gets in the way sometimes, this is bad. The solution people use is to [http://stackoverflow.com/questions/9680420/looking-for-a-cmake-clean-command-to-clear-up-cmake-output build in a temporary directory]. It isn't great.
+Just to finish my complaints about CMake, it lacks a "clean" command. And since it leaves trash lying all over the place, and since that trash really gets in the way sometimes, this is bad. The solution people use is to [http://stackoverflow.com/questions/9680420/looking-for-a-cmake-clean-command-to-clear-up-cmake-output build in a temporary directory]. It isn't great. Thus, zproject generates a `make distclean` target for cmake similar to the autotools one which cleans up all cmake generated files nicely. It isn't great either but better than no cleaning at all.
 
 Still, since we get CMake support for free, why complain.
 
